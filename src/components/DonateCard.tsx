@@ -4,17 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-// 🔧 Substitua pela URL real da sua página de doação
-// (ex: https://apoia.se/cuidarmais  ou  https://buymeacoffee.com/seuusuario)
-const DONATION_BASE_URL = "https://apoia.se/cuidarmais";
-
-// Alguns serviços aceitam ?valor= ou /valor na URL — ajuste se necessário.
-function buildDonationUrl(amount?: number) {
-  if (!amount || amount <= 0) return DONATION_BASE_URL;
-  const sep = DONATION_BASE_URL.includes("?") ? "&" : "?";
-  return `${DONATION_BASE_URL}${sep}valor=${amount.toFixed(2)}`;
-}
+// 🔧 Substitua pelo seu link real do Mercado Pago
+// (ex: https://mpago.la/abc123  ou  https://link.mercadopago.com.br/seuusuario)
+const MERCADO_PAGO_URL = "https://link.mercadopago.com.br/cuidarmais";
 
 const PRESETS = [2, 5, 10];
 
@@ -26,7 +20,12 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
     return Number.isFinite(n) && n > 0 ? n : 0;
   })();
 
-  const customUrl = customAmount > 0 ? buildDonationUrl(customAmount) : null;
+  const openDonation = (amount: number) => {
+    toast.success(`Sugestão: R$ ${amount.toFixed(2).replace(".", ",")}`, {
+      description: "Confirme o valor na página do Mercado Pago.",
+    });
+    window.open(MERCADO_PAGO_URL, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <Card className={`${compact ? "p-5" : "p-6 md:p-8"} shadow-card border-border/60 bg-gradient-soft`}>
@@ -39,8 +38,8 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
             Apoie o Cuidar+
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Esta plataforma é gratuita. Sua doação ajuda a manter a ferramenta
-            no ar e acessível para mais pessoas.
+            Esta plataforma é gratuita. Sua doação via Mercado Pago ajuda a
+            manter a ferramenta no ar e acessível para mais pessoas.
           </p>
         </div>
       </div>
@@ -49,17 +48,11 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
         {PRESETS.map((value) => (
           <Button
             key={value}
-            asChild
             variant="outline"
             className="border-primary/30 hover:bg-primary/10"
+            onClick={() => openDonation(value)}
           >
-            <a
-              href={buildDonationUrl(value)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Doar R$ {value}
-            </a>
+            Doar R$ {value}
           </Button>
         ))}
       </div>
@@ -79,27 +72,21 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
           />
         </div>
         <Button
-          asChild={!!customUrl}
-          disabled={!customUrl}
+          disabled={customAmount <= 0}
           className="bg-gradient-hero text-primary-foreground hover:opacity-90 transition-smooth"
+          onClick={() => openDonation(customAmount)}
         >
-          {customUrl ? (
-            <a href={customUrl} target="_blank" rel="noopener noreferrer">
-              <Heart className="h-4 w-4 mr-2" />
-              Doar R$ {customAmount.toFixed(2).replace(".", ",")}
-              <ExternalLink className="h-3 w-3 ml-1.5" />
-            </a>
-          ) : (
-            <span>
-              <Heart className="h-4 w-4 mr-2 inline" />
-              Doar
-            </span>
-          )}
+          <Heart className="h-4 w-4 mr-2" />
+          {customAmount > 0
+            ? `Doar R$ ${customAmount.toFixed(2).replace(".", ",")}`
+            : "Doar"}
+          <ExternalLink className="h-3 w-3 ml-1.5" />
         </Button>
       </div>
 
       <p className="text-xs text-muted-foreground mt-3">
-        Você será redirecionado para um site externo seguro de pagamento.
+        Você será redirecionado para o Mercado Pago, onde poderá pagar via PIX,
+        cartão ou saldo.
       </p>
     </Card>
   );
