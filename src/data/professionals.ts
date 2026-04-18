@@ -45,4 +45,14 @@ export const professionals: Professional[] = [
     whatsapp: "5521000000000",
     bio: "Equipe de psicólogos e psiquiatras com atendimentos a preços populares e plantão semanal.",
   },
+  {
+    name: "Unolife",
+    title: "Plataforma de saúde mental",
+    specialty: "Depressão, ansiedade e bem-estar emocional",
+    modality: "Online (Brasil todo)",
+    city: "Atendimento nacional",
+    priceFrom: "R$ 70",
+    contact: "https://www.unolife.com.br",
+    bio: "Plataforma online que conecta pacientes a psicólogos com valores acessíveis e agendamento flexível.",
+  },
 ];
