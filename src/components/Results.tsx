@@ -203,9 +203,13 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
               </p>
             )}
 
+            <p className="mt-5 text-sm font-medium">
+              Agende a sua consulta com um psiquiatra ou psicólogo:
+            </p>
+
             {/* Plataforma municipal oficial (quando disponível para a cidade) */}
             {municipalPlatform && (
-              <div className="mt-5 rounded-md border border-primary/30 bg-primary/5 p-4">
+              <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <Badge className="bg-primary/10 text-primary border-primary/30" variant="outline">
                     Sua cidade
