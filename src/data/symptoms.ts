@@ -74,7 +74,7 @@ export const phq9Options = [
 
 // Pergunta de impacto funcional (parte oficial do PHQ-9 — critério B do DSM-5)
 export const functionalImpactQuestion =
-  "Se você marcou algum problema acima, o quanto eles dificultaram seu trabalho, suas tarefas em casa ou seu relacionamento com as pessoas?";
+  "Se você marcou algum problema nas questões anteriores, o quanto eles dificultaram seu trabalho, suas tarefas em casa ou seu relacionamento com as pessoas?";
 
 export const functionalImpactOptions = [
   { label: "Nada difícil", value: 0 },
