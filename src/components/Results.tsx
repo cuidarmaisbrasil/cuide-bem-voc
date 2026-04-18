@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
-import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl } from "@/data/sus";
+import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
@@ -44,6 +44,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
   const phoneUrl = city && state ? buildPhoneSearchUrl(city, state) : null;
   const secretariaUrl = city && state ? buildSecretariaSearchUrl(city, state) : null;
   const mapsUrl = city && state ? buildGoogleMapsUrl(city, state) : null;
+  const municipalPlatform = findMunicipalPlatform(city, state);
 
   const levelColorClass = {
     success: "bg-success/10 text-success border-success/30",
@@ -235,6 +236,49 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 Preencha cidade e UF para encontrar os telefones de agendamento.
               </p>
             )}
+
+            {/* Plataforma municipal oficial (quando disponível para a cidade) */}
+            {municipalPlatform && (
+              <div className="mt-5 rounded-md border border-primary/30 bg-primary/5 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge className="bg-primary/10 text-primary border-primary/30" variant="outline">
+                    Sua cidade
+                  </Badge>
+                  <p className="text-sm font-semibold">{municipalPlatform.name}</p>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {municipalPlatform.description}
+                </p>
+                <Button asChild size="sm">
+                  <a
+                    href={municipalPlatform.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `municipal-${municipalPlatform.state}-${municipalPlatform.city}`, target_label: municipalPlatform.name } })}
+                  >
+                    Acessar plataforma da prefeitura
+                    <ExternalLink className="h-3 w-3 ml-1.5" />
+                  </a>
+                </Button>
+              </div>
+            )}
+
+            {/* Fallback nacional sempre disponível */}
+            <div className="mt-3 rounded-md border border-border/60 bg-muted/40 p-4">
+              <p className="text-sm font-semibold mb-1">{meuSusDigital.name}</p>
+              <p className="text-sm text-muted-foreground mb-3">{meuSusDigital.description}</p>
+              <Button asChild size="sm" variant="outline">
+                <a
+                  href={meuSusDigital.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "meu-sus-digital", target_label: meuSusDigital.name } })}
+                >
+                  Acessar Meu SUS Digital
+                  <ExternalLink className="h-3 w-3 ml-1.5" />
+                </a>
+              </Button>
+            </div>
           </Card>
 
           <div className="grid md:grid-cols-3 gap-3">

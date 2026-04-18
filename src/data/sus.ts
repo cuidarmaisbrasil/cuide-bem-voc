@@ -72,3 +72,74 @@ export function buildSecretariaSearchUrl(city: string, state: string) {
   const query = encodeURIComponent(`telefone Secretaria Municipal de Saúde ${city} ${state} agendamento`);
   return `https://www.google.com/search?q=${query}`;
 }
+
+// Plataformas municipais oficiais de agendamento de consultas no SUS
+// A correspondência é feita por (cidade normalizada, UF). Quando não houver
+// plataforma municipal específica, usamos o fallback nacional "Meu SUS Digital".
+export interface MunicipalPlatform {
+  city: string;        // nome da cidade (referência humana)
+  state: string;       // UF
+  name: string;        // nome da plataforma
+  url: string;         // link direto
+  description: string; // o que oferece
+}
+
+export const municipalPlatforms: MunicipalPlatform[] = [
+  {
+    city: "Recife",
+    state: "PE",
+    name: "Conecta Recife — Saúde",
+    url: "https://conecta-saude.recife.pe.gov.br",
+    description:
+      "Portal oficial da Prefeitura do Recife para marcação gratuita de consultas médicas nas unidades do SUS municipal.",
+  },
+  {
+    city: "São Paulo",
+    state: "SP",
+    name: "Agenda Fácil — Prefeitura de SP",
+    url: "https://agendafacil.prefeitura.sp.gov.br/saude",
+    description:
+      "Plataforma e app oficial da Prefeitura de São Paulo para agendar consultas e exames nas UBS do município.",
+  },
+  {
+    city: "Rio de Janeiro",
+    state: "RJ",
+    name: "MinhaSaúde.Rio",
+    url: "https://web2.smsrio.org/portalPaciente/",
+    description:
+      "Portal oficial da Prefeitura do Rio para marcação de consultas médicas e odontológicas nas unidades do SUS carioca.",
+  },
+  {
+    city: "Belo Horizonte",
+    state: "MG",
+    name: "Agendamento SIGA — PBH",
+    url: "https://agendamentoeletronico.pbh.gov.br/agendamento/",
+    description:
+      "Sistema oficial da Prefeitura de Belo Horizonte para agendamento eletrônico de serviços, incluindo saúde.",
+  },
+];
+
+// Fallback nacional: app do Ministério da Saúde, disponível em mais de 500 municípios
+export const meuSusDigital = {
+  name: "Meu SUS Digital (app nacional)",
+  url: "https://meususdigital.saude.gov.br/",
+  description:
+    "App oficial do Ministério da Saúde. Permite agendar e gerenciar consultas em UBS de mais de 500 municípios brasileiros. Verifique se sua cidade já está integrada.",
+};
+
+function normalize(s: string) {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+export function findMunicipalPlatform(city: string, state: string): MunicipalPlatform | null {
+  if (!city || !state) return null;
+  const c = normalize(city);
+  const uf = state.trim().toUpperCase();
+  return (
+    municipalPlatforms.find((p) => normalize(p.city) === c && p.state === uf) ?? null
+  );
+}
