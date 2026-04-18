@@ -14,9 +14,9 @@ export const Hero = ({ onStart }: HeroProps) => (
           Avaliação confidencial e gratuita
         </div>
         <h1 className="font-display text-4xl md:text-6xl font-semibold leading-tight text-foreground">
-          Cuidar da sua mente é{" "}
+          Acha que está depressivo?{" "}
           <span className="bg-gradient-hero bg-clip-text text-transparent">
-            um ato de coragem
+            Descubra se você precisa de ajuda profissional
           </span>
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
