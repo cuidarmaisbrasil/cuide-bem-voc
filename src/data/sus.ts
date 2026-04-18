@@ -117,6 +117,30 @@ export const municipalPlatforms: MunicipalPlatform[] = [
     description:
       "Sistema oficial da Prefeitura de Belo Horizonte para agendamento eletrônico de serviços, incluindo saúde.",
   },
+  {
+    city: "Curitiba",
+    state: "PR",
+    name: "Saúde Já Curitiba",
+    url: "https://saudeja.curitiba.pr.gov.br/",
+    description:
+      "Portal e app oficial da Prefeitura de Curitiba para agendar o primeiro atendimento nas Unidades Municipais de Saúde (SUS).",
+  },
+  {
+    city: "Porto Alegre",
+    state: "RS",
+    name: "Saúde Cidadão — Porto Alegre",
+    url: "https://prefeitura.poa.br/saudecidadao",
+    description:
+      "Portal oficial da Prefeitura de Porto Alegre para agendamento online de consultas e exames no SUS municipal.",
+  },
+  {
+    city: "Salvador",
+    state: "BA",
+    name: "Salvador Digital — Saúde",
+    url: "https://salvadordigital.salvador.ba.gov.br/",
+    description:
+      "Plataforma oficial da Prefeitura de Salvador com serviços digitais de saúde, incluindo solicitação e agendamento de procedimentos.",
+  },
 ];
 
 // Fallback nacional: app do Ministério da Saúde, disponível em mais de 500 municípios
