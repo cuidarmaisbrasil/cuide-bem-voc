@@ -163,7 +163,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           <Card className="p-6 shadow-card border-border/60">
             <div className="flex items-center gap-2 mb-4">
               <Lightbulb className="h-5 w-5 text-primary" />
-              <h3 className="font-display text-lg font-semibold">Encontrar ajuda</h3>
+              <h3 className="font-display text-lg font-semibold">Encontre ajuda gratuita:</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Informe sua cidade para encontrarmos a plataforma da prefeitura, telefones de CAPS, UBS
