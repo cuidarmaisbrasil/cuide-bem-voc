@@ -61,7 +61,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
         {hasSuicidalThoughts && <EmergencyBanner />}
 
-        <ReliabilityBadge />
+        {/* Para "Leve", o selo de confiabilidade aparece DEPOIS do card de resultado */}
+        {interpretation.level !== "Leve" && <ReliabilityBadge />}
 
         {/* Score card */}
         <Card className="p-6 md:p-8 shadow-soft border-border/60">
@@ -126,6 +127,9 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             </div>
           )}
         </Card>
+
+        {/* No caso "Leve", o selo de confiabilidade vem após o resultado */}
+        {interpretation.level === "Leve" && <ReliabilityBadge />}
 
         {/* Disclaimer */}
         <Card className="p-5 bg-muted/40 border-border/60">
