@@ -9,6 +9,8 @@ interface ReliabilityBadgeProps {
 }
 
 export const ReliabilityBadge = ({ variant = "full" }: ReliabilityBadgeProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+
   if (variant === "compact") {
     return (
       <div className="inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1.5 text-xs font-medium text-success">
