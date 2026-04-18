@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
-import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl } from "@/data/sus";
+import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
@@ -44,6 +44,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
   const phoneUrl = city && state ? buildPhoneSearchUrl(city, state) : null;
   const secretariaUrl = city && state ? buildSecretariaSearchUrl(city, state) : null;
   const mapsUrl = city && state ? buildGoogleMapsUrl(city, state) : null;
+  const municipalPlatform = findMunicipalPlatform(city, state);
 
   const levelColorClass = {
     success: "bg-success/10 text-success border-success/30",
