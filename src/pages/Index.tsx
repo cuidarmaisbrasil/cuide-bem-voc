@@ -4,16 +4,21 @@ import { DepressionTest, TestAnswers } from "@/components/DepressionTest";
 import { Results } from "@/components/Results";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
 import { DonateCard } from "@/components/DonateCard";
+import { AgeGate } from "@/components/AgeGate";
 import { Card } from "@/components/ui/card";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 
-type Stage = "intro" | "test" | "result";
+type Stage = "intro" | "age" | "test" | "result";
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("intro");
   const [answers, setAnswers] = useState<TestAnswers | null>(null);
 
-  const handleStart = () => setStage("test");
+  const handleStart = () => setStage("age");
+  const handleAgeConfirm = () => {
+    setStage("test");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const handleComplete = (a: TestAnswers) => {
     setAnswers(a);
     setStage("result");
