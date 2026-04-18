@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { track } from "@/lib/tracking";
 
 // 🔧 Substitua pelo seu link real do Mercado Pago
 // (ex: https://mpago.la/abc123  ou  https://link.mercadopago.com.br/seuusuario)
@@ -21,6 +22,7 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
   })();
 
   const openDonation = (amount: number) => {
+    track({ type: "click", payload: { link_type: "donation", target_id: String(amount), target_label: `Doação R$ ${amount}` } });
     toast.success(`Sugestão: R$ ${amount.toFixed(2).replace(".", ",")}`, {
       description: "Confirme o valor na página do Mercado Pago.",
     });
