@@ -32,6 +32,7 @@ const Admin = () => {
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [feedback, setFeedback] = useState<any[]>([]);
 
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
@@ -54,7 +55,16 @@ const Admin = () => {
   }, [isAdmin]);
 
   async function loadAll() {
-    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts()]);
+    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback()]);
+  }
+
+  async function loadFeedback() {
+    const { data } = await supabase
+      .from("feedback")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setFeedback(data ?? []);
   }
 
   async function loadAnalytics() {
@@ -220,6 +230,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="links">Links de atendimento</TabsTrigger>
+            <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
             <TabsTrigger value="professionals">Profissionais</TabsTrigger>
             <TabsTrigger value="platforms">Plataformas</TabsTrigger>
           </TabsList>
@@ -321,6 +332,43 @@ const Admin = () => {
                 </Table>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="feedback" className="space-y-4 pt-4">
+            <Card className="p-4">
+              <h3 className="font-semibold mb-3">Feedbacks dos usuários ({feedback.length})</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Mensagem</TableHead>
+                    <TableHead>Severidade</TableHead>
+                    <TableHead className="text-right">Score</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {feedback.map((f) => (
+                    <TableRow key={f.id}>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {format(new Date(f.created_at), "dd/MM/yy HH:mm")}
+                      </TableCell>
+                      <TableCell className="max-w-md">{f.message}</TableCell>
+                      <TableCell>
+                        {f.severity ? <Badge variant="outline">{f.severity}</Badge> : "—"}
+                      </TableCell>
+                      <TableCell className="text-right">{f.score ?? "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                  {feedback.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        Nenhum feedback recebido ainda.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Card>
           </TabsContent>
 
           <TabsContent value="professionals" className="space-y-4 pt-4">

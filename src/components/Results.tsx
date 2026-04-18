@@ -13,6 +13,7 @@ import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
 import { ReliabilityBadge } from "./ReliabilityBadge";
+import { FeedbackForm } from "./FeedbackForm";
 
 interface ResultsProps {
   answers: TestAnswers;
@@ -339,6 +340,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             * Profissionais listados a título informativo. Verifique sempre o registro no CRP/CRM.
           </p>
         </div>
+
+        <FeedbackForm severity={interpretation.level} score={score} />
 
         <DonateCard />
 
