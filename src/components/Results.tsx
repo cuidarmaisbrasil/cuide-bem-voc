@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ExternalLink, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
+import { CheckCircle2, ExternalLink, Lightbulb, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
@@ -162,12 +162,13 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
           <Card className="p-6 shadow-card border-border/60">
             <div className="flex items-center gap-2 mb-4">
-              <Phone className="h-5 w-5 text-primary" />
+              <Lightbulb className="h-5 w-5 text-primary" />
               <h3 className="font-display text-lg font-semibold">Onde encontrar ajuda</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Informe sua cidade para encontrarmos os telefones de CAPS, UBS e da Secretaria Municipal de Saúde,
-              onde você pode agendar atendimento psicológico ou psiquiátrico gratuito pelo SUS.
+              Informe sua cidade para encontrarmos a plataforma da prefeitura, telefones de CAPS, UBS
+              e da Secretaria Municipal de Saúde, onde você pode agendar atendimento psicológico ou
+              psiquiátrico gratuito pelo SUS.
             </p>
             <div className="grid sm:grid-cols-[1fr_120px] gap-3">
               <div>
@@ -196,44 +197,9 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
               </div>
             </div>
 
-            {phoneUrl && secretariaUrl && mapsUrl && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button asChild variant="default">
-                  <a href={phoneUrl} target="_blank" rel="noopener noreferrer"
-                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "caps-search", target_label: `CAPS/UBS ${city}/${state}` } })}>
-                    <Phone className="h-4 w-4 mr-2" />
-                    Telefones do CAPS / UBS
-                    <ExternalLink className="h-3 w-3 ml-1.5" />
-                  </a>
-                </Button>
-                <Button asChild variant="outline">
-                  <a href={secretariaUrl} target="_blank" rel="noopener noreferrer"
-                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "secretaria", target_label: `Secretaria ${city}/${state}` } })}>
-                    <Search className="h-4 w-4 mr-2" />
-                    Secretaria de Saúde
-                    <ExternalLink className="h-3 w-3 ml-1.5" />
-                  </a>
-                </Button>
-                <Button asChild variant="outline">
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "maps", target_label: `Maps ${city}/${state}` } })}>
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Ver no Google Maps
-                    <ExternalLink className="h-3 w-3 ml-1.5" />
-                  </a>
-                </Button>
-                <a
-                  href="tel:136"
-                  onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "136", target_label: "Disque Saúde 136" } })}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition-smooth"
-                >
-                  <Phone className="h-4 w-4" /> Disque Saúde 136
-                </a>
-              </div>
-            )}
             {!phoneUrl && (
               <p className="text-xs text-muted-foreground mt-3">
-                Preencha cidade e UF para encontrar os telefones de agendamento.
+                Preencha cidade e UF para encontrar as opções de agendamento.
               </p>
             )}
 
@@ -277,6 +243,46 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             </div>
+
+            {/* Telefones e mapa — exibidos após as plataformas online */}
+            {phoneUrl && secretariaUrl && mapsUrl && (
+              <div className="mt-5 pt-5 border-t border-border">
+                <p className="text-sm font-medium mb-3">Outras formas de buscar atendimento:</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild variant="default">
+                    <a href={phoneUrl} target="_blank" rel="noopener noreferrer"
+                      onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "caps-search", target_label: `CAPS/UBS ${city}/${state}` } })}>
+                      <Phone className="h-4 w-4 mr-2" />
+                      Telefones do CAPS / UBS
+                      <ExternalLink className="h-3 w-3 ml-1.5" />
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a href={secretariaUrl} target="_blank" rel="noopener noreferrer"
+                      onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "secretaria", target_label: `Secretaria ${city}/${state}` } })}>
+                      <Search className="h-4 w-4 mr-2" />
+                      Secretaria de Saúde
+                      <ExternalLink className="h-3 w-3 ml-1.5" />
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                      onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "maps", target_label: `Maps ${city}/${state}` } })}>
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Ver no Google Maps
+                      <ExternalLink className="h-3 w-3 ml-1.5" />
+                    </a>
+                  </Button>
+                  <a
+                    href="tel:136"
+                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "136", target_label: "Disque Saúde 136" } })}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition-smooth"
+                  >
+                    <Phone className="h-4 w-4" /> Disque Saúde 136
+                  </a>
+                </div>
+              </div>
+            )}
           </Card>
 
           <div className="grid md:grid-cols-3 gap-3">
