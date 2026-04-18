@@ -11,6 +11,7 @@ import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchU
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
+import { ReliabilityBadge } from "./ReliabilityBadge";
 
 interface ResultsProps {
   answers: TestAnswers;

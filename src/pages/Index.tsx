@@ -76,6 +76,8 @@ const Index = () => {
                 ))}
               </div>
 
+              <ReliabilityBadge />
+
               <EmergencyBanner />
 
               <DonateCard />
