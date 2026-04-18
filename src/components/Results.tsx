@@ -273,14 +273,26 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                       <ExternalLink className="h-3 w-3 ml-1.5" />
                     </a>
                   </Button>
-                  <a
-                    href="tel:136"
-                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "136", target_label: "Disque Saúde 136" } })}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition-smooth"
-                  >
-                    <Phone className="h-4 w-4" /> Disque Saúde 136
-                  </a>
                 </div>
+
+                {/* Destaque: Disque Saúde 136 */}
+                <a
+                  href="tel:136"
+                  onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "136", target_label: "Disque Saúde 136" } })}
+                  className="mt-4 flex items-center justify-between gap-3 rounded-lg border-2 border-primary bg-primary/10 px-4 py-3 hover:bg-primary/15 transition-smooth"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-medium uppercase tracking-wider text-primary">Ligação gratuita</p>
+                      <p className="text-base font-semibold text-foreground">Disque Saúde 136</p>
+                      <p className="text-xs text-muted-foreground">Informações sobre serviços do SUS, incluindo saúde mental</p>
+                    </div>
+                  </div>
+                  <span className="font-display text-2xl font-bold text-primary">136</span>
+                </a>
               </div>
             )}
           </Card>
