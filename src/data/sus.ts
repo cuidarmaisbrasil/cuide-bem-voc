@@ -133,14 +133,6 @@ export const municipalPlatforms: MunicipalPlatform[] = [
     description:
       "Portal oficial da Prefeitura de Porto Alegre para agendamento online de consultas e exames no SUS municipal.",
   },
-  {
-    city: "Salvador",
-    state: "BA",
-    name: "Salvador Digital — Saúde",
-    url: "https://salvadordigital.salvador.ba.gov.br/",
-    description:
-      "Plataforma oficial da Prefeitura de Salvador com serviços digitais de saúde, incluindo solicitação e agendamento de procedimentos.",
-  },
 ];
 
 // Fallback nacional: app do Ministério da Saúde, disponível em mais de 500 municípios
