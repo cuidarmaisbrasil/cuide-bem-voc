@@ -5,6 +5,7 @@ import { Results } from "@/components/Results";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
 import { DonateCard } from "@/components/DonateCard";
 import { AgeGate } from "@/components/AgeGate";
+import { ReliabilityBadge } from "@/components/ReliabilityBadge";
 import { Card } from "@/components/ui/card";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 
@@ -74,6 +75,8 @@ const Index = () => {
                   </Card>
                 ))}
               </div>
+
+              <ReliabilityBadge />
 
               <EmergencyBanner />
 

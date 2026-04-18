@@ -11,6 +11,7 @@ import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchU
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
+import { ReliabilityBadge } from "./ReliabilityBadge";
 
 interface ResultsProps {
   answers: TestAnswers;
@@ -59,6 +60,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
         </div>
 
         {hasSuicidalThoughts && <EmergencyBanner />}
+
+        <ReliabilityBadge />
 
         {/* Score card */}
         <Card className="p-6 md:p-8 shadow-soft border-border/60">
