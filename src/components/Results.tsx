@@ -163,7 +163,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           <Card className="p-6 shadow-card border-border/60">
             <div className="flex items-center gap-2 mb-4">
               <Phone className="h-5 w-5 text-primary" />
-              <h3 className="font-display text-lg font-semibold">Telefones para agendar consulta na sua cidade</h3>
+              <h3 className="font-display text-lg font-semibold">Onde encontrar ajuda</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Informe sua cidade para encontrarmos os telefones de CAPS, UBS e da Secretaria Municipal de Saúde,
