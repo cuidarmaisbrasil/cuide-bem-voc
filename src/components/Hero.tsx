@@ -15,7 +15,7 @@ export const Hero = ({ onStart }: HeroProps) => (
         </div>
         <h1 className="font-display text-4xl md:text-6xl font-semibold leading-tight text-foreground">
           Acha que está depressivo?{" "}
-          <span className="bg-gradient-hero bg-clip-text text-transparent">
+          <span className="text-accent">
             Descubra se você precisa de ajuda profissional
           </span>
         </h1>
