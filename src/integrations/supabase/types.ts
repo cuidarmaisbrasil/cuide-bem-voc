@@ -53,6 +53,39 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          message: string
+          region: string | null
+          score: number | null
+          severity: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          region?: string | null
+          score?: number | null
+          severity?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          region?: string | null
+          score?: number | null
+          severity?: string | null
+        }
+        Relationships: []
+      }
       link_clicks: {
         Row: {
           city: string | null
