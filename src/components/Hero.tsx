@@ -43,7 +43,7 @@ export const Hero = ({ onStart }: HeroProps) => (
           </span>
           <span className="flex items-center gap-2">
             <Heart className="h-4 w-4 text-accent" />
-            Baseado em ciência
+            α de Cronbach: 0,89
           </span>
           <span className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
