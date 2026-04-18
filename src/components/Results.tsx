@@ -29,11 +29,6 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
   const interpretation = interpretPhq9(score);
   const symptomEval = interpretSymptoms(answers.symptoms);
   const symptomCount = answers.symptoms.length;
-  const shouldSeek =
-    symptomEval.severity === "high" ||
-    symptomEval.severity === "medium" ||
-    score >= 10 ||
-    answers.functionalImpact >= 2;
   const hasSuicidalThoughts = answers.symptoms.includes("morte") || answers.phq9[8] >= 1;
   const functionalLabel = functionalImpactOptions[answers.functionalImpact]?.label ?? "—";
 
