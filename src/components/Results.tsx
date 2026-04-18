@@ -61,6 +61,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
         {hasSuicidalThoughts && <EmergencyBanner />}
 
+        <ReliabilityBadge />
+
         {/* Score card */}
         <Card className="p-6 md:p-8 shadow-soft border-border/60">
           <div className="grid md:grid-cols-2 gap-6">
