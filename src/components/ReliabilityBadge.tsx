@@ -1,6 +1,8 @@
-import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { ShieldCheck, CheckCircle2, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ReliabilityBadgeProps {
   variant?: "compact" | "full";
