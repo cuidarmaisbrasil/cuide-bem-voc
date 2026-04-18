@@ -249,17 +249,16 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 <p className="text-sm text-muted-foreground mb-3">
                   {municipalPlatform.description}
                 </p>
-                <Button asChild size="sm">
-                  <a
-                    href={municipalPlatform.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `municipal-${municipalPlatform.state}-${municipalPlatform.city}`, target_label: municipalPlatform.name } })}
-                  >
-                    Acessar plataforma da prefeitura
-                    <ExternalLink className="h-3 w-3 ml-1.5" />
-                  </a>
-                </Button>
+                <a
+                  href={municipalPlatform.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `municipal-${municipalPlatform.state}-${municipalPlatform.city}`, target_label: municipalPlatform.name } })}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-smooth"
+                >
+                  Acessar plataforma da prefeitura
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
               </div>
             )}
 
@@ -267,17 +266,16 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             <div className="mt-3 rounded-md border border-border/60 bg-muted/40 p-4">
               <p className="text-sm font-semibold mb-1">{meuSusDigital.name}</p>
               <p className="text-sm text-muted-foreground mb-3">{meuSusDigital.description}</p>
-              <Button asChild size="sm" variant="outline">
-                <a
-                  href={meuSusDigital.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "meu-sus-digital", target_label: meuSusDigital.name } })}
-                >
-                  Acessar Meu SUS Digital
-                  <ExternalLink className="h-3 w-3 ml-1.5" />
-                </a>
-              </Button>
+              <a
+                href={meuSusDigital.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "meu-sus-digital", target_label: meuSusDigital.name } })}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium hover:bg-muted transition-smooth"
+              >
+                Acessar Meu SUS Digital
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
             </div>
           </Card>
 
