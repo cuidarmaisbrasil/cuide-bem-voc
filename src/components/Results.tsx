@@ -128,6 +128,9 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           )}
         </Card>
 
+        {/* No caso "Leve", o selo de confiabilidade vem após o resultado */}
+        {interpretation.level === "Leve" && <ReliabilityBadge />}
+
         {/* Disclaimer */}
         <Card className="p-5 bg-muted/40 border-border/60">
           <p className="text-sm text-foreground/80 leading-relaxed">
