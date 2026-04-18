@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
-import { interpretPhq9, tenSymptoms } from "@/data/symptoms";
+import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl } from "@/data/sus";
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
@@ -27,9 +27,10 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
   const score = useMemo(() => answers.phq9.reduce((a, b) => a + b, 0), [answers.phq9]);
   const interpretation = interpretPhq9(score);
+  const symptomEval = interpretSymptoms(answers.symptoms);
   const symptomCount = answers.symptoms.length;
-  const shouldSeek = symptomCount >= 4 || score >= 10;
   const hasSuicidalThoughts = answers.symptoms.includes("morte") || answers.phq9[8] >= 1;
+  const functionalLabel = functionalImpactOptions[answers.functionalImpact]?.label ?? "—";
 
   const matchedSymptoms = tenSymptoms.filter((s) => answers.symptoms.includes(s.id));
   const phoneUrl = city && state ? buildPhoneSearchUrl(city, state) : null;
@@ -82,19 +83,30 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
               <Badge
                 variant="outline"
                 className={
-                  shouldSeek
-                    ? "bg-warning/10 text-warning-foreground border-warning/40 font-medium"
-                    : "bg-success/10 text-success border-success/30 font-medium"
+                  symptomEval.severity === "high"
+                    ? "bg-destructive/10 text-destructive border-destructive/30 font-medium"
+                    : symptomEval.severity === "medium"
+                      ? "bg-warning/10 text-warning-foreground border-warning/40 font-medium"
+                      : "bg-success/10 text-success border-success/30 font-medium"
                 }
               >
-                {shouldSeek ? "Buscar avaliação profissional" : "Sinais leves ou ausentes"}
+                {symptomEval.level}
               </Badge>
-              <p className="text-sm text-foreground/80 mt-3">
-                {shouldSeek
-                  ? "De acordo com critérios internacionais (DSM-5/CID-11), 4 ou mais sintomas indicam que uma avaliação profissional é recomendada."
-                  : "Continue observando como se sente. Procure ajuda se os sintomas persistirem."}
-              </p>
+              <p className="text-sm text-foreground/80 mt-3">{symptomEval.description}</p>
             </div>
+          </div>
+
+          {/* Impacto funcional */}
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-sm font-medium mb-1">
+              Impacto funcional (critério B do DSM-5)
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Você relatou que os sintomas dificultam seu dia a dia:{" "}
+              <strong className="text-foreground">{functionalLabel}</strong>.
+              {answers.functionalImpact >= 2 &&
+                " Esse nível de prejuízo reforça a indicação de avaliação profissional."}
+            </p>
           </div>
 
           {matchedSymptoms.length > 0 && (

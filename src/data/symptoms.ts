@@ -72,10 +72,59 @@ export const phq9Options = [
   { label: "Quase todos os dias", value: 3 },
 ] as const;
 
+// Pergunta de impacto funcional (parte oficial do PHQ-9 — critério B do DSM-5)
+export const functionalImpactQuestion =
+  "Se você marcou algum problema acima, o quanto eles dificultaram seu trabalho, suas tarefas em casa ou seu relacionamento com as pessoas?";
+
+export const functionalImpactOptions = [
+  { label: "Nada difícil", value: 0 },
+  { label: "Um pouco difícil", value: 1 },
+  { label: "Muito difícil", value: 2 },
+  { label: "Extremamente difícil", value: 3 },
+] as const;
+
 export function interpretPhq9(score: number) {
   if (score <= 4) return { level: "Mínima", color: "success", description: "Sintomas mínimos ou ausentes." };
   if (score <= 9) return { level: "Leve", color: "primary", description: "Depressão leve — observação recomendada." };
   if (score <= 14) return { level: "Moderada", color: "warning", description: "Depressão moderada — busca de avaliação profissional recomendada." };
   if (score <= 19) return { level: "Moderadamente grave", color: "warning", description: "Depressão moderadamente grave — tratamento ativo recomendado." };
   return { level: "Grave", color: "destructive", description: "Depressão grave — buscar atendimento profissional o quanto antes." };
+}
+
+// Avalia o checklist conforme critério A do DSM-5:
+// é necessário ter humor deprimido OU anedonia + ≥5 sintomas no total para episódio depressivo provável.
+// 4 sintomas = sinal de alerta para buscar avaliação.
+export function interpretSymptoms(symptomIds: string[]) {
+  const hasCore = symptomIds.includes("humor") || symptomIds.includes("anedonia");
+  const count = symptomIds.length;
+
+  if (count >= 5 && hasCore) {
+    return {
+      level: "Compatível com episódio depressivo (DSM-5)",
+      severity: "high" as const,
+      description:
+        "Você marcou 5 ou mais sintomas, incluindo humor deprimido ou perda de prazer — combinação que o DSM-5 considera compatível com episódio depressivo maior. Apenas um profissional pode confirmar o diagnóstico.",
+    };
+  }
+  if (count >= 4) {
+    return {
+      level: "Sinais relevantes — buscar avaliação",
+      severity: "medium" as const,
+      description:
+        "Você marcou 4 ou mais sintomas. Ainda que não atenda todos os critérios do DSM-5, é recomendável conversar com um profissional de saúde mental.",
+    };
+  }
+  if (count >= 1) {
+    return {
+      level: "Alguns sintomas presentes",
+      severity: "low" as const,
+      description:
+        "Sintomas leves ou isolados. Continue observando como se sente ao longo das próximas semanas.",
+    };
+  }
+  return {
+    level: "Sem sintomas marcados",
+    severity: "none" as const,
+    description: "Você não relatou sintomas no checklist.",
+  };
 }
