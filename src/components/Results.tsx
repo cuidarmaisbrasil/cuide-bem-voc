@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { track } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,11 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
   const score = useMemo(() => answers.phq9.reduce((a, b) => a + b, 0), [answers.phq9]);
   const interpretation = interpretPhq9(score);
+
+  useEffect(() => {
+    track({ type: "test", payload: { score, severity: interpretation.level } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const symptomEval = interpretSymptoms(answers.symptoms);
   const symptomCount = answers.symptoms.length;
   const hasSuicidalThoughts = answers.symptoms.includes("morte") || answers.phq9[8] >= 1;
@@ -191,21 +197,24 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             {phoneUrl && secretariaUrl && mapsUrl && (
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button asChild variant="default">
-                  <a href={phoneUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={phoneUrl} target="_blank" rel="noopener noreferrer"
+                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "caps-search", target_label: `CAPS/UBS ${city}/${state}` } })}>
                     <Phone className="h-4 w-4 mr-2" />
                     Telefones do CAPS / UBS
                     <ExternalLink className="h-3 w-3 ml-1.5" />
                   </a>
                 </Button>
                 <Button asChild variant="outline">
-                  <a href={secretariaUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={secretariaUrl} target="_blank" rel="noopener noreferrer"
+                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "secretaria", target_label: `Secretaria ${city}/${state}` } })}>
                     <Search className="h-4 w-4 mr-2" />
                     Secretaria de Saúde
                     <ExternalLink className="h-3 w-3 ml-1.5" />
                   </a>
                 </Button>
                 <Button asChild variant="outline">
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+                    onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "maps", target_label: `Maps ${city}/${state}` } })}>
                     <MapPin className="h-4 w-4 mr-2" />
                     Ver no Google Maps
                     <ExternalLink className="h-3 w-3 ml-1.5" />
@@ -213,6 +222,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 </Button>
                 <a
                   href="tel:136"
+                  onClick={() => track({ type: "click", payload: { link_type: "sus", target_id: "136", target_label: "Disque Saúde 136" } })}
                   className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm font-medium hover:bg-muted transition-smooth"
                 >
                   <Phone className="h-4 w-4" /> Disque Saúde 136
@@ -256,6 +266,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                   <div className="flex flex-wrap gap-2">
                     <a
                       href={`tel:${c.phone}`}
+                      onClick={() => track({ type: "click", payload: { link_type: c.phone === "188" ? "cvv" : c.phone === "192" ? "samu" : "platform", target_id: c.phone, target_label: c.name } })}
                       className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-smooth"
                     >
                       <Phone className="h-3.5 w-3.5" /> {c.phone}
@@ -265,6 +276,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                         href={c.site}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: c.phone, target_label: `${c.name} (site)` } })}
                         className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-medium hover:bg-muted transition-smooth"
                       >
                         Site <ExternalLink className="h-3 w-3" />
@@ -312,12 +324,13 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                       href={`https://wa.me/${encodeURIComponent(p.whatsapp)}`}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => track({ type: "click", payload: { link_type: "professional", target_id: p.name, target_label: p.name } })}
                     >
                       Entrar em contato
                     </a>
                   </Button>
                 ) : (
-                  <Button variant="outline" className="w-full">{p.contact}</Button>
+                  <Button variant="outline" className="w-full" onClick={() => track({ type: "click", payload: { link_type: "professional", target_id: p.name, target_label: p.name } })}>{p.contact}</Button>
                 )}
               </Card>
             ))}
