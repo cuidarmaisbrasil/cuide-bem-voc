@@ -53,13 +53,22 @@ export const susUnits = [
   },
 ];
 
-// Helper: gera URL do localizador oficial CNES por cidade
-export function buildCnesSearchUrl(city: string, state: string) {
-  const query = encodeURIComponent(`CAPS ${city} ${state}`);
-  return `https://cnes.datasus.gov.br/pages/estabelecimentos/consulta.jsp?search=${query}`;
+// Busca telefones de CAPS / UBS para agendar consulta psicológica/psiquiátrica
+export function buildPhoneSearchUrl(city: string, state: string) {
+  const query = encodeURIComponent(
+    `telefone CAPS OR "Centro de Atenção Psicossocial" OR "secretaria de saúde" agendamento psicólogo psiquiatra ${city} ${state}`
+  );
+  return `https://www.google.com/search?q=${query}`;
 }
 
+// Mapa com telefones reais (clicáveis no celular) das unidades próximas
 export function buildGoogleMapsUrl(city: string, state: string) {
   const query = encodeURIComponent(`CAPS Centro de Atenção Psicossocial ${city} ${state}`);
   return `https://www.google.com/maps/search/?api=1&query=${query}`;
+}
+
+// Telefone da Secretaria Municipal de Saúde (busca direcionada)
+export function buildSecretariaSearchUrl(city: string, state: string) {
+  const query = encodeURIComponent(`telefone Secretaria Municipal de Saúde ${city} ${state} agendamento`);
+  return `https://www.google.com/search?q=${query}`;
 }
