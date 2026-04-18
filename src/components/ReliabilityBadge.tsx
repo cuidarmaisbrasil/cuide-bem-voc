@@ -9,7 +9,7 @@ interface ReliabilityBadgeProps {
 }
 
 export const ReliabilityBadge = ({ variant = "full" }: ReliabilityBadgeProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   if (variant === "compact") {
     return (
