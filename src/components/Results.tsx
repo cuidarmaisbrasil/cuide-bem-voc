@@ -10,6 +10,7 @@ import { interpretPhq9, tenSymptoms } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl } from "@/data/sus";
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
+import { DonateCard } from "./DonateCard";
 
 interface ResultsProps {
   answers: TestAnswers;
@@ -306,6 +307,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             * Profissionais listados a título informativo. Verifique sempre o registro no CRP/CRM.
           </p>
         </div>
+
+        <DonateCard />
 
         <div className="flex justify-center pt-4">
           <Button variant="outline" onClick={onRestart} size="lg">

@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { DepressionTest, TestAnswers } from "@/components/DepressionTest";
 import { Results } from "@/components/Results";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
+import { DonateCard } from "@/components/DonateCard";
 import { Card } from "@/components/ui/card";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 
@@ -70,6 +71,8 @@ const Index = () => {
               </div>
 
               <EmergencyBanner />
+
+              <DonateCard />
             </div>
           </section>
         </>
