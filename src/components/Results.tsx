@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
-import { interpretPhq9, tenSymptoms } from "@/data/symptoms";
+import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl } from "@/data/sus";
 import { professionals } from "@/data/professionals";
 import { EmergencyBanner } from "./EmergencyBanner";
@@ -27,9 +27,15 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
 
   const score = useMemo(() => answers.phq9.reduce((a, b) => a + b, 0), [answers.phq9]);
   const interpretation = interpretPhq9(score);
+  const symptomEval = interpretSymptoms(answers.symptoms);
   const symptomCount = answers.symptoms.length;
-  const shouldSeek = symptomCount >= 4 || score >= 10;
+  const shouldSeek =
+    symptomEval.severity === "high" ||
+    symptomEval.severity === "medium" ||
+    score >= 10 ||
+    answers.functionalImpact >= 2;
   const hasSuicidalThoughts = answers.symptoms.includes("morte") || answers.phq9[8] >= 1;
+  const functionalLabel = functionalImpactOptions[answers.functionalImpact]?.label ?? "—";
 
   const matchedSymptoms = tenSymptoms.filter((s) => answers.symptoms.includes(s.id));
   const phoneUrl = city && state ? buildPhoneSearchUrl(city, state) : null;
