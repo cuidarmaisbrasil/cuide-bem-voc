@@ -135,7 +135,30 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
               </div>
             </div>
           )}
+
+          {/* Atalhos: encontrar ajuda + feedback */}
+          <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row gap-3">
+            <a
+              href="#encontre-ajuda"
+              onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-encontre-ajuda", target_label: "Encontre ajuda gratuita" } })}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-gradient-hero px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-90 transition-smooth"
+            >
+              <HeartHandshake className="h-4 w-4" />
+              Encontre ajuda gratuita
+            </a>
+            <a
+              href="#feedback"
+              onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-feedback", target_label: "Deixar feedback" } })}
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+            >
+              <MessageSquareHeart className="h-4 w-4" />
+              Deixar feedback
+            </a>
+          </div>
         </Card>
+
+        {/* Risco imediato — após o card de resultado e antes do disclaimer "Importante" */}
+        {hasSuicidalThoughts && <EmergencyBanner />}
 
         {/* No caso "Leve", o selo de confiabilidade vem após o resultado */}
         {interpretation.level === "Leve" && <ReliabilityBadge />}
