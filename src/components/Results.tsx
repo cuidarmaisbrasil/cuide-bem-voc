@@ -68,7 +68,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
-        {hasSuicidalThoughts && <EmergencyBanner />}
+        
 
         {/* Para "Leve", o selo de confiabilidade aparece DEPOIS do card de resultado */}
         {interpretation.level !== "Leve" && <ReliabilityBadge />}
