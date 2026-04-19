@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ExternalLink, Lightbulb, MapPin, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
+import { CheckCircle2, ExternalLink, HeartHandshake, Lightbulb, MapPin, MessageSquareHeart, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
@@ -68,7 +68,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
-        {hasSuicidalThoughts && <EmergencyBanner />}
+        
 
         {/* Para "Leve", o selo de confiabilidade aparece DEPOIS do card de resultado */}
         {interpretation.level !== "Leve" && <ReliabilityBadge />}
@@ -135,7 +135,30 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
               </div>
             </div>
           )}
+
+          {/* Atalhos: encontrar ajuda + feedback */}
+          <div className="mt-6 pt-6 border-t border-border flex flex-col sm:flex-row gap-3">
+            <a
+              href="#encontre-ajuda"
+              onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-encontre-ajuda", target_label: "Encontre ajuda gratuita" } })}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-gradient-hero px-4 py-3 text-sm font-semibold text-primary-foreground shadow-soft hover:opacity-90 transition-smooth"
+            >
+              <HeartHandshake className="h-4 w-4" />
+              Encontre ajuda gratuita
+            </a>
+            <a
+              href="#feedback"
+              onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-feedback", target_label: "Deixar feedback" } })}
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+            >
+              <MessageSquareHeart className="h-4 w-4" />
+              Deixar feedback
+            </a>
+          </div>
         </Card>
+
+        {/* Risco imediato — após o card de resultado e antes do disclaimer "Importante" */}
+        {hasSuicidalThoughts && <EmergencyBanner />}
 
         {/* No caso "Leve", o selo de confiabilidade vem após o resultado */}
         {interpretation.level === "Leve" && <ReliabilityBadge />}
@@ -151,7 +174,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
         </Card>
 
         {/* SUS Section */}
-        <div className="space-y-4">
+        <div id="encontre-ajuda" className="space-y-4 scroll-mt-20">
           <div>
             <h2 className="font-display text-2xl md:text-3xl font-semibold">
               Como buscar ajuda gratuita pelo SUS
@@ -414,7 +437,9 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
-        <FeedbackForm severity={interpretation.level} score={score} />
+        <div id="feedback" className="scroll-mt-20">
+          <FeedbackForm severity={interpretation.level} score={score} />
+        </div>
 
         <DonateCard />
 
