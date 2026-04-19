@@ -241,6 +241,13 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 Acessar Meu SUS Digital
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
+              <a
+                href="#profissionais"
+                onClick={() => track({ type: "click", payload: { link_type: "anchor", target_id: "profissionais", target_label: "Ver opções particulares" } })}
+                className="ml-2 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-primary hover:underline transition-smooth"
+              >
+                Ver opções particulares acessíveis
+              </a>
             </div>
 
             {/* Telefones e mapa — exibidos após as plataformas online */}
