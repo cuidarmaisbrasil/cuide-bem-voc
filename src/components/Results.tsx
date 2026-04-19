@@ -437,7 +437,9 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
-        <FeedbackForm severity={interpretation.level} score={score} />
+        <div id="feedback" className="scroll-mt-20">
+          <FeedbackForm severity={interpretation.level} score={score} />
+        </div>
 
         <DonateCard />
 
