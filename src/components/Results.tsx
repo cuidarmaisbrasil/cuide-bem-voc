@@ -174,7 +174,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
         </Card>
 
         {/* SUS Section */}
-        <div className="space-y-4">
+        <div id="encontre-ajuda" className="space-y-4 scroll-mt-20">
           <div>
             <h2 className="font-display text-2xl md:text-3xl font-semibold">
               Como buscar ajuda gratuita pelo SUS
