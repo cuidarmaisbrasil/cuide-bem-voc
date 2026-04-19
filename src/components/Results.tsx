@@ -357,7 +357,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
         </div>
 
         {/* Private practitioners */}
-        <div className="space-y-4">
+        <div id="profissionais" className="space-y-4">
           <div>
             <h2 className="font-display text-2xl md:text-3xl font-semibold">
               Atendimento particular acessível
