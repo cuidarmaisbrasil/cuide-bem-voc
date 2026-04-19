@@ -14,6 +14,7 @@ import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
 import { ReliabilityBadge } from "./ReliabilityBadge";
 import { FeedbackForm } from "./FeedbackForm";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface ResultsProps {
   answers: TestAnswers;
@@ -241,14 +242,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
                 Acessar Meu SUS Digital
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
-              <a
-                href="#profissionais"
-                onClick={() => track({ type: "click", payload: { link_type: "professional", target_id: "profissionais-anchor", target_label: "Ver opções particulares" } })}
-                className="ml-2 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-primary hover:underline transition-smooth"
-              >
-                Ver opções particulares acessíveis
-              </a>
             </div>
+
 
             {/* Telefones e mapa — exibidos após as plataformas online */}
             {phoneUrl && secretariaUrl && mapsUrl && (
@@ -303,15 +298,27 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             )}
           </Card>
 
-          <div className="grid md:grid-cols-3 gap-3">
+          <Accordion type="multiple" className="w-full">
             {susUnits.map((u) => (
-              <Card key={u.name} className="p-5 shadow-card border-border/60">
-                <h4 className="font-semibold mb-2 leading-snug">{u.name}</h4>
-                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{u.description}</p>
-                <p className="text-xs text-foreground/80"><strong>Como acessar:</strong> {u.howTo}</p>
-              </Card>
+              <AccordionItem key={u.name} value={u.name} className="border border-border/60 rounded-md mb-2 px-4 bg-card shadow-card">
+                <AccordionTrigger className="text-left font-semibold leading-snug hover:no-underline">
+                  {u.name}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{u.description}</p>
+                  <p className="text-xs text-foreground/80"><strong>Como acessar:</strong> {u.howTo}</p>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
+
+          <a
+            href="#profissionais"
+            onClick={() => track({ type: "click", payload: { link_type: "professional", target_id: "profissionais-anchor", target_label: "Ver opções particulares" } })}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-smooth"
+          >
+            Ver opções particulares acessíveis →
+          </a>
 
           <div>
             <h3 className="font-display text-lg font-semibold mb-3">Canais nacionais de apoio</h3>
