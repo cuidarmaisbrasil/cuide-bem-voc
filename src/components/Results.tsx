@@ -14,6 +14,7 @@ import { EmergencyBanner } from "./EmergencyBanner";
 import { DonateCard } from "./DonateCard";
 import { ReliabilityBadge } from "./ReliabilityBadge";
 import { FeedbackForm } from "./FeedbackForm";
+import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface ResultsProps {
@@ -436,6 +437,8 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
             * Profissionais listados a título informativo. Verifique sempre o registro no CRP/CRM.
           </p>
         </div>
+
+        <ShareButtons />
 
         <div id="feedback" className="scroll-mt-20">
           <FeedbackForm severity={interpretation.level} score={score} />
