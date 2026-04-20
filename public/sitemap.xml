@@ -6,4 +6,10 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/recife-pe</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/sao-paulo-sp</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/rio-de-janeiro-rj</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/belo-horizonte-mg</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/curitiba-pr</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://cuidarmaisbrasil.life/ajuda/porto-alegre-rs</loc><lastmod>2026-04-20</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
