@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ExternalLink, HeartHandshake, Lightbulb, MapPin, MessageSquareHeart, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
+import { CheckCircle2, ExternalLink, Heart, HeartHandshake, Lightbulb, MapPin, MessageSquareHeart, Phone, RefreshCw, Search, Share2, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
