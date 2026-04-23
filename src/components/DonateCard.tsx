@@ -30,7 +30,7 @@ export const DonateCard = ({ compact = false }: { compact?: boolean }) => {
   };
 
   return (
-    <Card className={`${compact ? "p-5" : "p-6 md:p-8"} shadow-card border-border/60 bg-gradient-soft`}>
+    <Card className={`${compact ? "p-5" : "p-6 md:p-8"} shadow-card border-border/60 bg-gradient-soft w-full h-full flex flex-col`}>
       <div className="flex items-start gap-3 mb-4">
         <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center shrink-0">
           <Heart className="h-5 w-5 text-primary-foreground" />
