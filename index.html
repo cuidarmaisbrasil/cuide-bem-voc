@@ -78,9 +78,22 @@
     ]
   }
   </script>
+
+  <!-- Google tag (gtag.js) — GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-40SCZSMH9X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-40SCZSMH9X', {
+      anonymize_ip: true,
+      allow_google_signals: false
+    });
+  </script>
 </head>
 
-  <body>
+<body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

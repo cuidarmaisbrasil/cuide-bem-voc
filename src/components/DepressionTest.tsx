@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +11,7 @@ import {
   functionalImpactOptions,
 } from "@/data/symptoms";
 import { EmergencyBanner } from "./EmergencyBanner";
+import { gaEvent } from "@/lib/analytics";
 
 export interface TestAnswers {
   phq9: number[];
@@ -29,6 +30,10 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
   const [phq9, setPhq9] = useState<(number | null)[]>(Array(phq9Questions.length).fill(null));
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [functionalImpact, setFunctionalImpact] = useState<number | null>(null);
+
+  useEffect(() => {
+    gaEvent("test_started");
+  }, []);
 
   const isPhq9Step = step < phq9Questions.length;
   const isFunctionalStep = step === phq9Questions.length;
