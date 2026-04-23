@@ -54,7 +54,7 @@ export const ShareButtons = ({
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
 
   return (
-    <Card className="p-5 md:p-6 shadow-card border-border/60 bg-gradient-to-br from-primary/5 to-transparent w-full h-full flex flex-col">
+    <Card className="p-5 md:p-6 shadow-card border-border/60 bg-gradient-to-br from-primary/5 to-transparent">
       <div className="flex items-center gap-2 mb-2">
         <Share2 className="h-5 w-5 text-primary" />
         <h3 className="font-display text-lg font-semibold">Ajude alguém a se cuidar</h3>
