@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ExternalLink, HeartHandshake, Lightbulb, MapPin, MessageSquareHeart, Phone, RefreshCw, Search, Stethoscope } from "lucide-react";
+import { CheckCircle2, ExternalLink, Heart, HeartHandshake, Lightbulb, MapPin, MessageSquareHeart, Phone, RefreshCw, Search, Share2, Stethoscope } from "lucide-react";
 import { TestAnswers } from "./DepressionTest";
 import { interpretPhq9, interpretSymptoms, tenSymptoms, functionalImpactOptions } from "@/data/symptoms";
 import { nationalChannels, susUnits, buildPhoneSearchUrl, buildSecretariaSearchUrl, buildGoogleMapsUrl, findMunicipalPlatform, meuSusDigital } from "@/data/sus";
@@ -438,17 +438,35 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
+        <div id="compartilhar" className="scroll-mt-20">
+          <ShareButtons />
+        </div>
+
         <div id="feedback" className="scroll-mt-20">
           <FeedbackForm severity={interpretation.level} score={score} />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 items-stretch">
-          <div className="flex">
-            <ShareButtons />
-          </div>
-          <div className="flex">
-            <DonateCard />
-          </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <a
+            href="#compartilhar"
+            onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-compartilhar", target_label: "Ir para Compartilhar" } })}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+          >
+            <Share2 className="h-4 w-4" />
+            Compartilhar a ferramenta
+          </a>
+          <a
+            href="#apoiar"
+            onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-apoiar", target_label: "Ir para Apoiar" } })}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+          >
+            <Heart className="h-4 w-4" />
+            Apoiar o Cuidar+
+          </a>
+        </div>
+
+        <div id="apoiar" className="scroll-mt-20">
+          <DonateCard />
         </div>
 
         <div className="flex justify-center pt-4">
