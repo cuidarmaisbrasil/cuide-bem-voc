@@ -438,13 +438,18 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
           </p>
         </div>
 
-        <ShareButtons />
-
         <div id="feedback" className="scroll-mt-20">
           <FeedbackForm severity={interpretation.level} score={score} />
         </div>
 
-        <DonateCard />
+        <div className="grid md:grid-cols-2 gap-4 items-stretch">
+          <div className="flex">
+            <ShareButtons />
+          </div>
+          <div className="flex">
+            <DonateCard />
+          </div>
+        </div>
 
         <div className="flex justify-center pt-4">
           <Button variant="outline" onClick={onRestart} size="lg">
