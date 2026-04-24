@@ -159,6 +159,26 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
           </div>
         </Card>
 
+        {/* Atalhos: Compartilhar + Apoiar — lado a lado e responsivos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a
+            href="#compartilhar"
+            onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-compartilhar", target_label: "Ir para Compartilhar" } })}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+          >
+            <Share2 className="h-4 w-4" />
+            Compartilhar
+          </a>
+          <a
+            href="#apoiar"
+            onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: "anchor-apoiar", target_label: "Ir para Apoiar" } })}
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-4 py-3 text-sm font-medium hover:bg-muted transition-smooth"
+          >
+            <Heart className="h-4 w-4" />
+            Apoiar o Cuidar+
+          </a>
+        </div>
+
         {/* Risco imediato — após o card de resultado e antes do disclaimer "Importante" */}
         {hasSuicidalThoughts && <EmergencyBanner />}
 
