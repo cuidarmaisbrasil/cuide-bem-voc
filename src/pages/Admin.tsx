@@ -404,6 +404,57 @@ const Admin = () => {
               </ResponsiveContainer>
               {byCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
             </Card>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Distribuição por faixa etária</h3>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={byAge}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" />
+                  </BarChart>
+                </ResponsiveContainer>
+                {byAge.every((b) => b.value === 0) && (
+                  <p className="text-sm text-muted-foreground">Sem dados de idade ainda. A coleta começa após este deploy.</p>
+                )}
+              </Card>
+
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Severidade × faixa etária</h3>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={severityByAge}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    {SEVERITIES.map((s, i) => (
+                      <Bar key={s} dataKey={s} stackId="sev" fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-3">Severidade × cidade (top 8)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={severityByCity} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis dataKey="city" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={140} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {SEVERITIES.map((s, i) => (
+                    <Bar key={s} dataKey={s} stackId="sev" fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+              {severityByCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
+            </Card>
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4 pt-4">
