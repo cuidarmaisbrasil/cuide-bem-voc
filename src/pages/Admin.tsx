@@ -333,14 +333,21 @@ const Admin = () => {
             <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
             <TabsTrigger value="professionals">Profissionais</TabsTrigger>
             <TabsTrigger value="platforms">Plataformas</TabsTrigger>
+            <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard label="Testes (30d)" value={stats.totalTests} />
               <StatCard label="IPs únicos (30d)" value={stats.uniqueIps} />
-              <StatCard label="Cliques em links (30d)" value={stats.totalClicks} />
+              <StatCard label="Cliques (30d)" value={stats.totalClicks} />
+              <StatCard label="Excluídos (admin)" value={stats.excludedAdmin ?? 0} />
             </div>
+            {stats.excludedAdmin > 0 && (
+              <p className="text-xs text-muted-foreground -mt-2">
+                {stats.excludedAdmin} eventos de IPs marcados como admin foram excluídos das métricas.
+              </p>
+            )}
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Atividade diária (30 dias)</h3>
