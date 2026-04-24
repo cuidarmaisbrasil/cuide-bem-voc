@@ -615,6 +615,56 @@ const Admin = () => {
               </Table>
             </Card>
           </TabsContent>
+
+          <TabsContent value="admin-ips" className="space-y-4 pt-4">
+            <Card className="p-4 space-y-4">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4" /> IPs do administrador</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Testes e cliques originados destes IPs (hash) são excluídos
+                  das métricas. Use o botão abaixo a partir de cada rede
+                  (casa, celular, escritório) que você queira ignorar.
+                </p>
+              </div>
+              <Button onClick={registerCurrentIp} disabled={registeringIp}>
+                <Plus className="h-4 w-4 mr-2" />
+                {registeringIp ? "Registrando…" : "Marcar meu IP atual como admin"}
+              </Button>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Hash do IP</TableHead>
+                    <TableHead>Rótulo</TableHead>
+                    <TableHead>Adicionado em</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {adminIps.map((ip) => (
+                    <TableRow key={ip.id}>
+                      <TableCell className="font-mono text-xs">{ip.ip_hash.slice(0, 12)}…</TableCell>
+                      <TableCell className="text-sm">{ip.label ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {format(new Date(ip.created_at), "dd/MM/yy HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={() => removeAdminIp(ip.id)}>
+                          <ShieldOff className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {adminIps.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        Nenhum IP marcado ainda.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </main>
