@@ -37,15 +37,20 @@ const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
 
-  const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0 });
+  const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
   const [bySeverity, setBySeverity] = useState<any[]>([]);
   const [byCountry, setByCountry] = useState<any[]>([]);
   const [byCity, setByCity] = useState<any[]>([]);
+  const [byAge, setByAge] = useState<any[]>([]);
+  const [severityByAge, setSeverityByAge] = useState<any[]>([]);
+  const [severityByCity, setSeverityByCity] = useState<any[]>([]);
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<any[]>([]);
+  const [adminIps, setAdminIps] = useState<any[]>([]);
+  const [registeringIp, setRegisteringIp] = useState(false);
 
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
@@ -68,7 +73,41 @@ const Admin = () => {
   }, [isAdmin]);
 
   async function loadAll() {
-    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback()]);
+    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps()]);
+  }
+
+  async function loadAdminIps() {
+    const { data } = await supabase
+      .from("admin_ip_hashes")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setAdminIps(data ?? []);
+    return data ?? [];
+  }
+
+  async function registerCurrentIp() {
+    setRegisteringIp(true);
+    try {
+      const { error } = await supabase.functions.invoke("register-admin-ip", {
+        body: { label: "via painel" },
+      });
+      if (error) throw error;
+      toast.success("IP atual marcado como admin. Recarregando métricas…");
+      await loadAdminIps();
+      await loadAnalytics();
+    } catch (e: any) {
+      toast.error("Falha ao registrar IP: " + (e?.message ?? String(e)));
+    } finally {
+      setRegisteringIp(false);
+    }
+  }
+
+  async function removeAdminIp(id: string) {
+    const { error } = await supabase.from("admin_ip_hashes").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("IP removido");
+    await loadAdminIps();
+    await loadAnalytics();
   }
 
   async function loadFeedback() {
