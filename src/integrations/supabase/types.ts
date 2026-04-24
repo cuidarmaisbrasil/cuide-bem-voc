@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_ip_hashes: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          id: string
+          ip_hash: string
+          label: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          ip_hash: string
+          label?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          label?: string | null
+        }
+        Relationships: []
+      }
       care_platforms: {
         Row: {
           active: boolean
@@ -205,6 +229,7 @@ export type Database = {
       }
       test_events: {
         Row: {
+          age: number | null
           city: string | null
           country: string | null
           created_at: string
@@ -216,6 +241,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
+          age?: number | null
           city?: string | null
           country?: string | null
           created_at?: string
@@ -227,6 +253,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
+          age?: number | null
           city?: string | null
           country?: string | null
           created_at?: string

@@ -69,9 +69,15 @@ Deno.serve(async (req) => {
 
     let result;
     if (type === "test") {
+      const ageRaw = payload.age;
+      const age =
+        typeof ageRaw === "number" && Number.isFinite(ageRaw) && ageRaw >= 1 && ageRaw <= 120
+          ? Math.floor(ageRaw)
+          : null;
       result = await supabase.from("test_events").insert({
         score: payload.score ?? null,
         severity: payload.severity ?? null,
+        age,
         ip_hash: ipHash,
         country: geo.country,
         region: geo.region,

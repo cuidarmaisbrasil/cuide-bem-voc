@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { AlertCircle, ShieldCheck } from "lucide-react";
 
 interface AgeGateProps {
-  onConfirm: () => void;
+  onConfirm: (age: number) => void;
   onCancel: () => void;
 }
 
@@ -26,7 +26,7 @@ export const AgeGate = ({ onConfirm, onCancel }: AgeGateProps) => {
       );
       return;
     }
-    onConfirm();
+    onConfirm(n);
   };
 
   return (
@@ -88,8 +88,8 @@ export const AgeGate = ({ onConfirm, onCancel }: AgeGateProps) => {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Sua idade não é armazenada — é usada apenas para validar a
-            elegibilidade do instrumento.
+            Sua idade é usada para validar a elegibilidade do instrumento e,
+            de forma anônima, para estatísticas agregadas por faixa etária.
           </p>
         </Card>
       </div>

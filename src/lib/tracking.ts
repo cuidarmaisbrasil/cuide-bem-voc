@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { gaEvent } from "@/lib/analytics";
 
 type TrackPayload =
-  | { type: "test"; payload: { score: number; severity: string } }
+  | { type: "test"; payload: { score: number; severity: string; age?: number } }
   | {
       type: "click";
       payload: { link_type: "professional" | "sus" | "cvv" | "samu" | "platform" | "donation"; target_id?: string; target_label?: string };
@@ -14,6 +14,7 @@ function mirrorToGa(event: TrackPayload) {
       gaEvent("test_completed", {
         score: event.payload.score,
         severity: event.payload.severity,
+        age: event.payload.age,
       });
       return;
     }

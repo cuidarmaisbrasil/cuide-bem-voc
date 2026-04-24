@@ -15,24 +15,42 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from "recharts";
+import { Shield, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
+const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
+const AGE_BUCKETS: { label: string; min: number; max: number }[] = [
+  { label: "18-24", min: 18, max: 24 },
+  { label: "25-34", min: 25, max: 34 },
+  { label: "35-44", min: 35, max: 44 },
+  { label: "45-59", min: 45, max: 59 },
+  { label: "60+", min: 60, max: 200 },
+];
+function bucketFor(age: number | null | undefined) {
+  if (age == null) return null;
+  return AGE_BUCKETS.find((b) => age >= b.min && age <= b.max)?.label ?? null;
+}
 
 const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
 
-  const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0 });
+  const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
   const [bySeverity, setBySeverity] = useState<any[]>([]);
   const [byCountry, setByCountry] = useState<any[]>([]);
   const [byCity, setByCity] = useState<any[]>([]);
+  const [byAge, setByAge] = useState<any[]>([]);
+  const [severityByAge, setSeverityByAge] = useState<any[]>([]);
+  const [severityByCity, setSeverityByCity] = useState<any[]>([]);
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<any[]>([]);
+  const [adminIps, setAdminIps] = useState<any[]>([]);
+  const [registeringIp, setRegisteringIp] = useState(false);
 
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
@@ -55,7 +73,41 @@ const Admin = () => {
   }, [isAdmin]);
 
   async function loadAll() {
-    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback()]);
+    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps()]);
+  }
+
+  async function loadAdminIps() {
+    const { data } = await supabase
+      .from("admin_ip_hashes")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setAdminIps(data ?? []);
+    return data ?? [];
+  }
+
+  async function registerCurrentIp() {
+    setRegisteringIp(true);
+    try {
+      const { error } = await supabase.functions.invoke("register-admin-ip", {
+        body: { label: "via painel" },
+      });
+      if (error) throw error;
+      toast.success("IP atual marcado como admin. Recarregando métricas…");
+      await loadAdminIps();
+      await loadAnalytics();
+    } catch (e: any) {
+      toast.error("Falha ao registrar IP: " + (e?.message ?? String(e)));
+    } finally {
+      setRegisteringIp(false);
+    }
+  }
+
+  async function removeAdminIp(id: string) {
+    const { error } = await supabase.from("admin_ip_hashes").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("IP removido");
+    await loadAdminIps();
+    await loadAnalytics();
   }
 
   async function loadFeedback() {
@@ -70,16 +122,21 @@ const Admin = () => {
   async function loadAnalytics() {
     const since = subDays(new Date(), 30).toISOString();
 
-    const [testsRes, clicksRes] = await Promise.all([
+    const [testsRes, clicksRes, ipRes] = await Promise.all([
       supabase.from("test_events").select("*").gte("created_at", since).order("created_at", { ascending: false }),
       supabase.from("link_clicks").select("*").gte("created_at", since).order("created_at", { ascending: false }),
+      supabase.from("admin_ip_hashes").select("ip_hash"),
     ]);
 
-    const tests = testsRes.data ?? [];
-    const clicks = clicksRes.data ?? [];
+    const adminHashes = new Set<string>((ipRes.data ?? []).map((r: any) => r.ip_hash));
+    const allTests = testsRes.data ?? [];
+    const allClicks = clicksRes.data ?? [];
+    const tests = allTests.filter((t: any) => !t.ip_hash || !adminHashes.has(t.ip_hash));
+    const clicks = allClicks.filter((c: any) => !c.ip_hash || !adminHashes.has(c.ip_hash));
+    const excludedAdmin = (allTests.length - tests.length) + (allClicks.length - clicks.length);
 
     const uniqueIps = new Set(tests.map((t: any) => t.ip_hash).filter(Boolean)).size;
-    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps });
+    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps, excludedAdmin });
 
     // by day
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
@@ -119,7 +176,50 @@ const Admin = () => {
       if (!t.city) return;
       cityMap.set(t.city, (cityMap.get(t.city) || 0) + 1);
     });
-    setByCity(Array.from(cityMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10));
+    const topCities = Array.from(cityMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10);
+    setByCity(topCities);
+
+    // age distribution
+    const ageMap = new Map<string, number>();
+    AGE_BUCKETS.forEach((b) => ageMap.set(b.label, 0));
+    ageMap.set("Sem idade", 0);
+    tests.forEach((t: any) => {
+      const b = bucketFor(t.age) ?? "Sem idade";
+      ageMap.set(b, (ageMap.get(b) || 0) + 1);
+    });
+    setByAge(Array.from(ageMap.entries()).map(([name, value]) => ({ name, value })));
+
+    // severity x age (stacked)
+    const sevByAge = AGE_BUCKETS.map((b) => {
+      const row: any = { age: b.label };
+      SEVERITIES.forEach((s) => (row[s] = 0));
+      return row;
+    });
+    tests.forEach((t: any) => {
+      const b = bucketFor(t.age);
+      if (!b) return;
+      const sev = t.severity;
+      if (!sev || !(SEVERITIES as readonly string[]).includes(sev)) return;
+      const row = sevByAge.find((r: any) => r.age === b);
+      if (row) row[sev]++;
+    });
+    setSeverityByAge(sevByAge);
+
+    // severity x city (stacked, top 8 cities)
+    const topCityNames = topCities.slice(0, 8).map((c) => c.name);
+    const sevByCity = topCityNames.map((name) => {
+      const row: any = { city: name };
+      SEVERITIES.forEach((s) => (row[s] = 0));
+      return row;
+    });
+    tests.forEach((t: any) => {
+      if (!t.city || !topCityNames.includes(t.city)) return;
+      const sev = t.severity;
+      if (!sev || !(SEVERITIES as readonly string[]).includes(sev)) return;
+      const row = sevByCity.find((r: any) => r.city === t.city);
+      if (row) row[sev]++;
+    });
+    setSeverityByCity(sevByCity);
 
     // top links
     const linkMap = new Map<string, { label: string; type: string; count: number }>();
@@ -233,14 +333,21 @@ const Admin = () => {
             <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
             <TabsTrigger value="professionals">Profissionais</TabsTrigger>
             <TabsTrigger value="platforms">Plataformas</TabsTrigger>
+            <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard label="Testes (30d)" value={stats.totalTests} />
               <StatCard label="IPs únicos (30d)" value={stats.uniqueIps} />
-              <StatCard label="Cliques em links (30d)" value={stats.totalClicks} />
+              <StatCard label="Cliques (30d)" value={stats.totalClicks} />
+              <StatCard label="Excluídos (admin)" value={stats.excludedAdmin ?? 0} />
             </div>
+            {stats.excludedAdmin > 0 && (
+              <p className="text-xs text-muted-foreground -mt-2">
+                {stats.excludedAdmin} eventos de IPs marcados como admin foram excluídos das métricas.
+              </p>
+            )}
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Atividade diária (30 dias)</h3>
@@ -296,6 +403,57 @@ const Admin = () => {
                 </BarChart>
               </ResponsiveContainer>
               {byCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Distribuição por faixa etária</h3>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={byAge}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                    <Bar dataKey="value" fill="hsl(var(--primary))" />
+                  </BarChart>
+                </ResponsiveContainer>
+                {byAge.every((b) => b.value === 0) && (
+                  <p className="text-sm text-muted-foreground">Sem dados de idade ainda. A coleta começa após este deploy.</p>
+                )}
+              </Card>
+
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Severidade × faixa etária</h3>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={severityByAge}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="age" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    {SEVERITIES.map((s, i) => (
+                      <Bar key={s} dataKey={s} stackId="sev" fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-3">Severidade × cidade (top 8)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={severityByCity} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis dataKey="city" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={140} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {SEVERITIES.map((s, i) => (
+                    <Bar key={s} dataKey={s} stackId="sev" fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+              {severityByCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
             </Card>
           </TabsContent>
 
@@ -453,6 +611,56 @@ const Admin = () => {
                       <TableCell><Button size="sm" variant="ghost" onClick={() => deletePlatform(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell>
                     </TableRow>
                   ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="admin-ips" className="space-y-4 pt-4">
+            <Card className="p-4 space-y-4">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4" /> IPs do administrador</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Testes e cliques originados destes IPs (hash) são excluídos
+                  das métricas. Use o botão abaixo a partir de cada rede
+                  (casa, celular, escritório) que você queira ignorar.
+                </p>
+              </div>
+              <Button onClick={registerCurrentIp} disabled={registeringIp}>
+                <Plus className="h-4 w-4 mr-2" />
+                {registeringIp ? "Registrando…" : "Marcar meu IP atual como admin"}
+              </Button>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Hash do IP</TableHead>
+                    <TableHead>Rótulo</TableHead>
+                    <TableHead>Adicionado em</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {adminIps.map((ip) => (
+                    <TableRow key={ip.id}>
+                      <TableCell className="font-mono text-xs">{ip.ip_hash.slice(0, 12)}…</TableCell>
+                      <TableCell className="text-sm">{ip.label ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {format(new Date(ip.created_at), "dd/MM/yy HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" onClick={() => removeAdminIp(ip.id)}>
+                          <ShieldOff className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {adminIps.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        Nenhum IP marcado ainda.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Card>
