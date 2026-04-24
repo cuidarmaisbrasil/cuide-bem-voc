@@ -15,10 +15,23 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from "recharts";
+import { Shield, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
+const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
+const AGE_BUCKETS: { label: string; min: number; max: number }[] = [
+  { label: "18-24", min: 18, max: 24 },
+  { label: "25-34", min: 25, max: 34 },
+  { label: "35-44", min: 35, max: 44 },
+  { label: "45-59", min: 45, max: 59 },
+  { label: "60+", min: 60, max: 200 },
+];
+function bucketFor(age: number | null | undefined) {
+  if (age == null) return null;
+  return AGE_BUCKETS.find((b) => age >= b.min && age <= b.max)?.label ?? null;
+}
 
 const Admin = () => {
   const navigate = useNavigate();
