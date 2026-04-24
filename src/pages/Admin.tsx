@@ -122,16 +122,21 @@ const Admin = () => {
   async function loadAnalytics() {
     const since = subDays(new Date(), 30).toISOString();
 
-    const [testsRes, clicksRes] = await Promise.all([
+    const [testsRes, clicksRes, ipRes] = await Promise.all([
       supabase.from("test_events").select("*").gte("created_at", since).order("created_at", { ascending: false }),
       supabase.from("link_clicks").select("*").gte("created_at", since).order("created_at", { ascending: false }),
+      supabase.from("admin_ip_hashes").select("ip_hash"),
     ]);
 
-    const tests = testsRes.data ?? [];
-    const clicks = clicksRes.data ?? [];
+    const adminHashes = new Set<string>((ipRes.data ?? []).map((r: any) => r.ip_hash));
+    const allTests = testsRes.data ?? [];
+    const allClicks = clicksRes.data ?? [];
+    const tests = allTests.filter((t: any) => !t.ip_hash || !adminHashes.has(t.ip_hash));
+    const clicks = allClicks.filter((c: any) => !c.ip_hash || !adminHashes.has(c.ip_hash));
+    const excludedAdmin = (allTests.length - tests.length) + (allClicks.length - clicks.length);
 
     const uniqueIps = new Set(tests.map((t: any) => t.ip_hash).filter(Boolean)).size;
-    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps });
+    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps, excludedAdmin });
 
     // by day
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
@@ -171,7 +176,50 @@ const Admin = () => {
       if (!t.city) return;
       cityMap.set(t.city, (cityMap.get(t.city) || 0) + 1);
     });
-    setByCity(Array.from(cityMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10));
+    const topCities = Array.from(cityMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 10);
+    setByCity(topCities);
+
+    // age distribution
+    const ageMap = new Map<string, number>();
+    AGE_BUCKETS.forEach((b) => ageMap.set(b.label, 0));
+    ageMap.set("Sem idade", 0);
+    tests.forEach((t: any) => {
+      const b = bucketFor(t.age) ?? "Sem idade";
+      ageMap.set(b, (ageMap.get(b) || 0) + 1);
+    });
+    setByAge(Array.from(ageMap.entries()).map(([name, value]) => ({ name, value })));
+
+    // severity x age (stacked)
+    const sevByAge = AGE_BUCKETS.map((b) => {
+      const row: any = { age: b.label };
+      SEVERITIES.forEach((s) => (row[s] = 0));
+      return row;
+    });
+    tests.forEach((t: any) => {
+      const b = bucketFor(t.age);
+      if (!b) return;
+      const sev = t.severity;
+      if (!sev || !(SEVERITIES as readonly string[]).includes(sev)) return;
+      const row = sevByAge.find((r: any) => r.age === b);
+      if (row) row[sev]++;
+    });
+    setSeverityByAge(sevByAge);
+
+    // severity x city (stacked, top 8 cities)
+    const topCityNames = topCities.slice(0, 8).map((c) => c.name);
+    const sevByCity = topCityNames.map((name) => {
+      const row: any = { city: name };
+      SEVERITIES.forEach((s) => (row[s] = 0));
+      return row;
+    });
+    tests.forEach((t: any) => {
+      if (!t.city || !topCityNames.includes(t.city)) return;
+      const sev = t.severity;
+      if (!sev || !(SEVERITIES as readonly string[]).includes(sev)) return;
+      const row = sevByCity.find((r: any) => r.city === t.city);
+      if (row) row[sev]++;
+    });
+    setSeverityByCity(sevByCity);
 
     // top links
     const linkMap = new Map<string, { label: string; type: string; count: number }>();
