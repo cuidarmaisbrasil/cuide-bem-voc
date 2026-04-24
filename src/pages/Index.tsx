@@ -14,9 +14,11 @@ type Stage = "intro" | "age" | "test" | "result";
 const Index = () => {
   const [stage, setStage] = useState<Stage>("intro");
   const [answers, setAnswers] = useState<TestAnswers | null>(null);
+  const [age, setAge] = useState<number | null>(null);
 
   const handleStart = () => setStage("age");
-  const handleAgeConfirm = () => {
+  const handleAgeConfirm = (a: number) => {
+    setAge(a);
     setStage("test");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -27,6 +29,7 @@ const Index = () => {
   };
   const handleRestart = () => {
     setAnswers(null);
+    setAge(null);
     setStage("intro");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -88,7 +91,7 @@ const Index = () => {
 
       {stage === "age" && <AgeGate onConfirm={handleAgeConfirm} onCancel={handleRestart} />}
       {stage === "test" && <DepressionTest onComplete={handleComplete} />}
-      {stage === "result" && answers && <Results answers={answers} onRestart={handleRestart} />}
+      {stage === "result" && answers && <Results answers={answers} age={age} onRestart={handleRestart} />}
 
       <footer className="border-t border-border/60 mt-16 py-10 bg-muted/30">
         <div className="container max-w-3xl space-y-6 text-sm text-muted-foreground">

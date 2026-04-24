@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 interface ResultsProps {
   answers: TestAnswers;
+  age?: number | null;
   onRestart: () => void;
 }
 
@@ -26,7 +27,7 @@ const STATES = [
   "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ];
 
-export const Results = ({ answers, onRestart }: ResultsProps) => {
+export const Results = ({ answers, age, onRestart }: ResultsProps) => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
 
@@ -34,7 +35,7 @@ export const Results = ({ answers, onRestart }: ResultsProps) => {
   const interpretation = interpretPhq9(score);
 
   useEffect(() => {
-    track({ type: "test", payload: { score, severity: interpretation.level } });
+    track({ type: "test", payload: { score, severity: interpretation.level, age: age ?? undefined } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const symptomEval = interpretSymptoms(answers.symptoms);
