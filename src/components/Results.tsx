@@ -126,7 +126,7 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                   href={severityArticle.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => track({ type: "click", payload: { link_type: "external", target_id: `severity-article-${interpretation.level}`, target_label: severityArticle.label } })}
+                  onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `severity-article-${interpretation.level}`, target_label: severityArticle.label } })}
                   className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-primary hover:underline"
                 >
                   <BookOpen className="h-3.5 w-3.5" />
