@@ -350,6 +350,7 @@ const Admin = () => {
             <TabsTrigger value="professionals">Profissionais</TabsTrigger>
             <TabsTrigger value="platforms">Plataformas</TabsTrigger>
             <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
+            <TabsTrigger value="articles">Artigos por severidade</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
