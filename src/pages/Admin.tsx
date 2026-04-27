@@ -54,6 +54,7 @@ const Admin = () => {
 
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
 
   const [newProf, setNewProf] = useState<any>({
     name: "", title: "", specialty: "", modality: "", city: "", country: "BR",
@@ -73,7 +74,22 @@ const Admin = () => {
   }, [isAdmin]);
 
   async function loadAll() {
-    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps()]);
+    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps(), loadArticles()]);
+  }
+
+  async function loadArticles() {
+    const { data } = await supabase
+      .from("severity_articles")
+      .select("*")
+      .order("severity");
+    setArticles(data ?? []);
+  }
+
+  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean }) {
+    const { error } = await supabase.from("severity_articles").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Artigo atualizado");
+    await loadArticles();
   }
 
   async function loadAdminIps() {
@@ -334,6 +350,7 @@ const Admin = () => {
             <TabsTrigger value="professionals">Profissionais</TabsTrigger>
             <TabsTrigger value="platforms">Plataformas</TabsTrigger>
             <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
+            <TabsTrigger value="articles">Artigos por severidade</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
@@ -663,6 +680,73 @@ const Admin = () => {
                   )}
                 </TableBody>
               </Table>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="articles" className="space-y-4 pt-4">
+            <Card className="p-4 space-y-4">
+              <div>
+                <h3 className="font-semibold">Artigos científicos por severidade</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Estes links aparecem na página de resultados, abaixo do nível de
+                  severidade. Use apenas fontes em português de instituições idôneas
+                  (OPAS/OMS, ABP, AMB, SciELO, Ministério da Saúde).
+                </p>
+              </div>
+              <div className="space-y-4">
+                {SEVERITIES.map((sev) => {
+                  const a = articles.find((x) => x.severity === sev);
+                  if (!a) return (
+                    <div key={sev} className="text-sm text-muted-foreground border border-dashed rounded-md p-3">
+                      Nenhum artigo cadastrado para <strong>{sev}</strong>.
+                    </div>
+                  );
+                  return (
+                    <div key={sev} className="border rounded-md p-4 space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Badge variant="outline">{sev}</Badge>
+                        <label className="flex items-center gap-2 text-xs">
+                          <input
+                            type="checkbox"
+                            checked={a.active}
+                            onChange={(e) => updateArticle(a.id, { active: e.target.checked })}
+                          />
+                          Ativo
+                        </label>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Título exibido</Label>
+                        <Input
+                          defaultValue={a.label}
+                          onBlur={(e) => {
+                            if (e.target.value !== a.label) updateArticle(a.id, { label: e.target.value });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">URL do artigo</Label>
+                        <Input
+                          defaultValue={a.url}
+                          onBlur={(e) => {
+                            if (e.target.value !== a.url) updateArticle(a.id, { url: e.target.value });
+                          }}
+                        />
+                        {a.url && (
+                          <a href={a.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline mt-1 inline-block">
+                            Abrir link atual ↗
+                          </a>
+                        )}
+                      </div>
+                      {a.source && (
+                        <p className="text-xs text-muted-foreground">Fonte: {a.source}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                As alterações são salvas automaticamente ao sair do campo (blur).
+              </p>
             </Card>
           </TabsContent>
         </Tabs>

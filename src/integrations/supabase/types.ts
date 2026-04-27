@@ -197,6 +197,39 @@ export type Database = {
         }
         Relationships: []
       }
+      severity_articles: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          label: string
+          severity: string
+          source: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label: string
+          severity: string
+          source?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label?: string
+          severity?: string
+          source?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       system_alerts: {
         Row: {
           alert_type: string
