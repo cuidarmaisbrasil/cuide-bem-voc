@@ -56,6 +56,39 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     destructive: "bg-destructive/10 text-destructive border-destructive/30",
   }[interpretation.color] ?? "bg-muted text-foreground border-border";
 
+  // Artigos científicos / fontes oficiais para cada nível de severidade do PHQ-9
+  const severityArticle = (() => {
+    switch (interpretation.level) {
+      case "Mínima":
+        return {
+          label: "O que significa pontuação mínima no PHQ-9",
+          url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1495268/",
+        };
+      case "Leve":
+        return {
+          label: "Entenda o que é depressão leve (artigo científico)",
+          url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1495268/",
+        };
+      case "Moderada":
+        return {
+          label: "Entenda o que é depressão moderada (artigo científico)",
+          url: "https://www.nimh.nih.gov/health/topics/depression",
+        };
+      case "Moderadamente grave":
+        return {
+          label: "Entenda o que é depressão moderadamente grave (artigo científico)",
+          url: "https://www.nimh.nih.gov/health/topics/depression",
+        };
+      case "Grave":
+        return {
+          label: "Entenda o que é depressão grave (artigo científico)",
+          url: "https://www.who.int/news-room/fact-sheets/detail/depressive-disorder-(depression)",
+        };
+      default:
+        return null;
+    }
+  })();
+
   return (
     <section className="container py-12 md:py-16">
       <div className="mx-auto max-w-3xl space-y-8">
