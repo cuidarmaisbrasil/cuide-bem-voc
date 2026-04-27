@@ -60,24 +60,24 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
   // Artigos científicos em português, gerenciados pelo admin (com fallback estático)
   const DEFAULT_ARTICLES: Record<string, { label: string; url: string }> = {
     "Mínima": {
-      label: "O que é depressão — OPAS/OMS (em português)",
+      label: "Depressão: visão geral e prevenção (OPAS/OMS)",
       url: "https://www.paho.org/pt/topicos/depressao",
     },
     "Leve": {
-      label: "Depressão leve: diretrizes da Associação Médica Brasileira (SciELO)",
-      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+      label: "Depressão leve: avaliação e conduta na atenção primária (Ministério da Saúde)",
+      url: "https://linhasdecuidado.saude.gov.br/portal/depressao/unidade-atencao-primaria/avaliacao-conduta/",
     },
     "Moderada": {
-      label: "Depressão moderada: diretrizes da Associação Médica Brasileira (SciELO)",
-      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+      label: "Depressão moderada: análise clínica do PHQ-9 (SciELO / Brazilian Journal of Psychiatry)",
+      url: "https://www.scielo.br/j/rbp/a/xpR4qBrTMF53TNnL88Hwpvr/?lang=pt",
     },
     "Moderadamente grave": {
-      label: "Depressão moderadamente grave: diretrizes da AMB (SciELO)",
-      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+      label: "Tratamento da depressão moderadamente grave ao longo da vida (ABP)",
+      url: "https://revistardp.org.br/abp/article/view/990",
     },
     "Grave": {
-      label: "Depressão grave: folha informativa da OPAS/OMS (em português)",
-      url: "https://www.paho.org/pt/topicos/depressao",
+      label: "Depressão grave: avaliação e conduta especializada (Ministério da Saúde)",
+      url: "https://linhasdecuidado.saude.gov.br/portal/depressao/unidade-hospitalar-especializada/avaliacao-conduta/",
     },
   };
 
