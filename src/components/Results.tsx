@@ -60,23 +60,23 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
   // Artigos científicos em português, gerenciados pelo admin (com fallback estático)
   const DEFAULT_ARTICLES: Record<string, { label: string; url: string }> = {
     "Mínima": {
-      label: "Depressão: visão geral e prevenção (OPAS/OMS)",
+      label: "Depressão: visão geral, sinais e prevenção (OPAS/OMS)",
       url: "https://www.paho.org/pt/topicos/depressao",
     },
     "Leve": {
-      label: "Depressão leve: avaliação e conduta na atenção primária (Ministério da Saúde)",
-      url: "https://linhasdecuidado.saude.gov.br/portal/depressao/unidade-atencao-primaria/avaliacao-conduta/",
+      label: "Depressão leve na atenção primária à saúde (RBMFC)",
+      url: "https://www.rbmfc.org.br/rbmfc/article/view/65/0",
     },
     "Moderada": {
-      label: "Depressão moderada: análise clínica do PHQ-9 (SciELO / Brazilian Journal of Psychiatry)",
-      url: "https://www.scielo.br/j/rbp/a/xpR4qBrTMF53TNnL88Hwpvr/?lang=pt",
+      label: "Depressão moderada: tratamento medicamentoso e prevenção quaternária (RBMFC)",
+      url: "https://rbmfc.org.br/rbmfc/article/view/2568",
     },
     "Moderadamente grave": {
-      label: "Tratamento da depressão moderadamente grave ao longo da vida (ABP)",
-      url: "https://revistardp.org.br/abp/article/view/990",
+      label: "Depressão moderadamente grave: sinais, tratamento e cuidado (Ministério da Saúde / BVS)",
+      url: "https://bvsms.saude.gov.br/depressao-3/",
     },
     "Grave": {
-      label: "Depressão grave: avaliação e conduta especializada (Ministério da Saúde)",
+      label: "Depressão grave: avaliação e conduta hospitalar especializada (Ministério da Saúde)",
       url: "https://linhasdecuidado.saude.gov.br/portal/depressao/unidade-hospitalar-especializada/avaliacao-conduta/",
     },
   };
