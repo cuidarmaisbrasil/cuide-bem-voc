@@ -495,6 +495,7 @@ const Admin = () => {
 
               <Card className="p-4">
                 <h3 className="font-semibold mb-3">Top links acessados</h3>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 <Table>
                   <TableHeader>
                     <TableRow><TableHead>Link</TableHead><TableHead>Tipo</TableHead><TableHead className="text-right">Cliques</TableHead></TableRow>
@@ -510,6 +511,7 @@ const Admin = () => {
                     {topLinks.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Sem cliques ainda</TableCell></TableRow>}
                   </TableBody>
                 </Table>
+              </div>
               </Card>
             </div>
           </TabsContent>
@@ -517,7 +519,8 @@ const Admin = () => {
           <TabsContent value="feedback" className="space-y-4 pt-4">
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Feedbacks dos usuários ({feedback.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
@@ -548,6 +551,7 @@ const Admin = () => {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -574,7 +578,8 @@ const Admin = () => {
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Profissionais cadastrados ({professionals.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow><TableHead>Nome</TableHead><TableHead>Cidade</TableHead><TableHead>Modalidade</TableHead><TableHead></TableHead></TableRow>
                 </TableHeader>
@@ -589,6 +594,7 @@ const Admin = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -619,7 +625,8 @@ const Admin = () => {
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Plataformas cadastradas ({platforms.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow><TableHead>Nome</TableHead><TableHead>País</TableHead><TableHead>Tipo</TableHead><TableHead>Telefone</TableHead><TableHead></TableHead></TableRow>
                 </TableHeader>
@@ -635,6 +642,7 @@ const Admin = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -652,7 +660,8 @@ const Admin = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 {registeringIp ? "Registrando…" : "Marcar meu IP atual como admin"}
               </Button>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Hash do IP</TableHead>
@@ -685,6 +694,7 @@ const Admin = () => {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
