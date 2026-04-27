@@ -56,33 +56,33 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     destructive: "bg-destructive/10 text-destructive border-destructive/30",
   }[interpretation.color] ?? "bg-muted text-foreground border-border";
 
-  // Artigos científicos / fontes oficiais para cada nível de severidade do PHQ-9
+  // Artigos científicos em português, de instituições idôneas (OPAS/OMS, AMB/ABP via SciELO)
   const severityArticle = (() => {
     switch (interpretation.level) {
       case "Mínima":
         return {
-          label: "O que significa pontuação mínima no PHQ-9",
-          url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1495268/",
+          label: "O que é depressão — OPAS/OMS (em português)",
+          url: "https://www.paho.org/pt/topicos/depressao",
         };
       case "Leve":
         return {
-          label: "Entenda o que é depressão leve (artigo científico)",
-          url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1495268/",
+          label: "Depressão leve: diretrizes da Associação Médica Brasileira (SciELO)",
+          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
         };
       case "Moderada":
         return {
-          label: "Entenda o que é depressão moderada (artigo científico)",
-          url: "https://www.nimh.nih.gov/health/topics/depression",
+          label: "Depressão moderada: diretrizes da Associação Médica Brasileira (SciELO)",
+          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
         };
       case "Moderadamente grave":
         return {
-          label: "Entenda o que é depressão moderadamente grave (artigo científico)",
-          url: "https://www.nimh.nih.gov/health/topics/depression",
+          label: "Depressão moderadamente grave: diretrizes da AMB (SciELO)",
+          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
         };
       case "Grave":
         return {
-          label: "Entenda o que é depressão grave (artigo científico)",
-          url: "https://www.who.int/news-room/fact-sheets/detail/depressive-disorder-(depression)",
+          label: "Depressão grave: folha informativa da OPAS/OMS (em português)",
+          url: "https://www.paho.org/pt/topicos/depressao",
         };
       default:
         return null;
