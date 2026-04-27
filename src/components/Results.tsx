@@ -57,38 +57,49 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     destructive: "bg-destructive/10 text-destructive border-destructive/30",
   }[interpretation.color] ?? "bg-muted text-foreground border-border";
 
-  // Artigos científicos em português, de instituições idôneas (OPAS/OMS, AMB/ABP via SciELO)
-  const severityArticle = (() => {
-    switch (interpretation.level) {
-      case "Mínima":
-        return {
-          label: "O que é depressão — OPAS/OMS (em português)",
-          url: "https://www.paho.org/pt/topicos/depressao",
-        };
-      case "Leve":
-        return {
-          label: "Depressão leve: diretrizes da Associação Médica Brasileira (SciELO)",
-          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
-        };
-      case "Moderada":
-        return {
-          label: "Depressão moderada: diretrizes da Associação Médica Brasileira (SciELO)",
-          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
-        };
-      case "Moderadamente grave":
-        return {
-          label: "Depressão moderadamente grave: diretrizes da AMB (SciELO)",
-          url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
-        };
-      case "Grave":
-        return {
-          label: "Depressão grave: folha informativa da OPAS/OMS (em português)",
-          url: "https://www.paho.org/pt/topicos/depressao",
-        };
-      default:
-        return null;
-    }
-  })();
+  // Artigos científicos em português, gerenciados pelo admin (com fallback estático)
+  const DEFAULT_ARTICLES: Record<string, { label: string; url: string }> = {
+    "Mínima": {
+      label: "O que é depressão — OPAS/OMS (em português)",
+      url: "https://www.paho.org/pt/topicos/depressao",
+    },
+    "Leve": {
+      label: "Depressão leve: diretrizes da Associação Médica Brasileira (SciELO)",
+      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+    },
+    "Moderada": {
+      label: "Depressão moderada: diretrizes da Associação Médica Brasileira (SciELO)",
+      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+    },
+    "Moderadamente grave": {
+      label: "Depressão moderadamente grave: diretrizes da AMB (SciELO)",
+      url: "https://www.scielo.br/j/rbp/a/bJdCdvw3H5hGwzLwVvMPXbp/?lang=pt",
+    },
+    "Grave": {
+      label: "Depressão grave: folha informativa da OPAS/OMS (em português)",
+      url: "https://www.paho.org/pt/topicos/depressao",
+    },
+  };
+
+  const [severityArticle, setSeverityArticle] = useState<{ label: string; url: string } | null>(
+    DEFAULT_ARTICLES[interpretation.level] ?? null,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("severity_articles")
+        .select("label, url")
+        .eq("severity", interpretation.level)
+        .eq("active", true)
+        .maybeSingle();
+      if (!cancelled && data) {
+        setSeverityArticle({ label: data.label, url: data.url });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [interpretation.level]);
 
   return (
     <section className="container py-12 md:py-16">
