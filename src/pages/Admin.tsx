@@ -74,7 +74,22 @@ const Admin = () => {
   }, [isAdmin]);
 
   async function loadAll() {
-    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps()]);
+    await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps(), loadArticles()]);
+  }
+
+  async function loadArticles() {
+    const { data } = await supabase
+      .from("severity_articles")
+      .select("*")
+      .order("severity");
+    setArticles(data ?? []);
+  }
+
+  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean }) {
+    const { error } = await supabase.from("severity_articles").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Artigo atualizado");
+    await loadArticles();
   }
 
   async function loadAdminIps() {
