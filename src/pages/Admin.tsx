@@ -54,6 +54,7 @@ const Admin = () => {
 
   const [professionals, setProfessionals] = useState<any[]>([]);
   const [platforms, setPlatforms] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
 
   const [newProf, setNewProf] = useState<any>({
     name: "", title: "", specialty: "", modality: "", city: "", country: "BR",
