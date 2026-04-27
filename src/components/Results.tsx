@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { track } from "@/lib/tracking";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
