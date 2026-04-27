@@ -317,23 +317,26 @@ const Admin = () => {
   return (
     <main className="min-h-screen bg-background">
       <header className="border-b bg-background sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-14">
-          <h1 className="font-display font-semibold">Cuidar+ — Painel Admin</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
+        <div className="container flex items-center justify-between h-14 gap-2 px-3 sm:px-4">
+          <h1 className="font-display font-semibold text-sm sm:text-base truncate">
+            <span className="hidden sm:inline">Cuidar+ — Painel Admin</span>
+            <span className="sm:hidden">Cuidar+ Admin</span>
+          </h1>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs text-muted-foreground hidden md:block truncate max-w-[180px]">{user?.email}</span>
             <Button size="sm" variant="outline" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
           </div>
         </div>
       </header>
 
       {alerts.length > 0 && (
-        <div className="container mt-4 space-y-2">
+        <div className="container mt-4 space-y-2 px-3 sm:px-4">
           {alerts.map((a) => (
             <Card key={a.id} className={`p-3 flex items-start gap-3 border-l-4 ${a.severity === "critical" ? "border-l-destructive bg-destructive/5" : "border-l-warning bg-warning/5"}`}>
-              <AlertTriangle className={`h-5 w-5 ${a.severity === "critical" ? "text-destructive" : "text-warning-foreground"}`} />
-              <div className="flex-1">
+              <AlertTriangle className={`h-5 w-5 shrink-0 ${a.severity === "critical" ? "text-destructive" : "text-warning-foreground"}`} />
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{a.alert_type === "quota" ? "⚠️ Saldo/Quota do Lovable Cloud" : a.alert_type === "volume" ? "📊 Volume alto de uso" : "Alerta"}</p>
-                <p className="text-sm text-muted-foreground">{a.message}</p>
+                <p className="text-sm text-muted-foreground break-words">{a.message}</p>
               </div>
               <Button size="sm" variant="ghost" onClick={() => resolveAlert(a.id)}>OK</Button>
             </Card>
@@ -341,17 +344,19 @@ const Admin = () => {
         </div>
       )}
 
-      <div className="container py-6">
+      <div className="container py-6 px-3 sm:px-4">
         <Tabs defaultValue="analytics">
-          <TabsList>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="links">Links de atendimento</TabsTrigger>
-            <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
-            <TabsTrigger value="professionals">Profissionais</TabsTrigger>
-            <TabsTrigger value="platforms">Plataformas</TabsTrigger>
-            <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
-            <TabsTrigger value="articles">Artigos por severidade</TabsTrigger>
-          </TabsList>
+          <div className="-mx-3 sm:mx-0 overflow-x-auto pb-1">
+            <TabsList className="inline-flex w-max min-w-full justify-start px-3 sm:px-0">
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="links">Links</TabsTrigger>
+              <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
+              <TabsTrigger value="professionals">Profissionais</TabsTrigger>
+              <TabsTrigger value="platforms">Plataformas</TabsTrigger>
+              <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
+              <TabsTrigger value="articles">Artigos</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -490,6 +495,7 @@ const Admin = () => {
 
               <Card className="p-4">
                 <h3 className="font-semibold mb-3">Top links acessados</h3>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 <Table>
                   <TableHeader>
                     <TableRow><TableHead>Link</TableHead><TableHead>Tipo</TableHead><TableHead className="text-right">Cliques</TableHead></TableRow>
@@ -505,6 +511,7 @@ const Admin = () => {
                     {topLinks.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Sem cliques ainda</TableCell></TableRow>}
                   </TableBody>
                 </Table>
+              </div>
               </Card>
             </div>
           </TabsContent>
@@ -512,7 +519,8 @@ const Admin = () => {
           <TabsContent value="feedback" className="space-y-4 pt-4">
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Feedbacks dos usuários ({feedback.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Data</TableHead>
@@ -543,6 +551,7 @@ const Admin = () => {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -569,7 +578,8 @@ const Admin = () => {
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Profissionais cadastrados ({professionals.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow><TableHead>Nome</TableHead><TableHead>Cidade</TableHead><TableHead>Modalidade</TableHead><TableHead></TableHead></TableRow>
                 </TableHeader>
@@ -584,6 +594,7 @@ const Admin = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -614,7 +625,8 @@ const Admin = () => {
 
             <Card className="p-4">
               <h3 className="font-semibold mb-3">Plataformas cadastradas ({platforms.length})</h3>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow><TableHead>Nome</TableHead><TableHead>País</TableHead><TableHead>Tipo</TableHead><TableHead>Telefone</TableHead><TableHead></TableHead></TableRow>
                 </TableHeader>
@@ -630,6 +642,7 @@ const Admin = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
@@ -647,7 +660,8 @@ const Admin = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 {registeringIp ? "Registrando…" : "Marcar meu IP atual como admin"}
               </Button>
-              <Table>
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Hash do IP</TableHead>
@@ -680,6 +694,7 @@ const Admin = () => {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </Card>
           </TabsContent>
 
