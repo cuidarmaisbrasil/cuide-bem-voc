@@ -150,6 +150,33 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                   <ExternalLink className="h-3 w-3" />
                 </a>
               )}
+              {severityArticle?.summary && (
+                <div className="mt-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `severity-summary-${interpretation.level}`, target_label: `O que é depressão ${interpretation.level}?` } })}
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline text-left"
+                      >
+                        <HelpCircle className="h-3.5 w-3.5" />
+                        O que é depressão {interpretation.level}?
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle>O que é depressão {interpretation.level}?</DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Resumo explicativo sobre o nível de severidade {interpretation.level}.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="text-sm text-foreground/85 whitespace-pre-line leading-relaxed">
+                        {severityArticle.summary}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-2">Sintomas marcados (DSM-5)</p>
