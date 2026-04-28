@@ -90,36 +90,37 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const { data } = await supabase
-        .from("severity_articles")
-        .select("label, url")
-        .eq("severity", interpretation.level)
-        .eq("active", true)
-        .maybeSingle();
-      if (!cancelled && data) {
-        setSeverityArticle({ label: data.label, url: data.url });
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [interpretation.level]);
-
-  useEffect(() => {
-    let cancelled = false;
     setAiSummary("");
     setAiLoading(true);
     (async () => {
+      // 1) tenta carregar artigo + resumo customizado pelo admin
+      const { data: articleRow } = await supabase
+        .from("severity_articles")
+        .select("label, url, summary")
+        .eq("severity", interpretation.level)
+        .eq("active", true)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (articleRow) {
+        setSeverityArticle({ label: articleRow.label, url: articleRow.url });
+        const customSummary = (articleRow as any).summary?.trim?.() ?? "";
+        if (customSummary) {
+          setAiSummary(customSummary);
+          setAiLoading(false);
+          return;
+        }
+      }
+
+      // 2) sem resumo customizado → gera via IA
       try {
         const { data, error } = await supabase.functions.invoke("severity-summary", {
           body: { severity: interpretation.level },
         });
-        if (!cancelled) {
-          if (error || !data?.summary) {
-            setAiSummary("");
-          } else {
-            setAiSummary(data.summary);
-          }
-        }
+        if (cancelled) return;
+        if (error || !data?.summary) setAiSummary("");
+        else setAiSummary(data.summary);
       } catch {
         if (!cancelled) setAiSummary("");
       } finally {

@@ -85,7 +85,7 @@ const Admin = () => {
     setArticles(data ?? []);
   }
 
-  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean }) {
+  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean; summary?: string | null }) {
     const { error } = await supabase.from("severity_articles").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Artigo atualizado");
@@ -751,6 +751,24 @@ const Admin = () => {
                             Abrir link atual ↗
                           </a>
                         )}
+                      </div>
+                      <div>
+                        <Label className="text-xs">
+                          Resumo exibido (“O que é depressão {sev.toLowerCase()}?”)
+                        </Label>
+                        <Textarea
+                          rows={4}
+                          placeholder="Se vazio, será gerado automaticamente por IA na página de resultados."
+                          defaultValue={a.summary ?? ""}
+                          onBlur={(e) => {
+                            const v = e.target.value.trim();
+                            const current = a.summary ?? "";
+                            if (v !== current) updateArticle(a.id, { summary: v || null });
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Deixe em branco para usar o resumo gerado por IA.
+                        </p>
                       </div>
                       {a.source && (
                         <p className="text-xs text-muted-foreground">Fonte: {a.source}</p>
