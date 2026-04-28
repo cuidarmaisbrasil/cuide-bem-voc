@@ -17,6 +17,8 @@ import { ReliabilityBadge } from "./ReliabilityBadge";
 import { FeedbackForm } from "./FeedbackForm";
 import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { HelpCircle } from "lucide-react";
 
 interface ResultsProps {
   answers: TestAnswers;
