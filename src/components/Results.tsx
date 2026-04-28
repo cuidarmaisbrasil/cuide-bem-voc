@@ -83,8 +83,10 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     },
   };
 
-  const [severityArticle, setSeverityArticle] = useState<{ label: string; url: string } | null>(
-    DEFAULT_ARTICLES[interpretation.level] ?? null,
+  const [severityArticle, setSeverityArticle] = useState<{ label: string; url: string; summary: string | null } | null>(
+    DEFAULT_ARTICLES[interpretation.level]
+      ? { ...DEFAULT_ARTICLES[interpretation.level], summary: null }
+      : null,
   );
 
   useEffect(() => {
@@ -92,12 +94,12 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     (async () => {
       const { data } = await supabase
         .from("severity_articles")
-        .select("label, url")
+        .select("label, url, summary")
         .eq("severity", interpretation.level)
         .eq("active", true)
         .maybeSingle();
       if (!cancelled && data) {
-        setSeverityArticle({ label: data.label, url: data.url });
+        setSeverityArticle({ label: data.label, url: data.url, summary: data.summary });
       }
     })();
     return () => { cancelled = true; };
