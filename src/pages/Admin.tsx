@@ -85,7 +85,7 @@ const Admin = () => {
     setArticles(data ?? []);
   }
 
-  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean; summary?: string }) {
+  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean }) {
     const { error } = await supabase.from("severity_articles").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Artigo atualizado");
@@ -751,20 +751,6 @@ const Admin = () => {
                             Abrir link atual ↗
                           </a>
                         )}
-                      </div>
-                      <div>
-                        <Label className="text-xs">Resumo explicativo (exibido no link "O que é depressão {sev}?")</Label>
-                        <Textarea
-                          rows={6}
-                          defaultValue={a.summary ?? ""}
-                          placeholder={`Resumo explicativo sobre depressão ${sev}. Termine com — Equipe Cuidar+`}
-                          onBlur={(e) => {
-                            if (e.target.value !== (a.summary ?? "")) updateArticle(a.id, { summary: e.target.value });
-                          }}
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Lembre-se de assinar como <strong>— Equipe Cuidar+</strong> ao final.
-                        </p>
                       </div>
                       {a.source && (
                         <p className="text-xs text-muted-foreground">Fonte: {a.source}</p>
