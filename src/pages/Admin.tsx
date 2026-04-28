@@ -85,7 +85,7 @@ const Admin = () => {
     setArticles(data ?? []);
   }
 
-  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean }) {
+  async function updateArticle(id: string, patch: { label?: string; url?: string; active?: boolean; summary?: string | null }) {
     const { error } = await supabase.from("severity_articles").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Artigo atualizado");
