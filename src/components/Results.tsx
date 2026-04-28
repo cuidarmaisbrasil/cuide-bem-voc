@@ -17,6 +17,8 @@ import { ReliabilityBadge } from "./ReliabilityBadge";
 import { FeedbackForm } from "./FeedbackForm";
 import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { HelpCircle } from "lucide-react";
 
 interface ResultsProps {
   answers: TestAnswers;
@@ -81,8 +83,10 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     },
   };
 
-  const [severityArticle, setSeverityArticle] = useState<{ label: string; url: string } | null>(
-    DEFAULT_ARTICLES[interpretation.level] ?? null,
+  const [severityArticle, setSeverityArticle] = useState<{ label: string; url: string; summary: string | null } | null>(
+    DEFAULT_ARTICLES[interpretation.level]
+      ? { ...DEFAULT_ARTICLES[interpretation.level], summary: null }
+      : null,
   );
 
   useEffect(() => {
@@ -90,12 +94,12 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     (async () => {
       const { data } = await supabase
         .from("severity_articles")
-        .select("label, url")
+        .select("label, url, summary")
         .eq("severity", interpretation.level)
         .eq("active", true)
         .maybeSingle();
       if (!cancelled && data) {
-        setSeverityArticle({ label: data.label, url: data.url });
+        setSeverityArticle({ label: data.label, url: data.url, summary: data.summary });
       }
     })();
     return () => { cancelled = true; };
@@ -145,6 +149,33 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                   {severityArticle.label}
                   <ExternalLink className="h-3 w-3" />
                 </a>
+              )}
+              {severityArticle?.summary && (
+                <div className="mt-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `severity-summary-${interpretation.level}`, target_label: `O que é depressão ${interpretation.level}?` } })}
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline text-left"
+                      >
+                        <HelpCircle className="h-3.5 w-3.5" />
+                        O que é depressão {interpretation.level}?
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle>O que é depressão {interpretation.level}?</DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Resumo explicativo sobre o nível de severidade {interpretation.level}.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="text-sm text-foreground/85 whitespace-pre-line leading-relaxed">
+                        {severityArticle.summary}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               )}
             </div>
             <div>

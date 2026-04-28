@@ -205,6 +205,7 @@ export type Database = {
           label: string
           severity: string
           source: string | null
+          summary: string | null
           updated_at: string
           url: string
         }
@@ -215,6 +216,7 @@ export type Database = {
           label: string
           severity: string
           source?: string | null
+          summary?: string | null
           updated_at?: string
           url: string
         }
@@ -225,6 +227,7 @@ export type Database = {
           label?: string
           severity?: string
           source?: string | null
+          summary?: string | null
           updated_at?: string
           url?: string
         }
