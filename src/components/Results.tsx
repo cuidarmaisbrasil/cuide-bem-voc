@@ -85,6 +85,9 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     DEFAULT_ARTICLES[interpretation.level] ?? null,
   );
 
+  const [aiSummary, setAiSummary] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -100,6 +103,32 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     })();
     return () => { cancelled = true; };
   }, [interpretation.level]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setAiSummary("");
+    setAiLoading(true);
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("severity-summary", {
+          body: { severity: interpretation.level },
+        });
+        if (!cancelled) {
+          if (error || !data?.summary) {
+            setAiSummary("");
+          } else {
+            setAiSummary(data.summary);
+          }
+        }
+      } catch {
+        if (!cancelled) setAiSummary("");
+      } finally {
+        if (!cancelled) setAiLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [interpretation.level]);
+
 
   return (
     <section className="container py-12 md:py-16">
