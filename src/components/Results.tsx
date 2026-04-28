@@ -164,23 +164,27 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
               </Badge>
               <p className="text-sm text-foreground/80 mt-3">{interpretation.description}</p>
               {(aiLoading || aiSummary) && (
-                <div className="mt-4 rounded-md border border-border/60 bg-muted/40 p-3">
-                  <p className="text-sm font-semibold text-foreground">
-                    O que é depressão {interpretation.level.toLowerCase()}?
-                  </p>
-                  {aiLoading && !aiSummary ? (
-                    <p className="text-sm text-muted-foreground mt-1.5 italic">
-                      Gerando resumo…
+                <details className="mt-4 group rounded-md border border-border/60 bg-muted/40">
+                  <summary
+                    className="flex items-center justify-between gap-2 cursor-pointer list-none p-3 text-sm font-semibold text-foreground select-none"
+                    onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `severity-summary-${interpretation.level}`, target_label: `O que é depressão ${interpretation.level.toLowerCase()}?` } })}
+                  >
+                    <span>O que é depressão {interpretation.level.toLowerCase()}?</span>
+                    <span aria-hidden className="text-muted-foreground transition-transform group-open:rotate-180">▾</span>
+                  </summary>
+                  <div className="px-3 pb-3">
+                    {aiLoading && !aiSummary ? (
+                      <p className="text-sm text-muted-foreground italic">Gerando resumo…</p>
+                    ) : (
+                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
+                        {aiSummary}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-muted-foreground mt-2">
+                      Resumo com base em PHQ-9, DSM-5 e diretrizes da OMS. Não substitui avaliação profissional.
                     </p>
-                  ) : (
-                    <p className="text-sm text-foreground/80 mt-1.5 leading-relaxed whitespace-pre-line">
-                      {aiSummary}
-                    </p>
-                  )}
-                  <p className="text-[11px] text-muted-foreground mt-2">
-                    Resumo gerado por IA com base em PHQ-9, DSM-5 e diretrizes da OMS. Não substitui avaliação profissional.
-                  </p>
-                </div>
+                  </div>
+                </details>
               )}
               {severityArticle && (
                 <a
