@@ -85,6 +85,9 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     DEFAULT_ARTICLES[interpretation.level] ?? null,
   );
 
+  const [aiSummary, setAiSummary] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -100,6 +103,32 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
     })();
     return () => { cancelled = true; };
   }, [interpretation.level]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setAiSummary("");
+    setAiLoading(true);
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("severity-summary", {
+          body: { severity: interpretation.level },
+        });
+        if (!cancelled) {
+          if (error || !data?.summary) {
+            setAiSummary("");
+          } else {
+            setAiSummary(data.summary);
+          }
+        }
+      } catch {
+        if (!cancelled) setAiSummary("");
+      } finally {
+        if (!cancelled) setAiLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [interpretation.level]);
+
 
   return (
     <section className="container py-12 md:py-16">
@@ -133,6 +162,25 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                 {interpretation.level}
               </Badge>
               <p className="text-sm text-foreground/80 mt-3">{interpretation.description}</p>
+              {(aiLoading || aiSummary) && (
+                <div className="mt-4 rounded-md border border-border/60 bg-muted/40 p-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    O que é depressão {interpretation.level.toLowerCase()}?
+                  </p>
+                  {aiLoading && !aiSummary ? (
+                    <p className="text-sm text-muted-foreground mt-1.5 italic">
+                      Gerando resumo…
+                    </p>
+                  ) : (
+                    <p className="text-sm text-foreground/80 mt-1.5 leading-relaxed whitespace-pre-line">
+                      {aiSummary}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-muted-foreground mt-2">
+                    Resumo gerado por IA com base em PHQ-9, DSM-5 e diretrizes da OMS. Não substitui avaliação profissional.
+                  </p>
+                </div>
+              )}
               {severityArticle && (
                 <a
                   href={severityArticle.url}
@@ -140,12 +188,15 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                   rel="noopener noreferrer"
                   onClick={() => track({ type: "click", payload: { link_type: "platform", target_id: `severity-article-${interpretation.level}`, target_label: severityArticle.label } })}
                   className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-primary hover:underline"
+                  aria-label={`Saiba mais: ${severityArticle.label}`}
+                  title={severityArticle.label}
                 >
                   <BookOpen className="h-3.5 w-3.5" />
-                  {severityArticle.label}
+                  Saiba mais
                   <ExternalLink className="h-3 w-3" />
                 </a>
               )}
+
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-2">Sintomas marcados (DSM-5)</p>

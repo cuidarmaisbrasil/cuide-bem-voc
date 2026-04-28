@@ -2,3 +2,6 @@ project_id = "wdifxfwemvkggwixwvja"
 
 [functions.register-admin-ip]
 verify_jwt = true
+
+[functions.severity-summary]
+verify_jwt = false
