@@ -1,0 +1,1 @@
+ALTER TABLE public.severity_articles ADD COLUMN IF NOT EXISTS summary TEXT;
