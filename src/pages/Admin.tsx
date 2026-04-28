@@ -752,6 +752,20 @@ const Admin = () => {
                           </a>
                         )}
                       </div>
+                      <div>
+                        <Label className="text-xs">Resumo explicativo (exibido no link "O que é depressão {sev}?")</Label>
+                        <Textarea
+                          rows={6}
+                          defaultValue={a.summary ?? ""}
+                          placeholder={`Resumo explicativo sobre depressão ${sev}. Termine com — Equipe Cuidar+`}
+                          onBlur={(e) => {
+                            if (e.target.value !== (a.summary ?? "")) updateArticle(a.id, { summary: e.target.value });
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Lembre-se de assinar como <strong>— Equipe Cuidar+</strong> ao final.
+                        </p>
+                      </div>
                       {a.source && (
                         <p className="text-xs text-muted-foreground">Fonte: {a.source}</p>
                       )}
