@@ -74,10 +74,15 @@ Deno.serve(async (req) => {
         typeof ageRaw === "number" && Number.isFinite(ageRaw) && ageRaw >= 1 && ageRaw <= 120
           ? Math.floor(ageRaw)
           : null;
+      const symptomsRaw = payload.symptoms;
+      const symptoms = Array.isArray(symptomsRaw)
+        ? symptomsRaw.filter((s: unknown) => typeof s === "string" && s.length <= 64).slice(0, 30)
+        : null;
       result = await supabase.from("test_events").insert({
         score: payload.score ?? null,
         severity: payload.severity ?? null,
         age,
+        symptoms,
         ip_hash: ipHash,
         country: geo.country,
         region: geo.region,
