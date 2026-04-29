@@ -156,7 +156,32 @@ const Admin = () => {
     const excludedAdmin = (allTests.length - tests.length) + (allClicks.length - clicks.length);
 
     const uniqueIps = new Set(tests.map((t: any) => t.ip_hash).filter(Boolean)).size;
-    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps, excludedAdmin });
+    setRawTests(tests);
+    setRawClicks(clicks);
+
+    // symptom frequency
+    const symMap = new Map<string, number>();
+    tenSymptoms.forEach((s) => symMap.set(s.id, 0));
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.symptoms)) return;
+      t.symptoms.forEach((id: string) => {
+        if (symMap.has(id)) symMap.set(id, (symMap.get(id) || 0) + 1);
+      });
+    });
+    const totalSymTests = tests.filter((t: any) => Array.isArray(t.symptoms) && t.symptoms.length > 0).length;
+    const symRows = tenSymptoms
+      .map((s) => {
+        const count = symMap.get(s.id) || 0;
+        return {
+          id: s.id,
+          name: s.title,
+          count,
+          pct: totalSymTests > 0 ? Math.round((count / totalSymTests) * 100) : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+    setBySymptom(symRows);
+
 
     // by day
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
