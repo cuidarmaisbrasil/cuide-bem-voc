@@ -37,12 +37,9 @@ function bucketFor(age: number | null | undefined) {
 
 function toCSV(rows: Record<string, any>[]): string {
   if (rows.length === 0) return "";
-  const headers = Array.from(
-    rows.reduce((set, r) => {
-      Object.keys(r).forEach((k) => set.add(k));
-      return set;
-    }, new Set<string>())
-  );
+  const headerSet = new Set<string>();
+  rows.forEach((r) => Object.keys(r).forEach((k) => headerSet.add(k)));
+  const headers = Array.from(headerSet);
   const escape = (v: any) => {
     if (v == null) return "";
     let s: string;
