@@ -117,10 +117,17 @@ export type Database = {
           created_at: string
           id: string
           ip_hash: string | null
+          landing_path: string | null
           link_type: string
+          referrer: string | null
           region: string | null
           target_id: string | null
           target_label: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           city?: string | null
@@ -128,10 +135,17 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          landing_path?: string | null
           link_type: string
+          referrer?: string | null
           region?: string | null
           target_id?: string | null
           target_label?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           city?: string | null
@@ -139,10 +153,17 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          landing_path?: string | null
           link_type?: string
+          referrer?: string | null
           region?: string | null
           target_id?: string | null
           target_label?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }
@@ -271,11 +292,18 @@ export type Database = {
           created_at: string
           id: string
           ip_hash: string | null
+          landing_path: string | null
+          referrer: string | null
           region: string | null
           score: number | null
           severity: string | null
           symptoms: string[] | null
           user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           age?: number | null
@@ -284,11 +312,18 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          landing_path?: string | null
+          referrer?: string | null
           region?: string | null
           score?: number | null
           severity?: string | null
           symptoms?: string[] | null
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           age?: number | null
@@ -297,11 +332,18 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          landing_path?: string | null
+          referrer?: string | null
           region?: string | null
           score?: number | null
           severity?: string | null
           symptoms?: string[] | null
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

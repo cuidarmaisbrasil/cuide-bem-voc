@@ -53,7 +53,20 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json();
-    const { type, payload } = body || {};
+    const { type, payload, attribution } = body || {};
+
+    const attr = attribution && typeof attribution === "object" ? attribution : {};
+    const trim = (v: unknown) =>
+      typeof v === "string" && v.length > 0 ? v.slice(0, 200) : null;
+    const attrCols = {
+      utm_source: trim(attr.utm_source),
+      utm_medium: trim(attr.utm_medium),
+      utm_campaign: trim(attr.utm_campaign),
+      utm_content: trim(attr.utm_content),
+      utm_term: trim(attr.utm_term),
+      referrer: trim(attr.referrer),
+      landing_path: trim(attr.landing_path),
+    };
 
     if (!type || !payload) {
       return new Response(JSON.stringify({ error: "Missing type or payload" }), {
@@ -88,6 +101,7 @@ Deno.serve(async (req) => {
         region: geo.region,
         city: geo.city,
         user_agent: ua.slice(0, 500),
+        ...attrCols,
       });
     } else if (type === "click") {
       result = await supabase.from("link_clicks").insert({
@@ -98,6 +112,7 @@ Deno.serve(async (req) => {
         country: geo.country,
         region: geo.region,
         city: geo.city,
+        ...attrCols,
       });
     } else {
       return new Response(JSON.stringify({ error: "Unknown type" }), {
