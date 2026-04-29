@@ -48,6 +48,9 @@ const Admin = () => {
   const [severityByCity, setSeverityByCity] = useState<any[]>([]);
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
+  const [bySymptom, setBySymptom] = useState<any[]>([]);
+  const [rawTests, setRawTests] = useState<any[]>([]);
+  const [rawClicks, setRawClicks] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<any[]>([]);
   const [adminIps, setAdminIps] = useState<any[]>([]);
