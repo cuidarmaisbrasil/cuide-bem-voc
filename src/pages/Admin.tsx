@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, LogOut, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, LogOut, Plus, Trash2 } from "lucide-react";
+import { tenSymptoms } from "@/data/symptoms";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -33,6 +34,43 @@ function bucketFor(age: number | null | undefined) {
   return AGE_BUCKETS.find((b) => age >= b.min && age <= b.max)?.label ?? null;
 }
 
+
+function toCSV(rows: Record<string, any>[]): string {
+  if (rows.length === 0) return "";
+  const headerSet = new Set<string>();
+  rows.forEach((r) => Object.keys(r).forEach((k) => headerSet.add(k)));
+  const headers = Array.from(headerSet);
+  const escape = (v: any) => {
+    if (v == null) return "";
+    let s: string;
+    if (Array.isArray(v)) s = v.join("|");
+    else if (typeof v === "object") s = JSON.stringify(v);
+    else s = String(v);
+    if (/[",\n;]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+    return s;
+  };
+  const lines = [headers.join(",")];
+  for (const row of rows) lines.push(headers.map((h) => escape(row[h])).join(","));
+  return lines.join("\n");
+}
+
+function downloadCSV(filename: string, rows: Record<string, any>[]) {
+  if (rows.length === 0) {
+    toast.error("Sem dados para exportar");
+    return;
+  }
+  // BOM for Excel UTF-8 compatibility; R reads UTF-8 CSV natively
+  const blob = new Blob(["\ufeff" + toCSV(rows)], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -47,6 +85,9 @@ const Admin = () => {
   const [severityByCity, setSeverityByCity] = useState<any[]>([]);
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
+  const [bySymptom, setBySymptom] = useState<any[]>([]);
+  const [rawTests, setRawTests] = useState<any[]>([]);
+  const [rawClicks, setRawClicks] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [feedback, setFeedback] = useState<any[]>([]);
   const [adminIps, setAdminIps] = useState<any[]>([]);
@@ -153,6 +194,32 @@ const Admin = () => {
 
     const uniqueIps = new Set(tests.map((t: any) => t.ip_hash).filter(Boolean)).size;
     setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps, excludedAdmin });
+    setRawTests(tests);
+    setRawClicks(clicks);
+
+    // symptom frequency
+    const symMap = new Map<string, number>();
+    tenSymptoms.forEach((s) => symMap.set(s.id, 0));
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.symptoms)) return;
+      t.symptoms.forEach((id: string) => {
+        if (symMap.has(id)) symMap.set(id, (symMap.get(id) || 0) + 1);
+      });
+    });
+    const totalSymTests = tests.filter((t: any) => Array.isArray(t.symptoms) && t.symptoms.length > 0).length;
+    const symRows = tenSymptoms
+      .map((s) => {
+        const count = symMap.get(s.id) || 0;
+        return {
+          id: s.id,
+          name: s.title,
+          count,
+          pct: totalSymTests > 0 ? Math.round((count / totalSymTests) * 100) : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+    setBySymptom(symRows);
+
 
     // by day
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
@@ -372,6 +439,99 @@ const Admin = () => {
             )}
 
             <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="font-semibold">Exportar dados (CSV)</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                    Arquivos UTF-8 prontos para análise em R, Python, SPSS ou Excel. Janela: últimos 30 dias.
+                    Em R use <code className="text-[11px] bg-muted px-1 rounded">readr::read_csv("arquivo.csv")</code>.
+                    Sintomas vêm separados por <code className="text-[11px] bg-muted px-1 rounded">|</code> (ex.: <code className="text-[11px] bg-muted px-1 rounded">humor|sono|fadiga</code>).
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-tests-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests.map((t) => ({
+                        id: t.id,
+                        created_at: t.created_at,
+                        score: t.score,
+                        severity: t.severity,
+                        age: t.age,
+                        age_bucket: bucketFor(t.age),
+                        country: t.country,
+                        region: t.region,
+                        city: t.city,
+                        symptoms: Array.isArray(t.symptoms) ? t.symptoms : [],
+                        symptom_count: Array.isArray(t.symptoms) ? t.symptoms.length : 0,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Testes ({rawTests.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-clicks-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawClicks.map((c) => ({
+                        id: c.id,
+                        created_at: c.created_at,
+                        link_type: c.link_type,
+                        target_id: c.target_id,
+                        target_label: c.target_label,
+                        country: c.country,
+                        region: c.region,
+                        city: c.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Cliques ({rawClicks.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-feedback-${format(new Date(), "yyyyMMdd")}.csv`,
+                      feedback.map((f) => ({
+                        id: f.id,
+                        created_at: f.created_at,
+                        message: f.message,
+                        severity: f.severity,
+                        score: f.score,
+                        country: f.country,
+                        region: f.region,
+                        city: f.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Feedback ({feedback.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-sintomas-${format(new Date(), "yyyyMMdd")}.csv`,
+                      bySymptom.map((s) => ({ symptom_id: s.id, symptom: s.name, count: s.count, pct: s.pct }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Sintomas (agregado)
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-4">
               <h3 className="font-semibold mb-3">Atividade diária (30 dias)</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={byDay}>
@@ -476,6 +636,30 @@ const Admin = () => {
                 </BarChart>
               </ResponsiveContainer>
               {severityByCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-1">Sintomas mais frequentes (checklist DSM-5)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Frequência com que cada sintoma foi marcado entre os {rawTests.filter((t) => Array.isArray(t.symptoms) && t.symptoms.length > 0).length} testes com checklist preenchido nos últimos 30 dias.
+              </p>
+              <ResponsiveContainer width="100%" height={Math.max(280, bySymptom.length * 32)}>
+                <BarChart data={bySymptom} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={180} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v} (${p?.payload?.pct ?? 0}%)`, "Marcações"]}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {bySymptom.every((s) => s.count === 0) && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhum sintoma registrado ainda. A coleta começa após este deploy — testes anteriores não enviavam o checklist.
+                </p>
+              )}
             </Card>
           </TabsContent>
 
