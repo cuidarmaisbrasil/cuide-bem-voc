@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, LogOut, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, LogOut, Plus, Trash2 } from "lucide-react";
+import { tenSymptoms } from "@/data/symptoms";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid, Legend,
