@@ -104,6 +104,11 @@ const Index = () => {
               Em emergência ligue <a className="text-destructive font-semibold" href="tel:188">CVV 188</a> ou{" "}
               <a className="text-destructive font-semibold" href="tel:192">SAMU 192</a>.
             </p>
+            <p className="pt-1">
+              <a className="text-primary hover:underline" href="/privacidade">Política de Privacidade</a>
+              <span className="mx-2">·</span>
+              <a className="text-primary hover:underline" href="/termos">Termos de Uso</a>
+            </p>
           </div>
 
           <div className="border-t border-border/60 pt-6">
