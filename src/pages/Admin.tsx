@@ -156,6 +156,7 @@ const Admin = () => {
     const excludedAdmin = (allTests.length - tests.length) + (allClicks.length - clicks.length);
 
     const uniqueIps = new Set(tests.map((t: any) => t.ip_hash).filter(Boolean)).size;
+    setStats({ totalTests: tests.length, totalClicks: clicks.length, uniqueIps, excludedAdmin });
     setRawTests(tests);
     setRawClicks(clicks);
 
