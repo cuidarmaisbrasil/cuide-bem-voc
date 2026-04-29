@@ -36,7 +36,7 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
   const interpretation = interpretPhq9(score);
 
   useEffect(() => {
-    track({ type: "test", payload: { score, severity: interpretation.level, age: age ?? undefined } });
+    track({ type: "test", payload: { score, severity: interpretation.level, age: age ?? undefined, symptoms: answers.symptoms } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const symptomEval = interpretSymptoms(answers.symptoms);
