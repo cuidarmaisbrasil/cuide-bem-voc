@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { gaEvent } from "@/lib/analytics";
 
 type TrackPayload =
-  | { type: "test"; payload: { score: number; severity: string; age?: number } }
+  | { type: "test"; payload: { score: number; severity: string; age?: number; symptoms?: string[] } }
   | {
       type: "click";
       payload: { link_type: "professional" | "sus" | "cvv" | "samu" | "platform" | "donation"; target_id?: string; target_label?: string };
