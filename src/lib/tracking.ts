@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { gaEvent } from "@/lib/analytics";
+import { getAttribution } from "@/lib/attribution";
 
 type TrackPayload =
   | { type: "test"; payload: { score: number; severity: string; age?: number; symptoms?: string[] } }
@@ -50,7 +51,10 @@ function mirrorToGa(event: TrackPayload) {
 export async function track(event: TrackPayload) {
   mirrorToGa(event);
   try {
-    await supabase.functions.invoke("track-event", { body: event });
+    const attribution = getAttribution();
+    await supabase.functions.invoke("track-event", {
+      body: { ...event, attribution },
+    });
   } catch (e) {
     // never break UX on tracking failures
     console.warn("tracking failed", e);
