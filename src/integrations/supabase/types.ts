@@ -274,6 +274,7 @@ export type Database = {
           region: string | null
           score: number | null
           severity: string | null
+          symptoms: string[] | null
           user_agent: string | null
         }
         Insert: {
@@ -286,6 +287,7 @@ export type Database = {
           region?: string | null
           score?: number | null
           severity?: string | null
+          symptoms?: string[] | null
           user_agent?: string | null
         }
         Update: {
@@ -298,6 +300,7 @@ export type Database = {
           region?: string | null
           score?: number | null
           severity?: string | null
+          symptoms?: string[] | null
           user_agent?: string | null
         }
         Relationships: []
