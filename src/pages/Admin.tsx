@@ -544,6 +544,30 @@ const Admin = () => {
               </ResponsiveContainer>
               {severityByCity.length === 0 && <p className="text-sm text-muted-foreground">Sem dados de cidade ainda.</p>}
             </Card>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-1">Sintomas mais frequentes (checklist DSM-5)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Frequência com que cada sintoma foi marcado entre os {rawTests.filter((t) => Array.isArray(t.symptoms) && t.symptoms.length > 0).length} testes com checklist preenchido nos últimos 30 dias.
+              </p>
+              <ResponsiveContainer width="100%" height={Math.max(280, bySymptom.length * 32)}>
+                <BarChart data={bySymptom} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={180} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v} (${p?.payload?.pct ?? 0}%)`, "Marcações"]}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {bySymptom.every((s) => s.count === 0) && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhum sintoma registrado ainda. A coleta começa após este deploy — testes anteriores não enviavam o checklist.
+                </p>
+              )}
+            </Card>
           </TabsContent>
 
           <TabsContent value="links" className="space-y-4 pt-4">
