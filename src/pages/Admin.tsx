@@ -34,6 +34,46 @@ function bucketFor(age: number | null | undefined) {
   return AGE_BUCKETS.find((b) => age >= b.min && age <= b.max)?.label ?? null;
 }
 
+
+function toCSV(rows: Record<string, any>[]): string {
+  if (rows.length === 0) return "";
+  const headers = Array.from(
+    rows.reduce((set, r) => {
+      Object.keys(r).forEach((k) => set.add(k));
+      return set;
+    }, new Set<string>())
+  );
+  const escape = (v: any) => {
+    if (v == null) return "";
+    let s: string;
+    if (Array.isArray(v)) s = v.join("|");
+    else if (typeof v === "object") s = JSON.stringify(v);
+    else s = String(v);
+    if (/[",\n;]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+    return s;
+  };
+  const lines = [headers.join(",")];
+  for (const row of rows) lines.push(headers.map((h) => escape(row[h])).join(","));
+  return lines.join("\n");
+}
+
+function downloadCSV(filename: string, rows: Record<string, any>[]) {
+  if (rows.length === 0) {
+    toast.error("Sem dados para exportar");
+    return;
+  }
+  // BOM for Excel UTF-8 compatibility; R reads UTF-8 CSV natively
+  const blob = new Blob(["\ufeff" + toCSV(rows)], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
