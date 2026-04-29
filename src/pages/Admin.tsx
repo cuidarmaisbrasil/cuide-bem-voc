@@ -439,6 +439,99 @@ const Admin = () => {
             )}
 
             <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="font-semibold">Exportar dados (CSV)</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                    Arquivos UTF-8 prontos para análise em R, Python, SPSS ou Excel. Janela: últimos 30 dias.
+                    Em R use <code className="text-[11px] bg-muted px-1 rounded">readr::read_csv("arquivo.csv")</code>.
+                    Sintomas vêm separados por <code className="text-[11px] bg-muted px-1 rounded">|</code> (ex.: <code className="text-[11px] bg-muted px-1 rounded">humor|sono|fadiga</code>).
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-tests-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests.map((t) => ({
+                        id: t.id,
+                        created_at: t.created_at,
+                        score: t.score,
+                        severity: t.severity,
+                        age: t.age,
+                        age_bucket: bucketFor(t.age),
+                        country: t.country,
+                        region: t.region,
+                        city: t.city,
+                        symptoms: Array.isArray(t.symptoms) ? t.symptoms : [],
+                        symptom_count: Array.isArray(t.symptoms) ? t.symptoms.length : 0,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Testes ({rawTests.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-clicks-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawClicks.map((c) => ({
+                        id: c.id,
+                        created_at: c.created_at,
+                        link_type: c.link_type,
+                        target_id: c.target_id,
+                        target_label: c.target_label,
+                        country: c.country,
+                        region: c.region,
+                        city: c.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Cliques ({rawClicks.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-feedback-${format(new Date(), "yyyyMMdd")}.csv`,
+                      feedback.map((f) => ({
+                        id: f.id,
+                        created_at: f.created_at,
+                        message: f.message,
+                        severity: f.severity,
+                        score: f.score,
+                        country: f.country,
+                        region: f.region,
+                        city: f.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Feedback ({feedback.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-sintomas-${format(new Date(), "yyyyMMdd")}.csv`,
+                      bySymptom.map((s) => ({ symptom_id: s.id, symptom: s.name, count: s.count, pct: s.pct }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Sintomas (agregado)
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-4">
               <h3 className="font-semibold mb-3">Atividade diária (30 dias)</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={byDay}>
