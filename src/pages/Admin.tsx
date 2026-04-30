@@ -841,6 +841,8 @@ const Admin = () => {
               )}
             </Card>
           </TabsContent>
+
+          <TabsContent value="links" className="space-y-4 pt-4">
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="p-4">
                 <h3 className="font-semibold mb-3">Cliques por tipo</h3>
