@@ -715,9 +715,132 @@ const Admin = () => {
                 </p>
               )}
             </Card>
-          </TabsContent>
 
-          <TabsContent value="links" className="space-y-4 pt-4">
+            <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
+                <div>
+                  <h3 className="font-semibold">Origem dos testes (atribuição)</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                    De onde vêm os usuários que completam o teste. Use links com <code className="text-[11px] bg-muted px-1 rounded">?utm_source=instagram&utm_medium=bio&utm_campaign=lancamento</code> para rastrear cada canal.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-atribuicao-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests.map((t) => ({
+                        id: t.id,
+                        created_at: t.created_at,
+                        severity: t.severity,
+                        utm_source: t.utm_source,
+                        utm_medium: t.utm_medium,
+                        utm_campaign: t.utm_campaign,
+                        utm_content: t.utm_content,
+                        utm_term: t.utm_term,
+                        referrer: t.referrer,
+                        landing_path: t.landing_path,
+                        country: t.country,
+                        city: t.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Exportar atribuição
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top fontes (utm_source)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={bySource} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top meios (utm_medium)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byMedium} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--success))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top campanhas (utm_campaign)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byCampaign} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--warning))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Referrers (sem UTM)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byReferrer} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--muted-foreground))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="text-sm font-medium mb-2">Testes vs cliques por fonte</h4>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Fonte</TableHead>
+                        <TableHead className="text-right">Testes</TableHead>
+                        <TableHead className="text-right">Cliques (saída)</TableHead>
+                        <TableHead className="text-right">Cliques/teste</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sourceConv.map((r, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-medium">{r.name}</TableCell>
+                          <TableCell className="text-right">{r.tests}</TableCell>
+                          <TableCell className="text-right">{r.clicks}</TableCell>
+                          <TableCell className="text-right">{r.tests > 0 ? (r.clicks / r.tests).toFixed(2) : "—"}</TableCell>
+                        </TableRow>
+                      ))}
+                      {sourceConv.length === 0 && (
+                        <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Sem dados de atribuição ainda.</TableCell></TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              {bySource.every((s) => s.name === "(direto/desconhecido)") && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  Nenhum UTM detectado ainda. Compartilhe links com parâmetros <code className="text-[11px] bg-muted px-1 rounded">utm_source</code>, <code className="text-[11px] bg-muted px-1 rounded">utm_medium</code> e <code className="text-[11px] bg-muted px-1 rounded">utm_campaign</code> para ver a divisão por canal.
+                </p>
+              )}
+            </Card>
+          </TabsContent>
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="p-4">
                 <h3 className="font-semibold mb-3">Cliques por tipo</h3>
