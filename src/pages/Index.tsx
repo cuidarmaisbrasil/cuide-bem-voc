@@ -8,6 +8,8 @@ import { AgeGate } from "@/components/AgeGate";
 import { ReliabilityBadge } from "@/components/ReliabilityBadge";
 import { Card } from "@/components/ui/card";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
+import { interpretPhq9 } from "@/data/symptoms";
+import { track } from "@/lib/tracking";
 
 type Stage = "intro" | "age" | "test" | "result";
 
@@ -23,6 +25,17 @@ const Index = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const handleComplete = (a: TestAnswers) => {
+    const score = a.phq9.reduce((sum, value) => sum + value, 0);
+    const interpretation = interpretPhq9(score);
+    track({
+      type: "test",
+      payload: {
+        score,
+        severity: interpretation.level,
+        age: age ?? undefined,
+        symptoms: a.symptoms,
+      },
+    });
     setAnswers(a);
     setStage("result");
     window.scrollTo({ top: 0, behavior: "smooth" });

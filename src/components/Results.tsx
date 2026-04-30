@@ -35,10 +35,6 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
   const score = useMemo(() => answers.phq9.reduce((a, b) => a + b, 0), [answers.phq9]);
   const interpretation = interpretPhq9(score);
 
-  useEffect(() => {
-    track({ type: "test", payload: { score, severity: interpretation.level, age: age ?? undefined, symptoms: answers.symptoms } });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const symptomEval = interpretSymptoms(answers.symptoms);
   const symptomCount = answers.symptoms.length;
   const hasSuicidalThoughts = answers.symptoms.includes("morte") || answers.phq9[8] >= 1;
