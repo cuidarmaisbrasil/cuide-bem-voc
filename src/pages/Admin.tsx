@@ -225,8 +225,57 @@ const Admin = () => {
       .sort((a, b) => b.count - a.count);
     setBySymptom(symRows);
 
+    // attribution aggregations
+    const aggBy = (field: string, items: any[]) => {
+      const m = new Map<string, number>();
+      items.forEach((x: any) => {
+        const v = (x[field] && String(x[field]).trim()) || "(direto/desconhecido)";
+        m.set(v, (m.get(v) || 0) + 1);
+      });
+      return Array.from(m.entries())
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10);
+    };
+    setBySource(aggBy("utm_source", tests));
+    setByMedium(aggBy("utm_medium", tests));
+    setByCampaign(aggBy("utm_campaign", tests));
 
-    // by day
+    // referrer host (only when no utm_source)
+    const refMap = new Map<string, number>();
+    tests.forEach((t: any) => {
+      if (t.utm_source) return;
+      let host = "(direto)";
+      if (t.referrer) {
+        try { host = new URL(t.referrer).hostname.replace(/^www\./, ""); } catch { host = t.referrer.slice(0, 60); }
+      }
+      refMap.set(host, (refMap.get(host) || 0) + 1);
+    });
+    setByReferrer(
+      Array.from(refMap.entries())
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10)
+    );
+
+    // source × clicks (conversion proxy: tests vs clicks per source)
+    const srcTests = new Map<string, number>();
+    const srcClicks = new Map<string, number>();
+    tests.forEach((t: any) => {
+      const s = (t.utm_source && String(t.utm_source).trim()) || "(direto)";
+      srcTests.set(s, (srcTests.get(s) || 0) + 1);
+    });
+    clicks.forEach((c: any) => {
+      const s = (c.utm_source && String(c.utm_source).trim()) || "(direto)";
+      srcClicks.set(s, (srcClicks.get(s) || 0) + 1);
+    });
+    const srcKeys = Array.from(new Set([...srcTests.keys(), ...srcClicks.keys()]));
+    setSourceConv(
+      srcKeys
+        .map((name) => ({ name, tests: srcTests.get(name) || 0, clicks: srcClicks.get(name) || 0 }))
+        .sort((a, b) => (b.tests + b.clicks) - (a.tests + a.clicks))
+        .slice(0, 10)
+    );
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
     for (let i = 29; i >= 0; i--) {
       const d = format(subDays(new Date(), i), "dd/MM");
