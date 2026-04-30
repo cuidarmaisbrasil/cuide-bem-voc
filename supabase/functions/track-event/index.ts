@@ -91,6 +91,12 @@ Deno.serve(async (req) => {
       const symptoms = Array.isArray(symptomsRaw)
         ? symptomsRaw.filter((s: unknown) => typeof s === "string" && s.length <= 64).slice(0, 30)
         : null;
+      console.log("track-event/test", {
+        hasAge: age !== null,
+        symptomsCount: symptoms?.length ?? 0,
+        utm_source: attrCols.utm_source,
+        referrer: attrCols.referrer,
+      });
       result = await supabase.from("test_events").insert({
         score: payload.score ?? null,
         severity: payload.severity ?? null,
