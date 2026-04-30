@@ -86,6 +86,11 @@ const Admin = () => {
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [bySymptom, setBySymptom] = useState<any[]>([]);
+  const [bySource, setBySource] = useState<any[]>([]);
+  const [byMedium, setByMedium] = useState<any[]>([]);
+  const [byCampaign, setByCampaign] = useState<any[]>([]);
+  const [byReferrer, setByReferrer] = useState<any[]>([]);
+  const [sourceConv, setSourceConv] = useState<any[]>([]);
   const [rawTests, setRawTests] = useState<any[]>([]);
   const [rawClicks, setRawClicks] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
