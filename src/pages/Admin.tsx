@@ -86,6 +86,11 @@ const Admin = () => {
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [bySymptom, setBySymptom] = useState<any[]>([]);
+  const [bySource, setBySource] = useState<any[]>([]);
+  const [byMedium, setByMedium] = useState<any[]>([]);
+  const [byCampaign, setByCampaign] = useState<any[]>([]);
+  const [byReferrer, setByReferrer] = useState<any[]>([]);
+  const [sourceConv, setSourceConv] = useState<any[]>([]);
   const [rawTests, setRawTests] = useState<any[]>([]);
   const [rawClicks, setRawClicks] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -220,8 +225,57 @@ const Admin = () => {
       .sort((a, b) => b.count - a.count);
     setBySymptom(symRows);
 
+    // attribution aggregations
+    const aggBy = (field: string, items: any[]) => {
+      const m = new Map<string, number>();
+      items.forEach((x: any) => {
+        const v = (x[field] && String(x[field]).trim()) || "(direto/desconhecido)";
+        m.set(v, (m.get(v) || 0) + 1);
+      });
+      return Array.from(m.entries())
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10);
+    };
+    setBySource(aggBy("utm_source", tests));
+    setByMedium(aggBy("utm_medium", tests));
+    setByCampaign(aggBy("utm_campaign", tests));
 
-    // by day
+    // referrer host (only when no utm_source)
+    const refMap = new Map<string, number>();
+    tests.forEach((t: any) => {
+      if (t.utm_source) return;
+      let host = "(direto)";
+      if (t.referrer) {
+        try { host = new URL(t.referrer).hostname.replace(/^www\./, ""); } catch { host = t.referrer.slice(0, 60); }
+      }
+      refMap.set(host, (refMap.get(host) || 0) + 1);
+    });
+    setByReferrer(
+      Array.from(refMap.entries())
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10)
+    );
+
+    // source × clicks (conversion proxy: tests vs clicks per source)
+    const srcTests = new Map<string, number>();
+    const srcClicks = new Map<string, number>();
+    tests.forEach((t: any) => {
+      const s = (t.utm_source && String(t.utm_source).trim()) || "(direto)";
+      srcTests.set(s, (srcTests.get(s) || 0) + 1);
+    });
+    clicks.forEach((c: any) => {
+      const s = (c.utm_source && String(c.utm_source).trim()) || "(direto)";
+      srcClicks.set(s, (srcClicks.get(s) || 0) + 1);
+    });
+    const srcKeys = Array.from(new Set([...srcTests.keys(), ...srcClicks.keys()]));
+    setSourceConv(
+      srcKeys
+        .map((name) => ({ name, tests: srcTests.get(name) || 0, clicks: srcClicks.get(name) || 0 }))
+        .sort((a, b) => (b.tests + b.clicks) - (a.tests + a.clicks))
+        .slice(0, 10)
+    );
     const dayMap = new Map<string, { date: string; tests: number; clicks: number }>();
     for (let i = 29; i >= 0; i--) {
       const d = format(subDays(new Date(), i), "dd/MM");
@@ -658,6 +712,131 @@ const Admin = () => {
               {bySymptom.every((s) => s.count === 0) && (
                 <p className="text-sm text-muted-foreground">
                   Nenhum sintoma registrado ainda. A coleta começa após este deploy — testes anteriores não enviavam o checklist.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
+                <div>
+                  <h3 className="font-semibold">Origem dos testes (atribuição)</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                    De onde vêm os usuários que completam o teste. Use links com <code className="text-[11px] bg-muted px-1 rounded">?utm_source=instagram&utm_medium=bio&utm_campaign=lancamento</code> para rastrear cada canal.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-atribuicao-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests.map((t) => ({
+                        id: t.id,
+                        created_at: t.created_at,
+                        severity: t.severity,
+                        utm_source: t.utm_source,
+                        utm_medium: t.utm_medium,
+                        utm_campaign: t.utm_campaign,
+                        utm_content: t.utm_content,
+                        utm_term: t.utm_term,
+                        referrer: t.referrer,
+                        landing_path: t.landing_path,
+                        country: t.country,
+                        city: t.city,
+                      }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> Exportar atribuição
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top fontes (utm_source)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={bySource} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top meios (utm_medium)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byMedium} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--success))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Top campanhas (utm_campaign)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byCampaign} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--warning))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Referrers (sem UTM)</h4>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={byReferrer} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                      <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="value" fill="hsl(var(--muted-foreground))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="text-sm font-medium mb-2">Testes vs cliques por fonte</h4>
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Fonte</TableHead>
+                        <TableHead className="text-right">Testes</TableHead>
+                        <TableHead className="text-right">Cliques (saída)</TableHead>
+                        <TableHead className="text-right">Cliques/teste</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sourceConv.map((r, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="font-medium">{r.name}</TableCell>
+                          <TableCell className="text-right">{r.tests}</TableCell>
+                          <TableCell className="text-right">{r.clicks}</TableCell>
+                          <TableCell className="text-right">{r.tests > 0 ? (r.clicks / r.tests).toFixed(2) : "—"}</TableCell>
+                        </TableRow>
+                      ))}
+                      {sourceConv.length === 0 && (
+                        <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground">Sem dados de atribuição ainda.</TableCell></TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+
+              {bySource.every((s) => s.name === "(direto/desconhecido)") && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  Nenhum UTM detectado ainda. Compartilhe links com parâmetros <code className="text-[11px] bg-muted px-1 rounded">utm_source</code>, <code className="text-[11px] bg-muted px-1 rounded">utm_medium</code> e <code className="text-[11px] bg-muted px-1 rounded">utm_campaign</code> para ver a divisão por canal.
                 </p>
               )}
             </Card>
