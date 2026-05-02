@@ -86,6 +86,9 @@ const Admin = () => {
   const [topLinks, setTopLinks] = useState<any[]>([]);
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [bySymptom, setBySymptom] = useState<any[]>([]);
+  const [phq9ByQuestion, setPhq9ByQuestion] = useState<any[]>([]);
+  const [functionalImpactDist, setFunctionalImpactDist] = useState<any[]>([]);
+  const [phq9Stats, setPhq9Stats] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
   const [bySource, setBySource] = useState<any[]>([]);
   const [byMedium, setByMedium] = useState<any[]>([]);
   const [byCampaign, setByCampaign] = useState<any[]>([]);
@@ -224,6 +227,55 @@ const Admin = () => {
       })
       .sort((a, b) => b.count - a.count);
     setBySymptom(symRows);
+
+    // PHQ-9 por questão (média 0-3)
+    const phq9Labels = [
+      "Q1 · Pouco interesse/prazer",
+      "Q2 · Para baixo/sem perspectiva",
+      "Q3 · Sono",
+      "Q4 · Cansaço/pouca energia",
+      "Q5 · Apetite",
+      "Q6 · Sentir-se mal consigo",
+      "Q7 · Concentração",
+      "Q8 · Lentidão/agitação",
+      "Q9 · Pensamentos de auto-dano",
+    ];
+    const phq9Sums = Array(9).fill(0);
+    const phq9Counts = Array(9).fill(0);
+    let totalScoreSum = 0;
+    let totalScoreCount = 0;
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.phq9_answers) || t.phq9_answers.length !== 9) return;
+      let rowSum = 0;
+      let valid = true;
+      t.phq9_answers.forEach((v: any, i: number) => {
+        if (typeof v !== "number") { valid = false; return; }
+        phq9Sums[i] += v;
+        phq9Counts[i] += 1;
+        rowSum += v;
+      });
+      if (valid) { totalScoreSum += rowSum; totalScoreCount += 1; }
+    });
+    setPhq9ByQuestion(
+      phq9Labels.map((name, i) => ({
+        name,
+        avg: phq9Counts[i] > 0 ? +(phq9Sums[i] / phq9Counts[i]).toFixed(2) : 0,
+        responses: phq9Counts[i],
+      }))
+    );
+    setPhq9Stats({
+      avg: totalScoreCount > 0 ? +(totalScoreSum / totalScoreCount).toFixed(1) : 0,
+      count: totalScoreCount,
+    });
+
+    // Distribuição do impacto funcional (0-3)
+    const fiLabels = ["Nada difícil", "Um pouco difícil", "Muito difícil", "Extremamente difícil"];
+    const fiCounts = [0, 0, 0, 0];
+    tests.forEach((t: any) => {
+      const v = t.functional_impact;
+      if (typeof v === "number" && v >= 0 && v <= 3) fiCounts[v] += 1;
+    });
+    setFunctionalImpactDist(fiLabels.map((name, i) => ({ name, value: fiCounts[i] })));
 
     // attribution aggregations
     const aggBy = (field: string, items: any[]) => {
@@ -713,6 +765,86 @@ const Admin = () => {
                 <p className="text-sm text-muted-foreground">
                   Nenhum sintoma registrado ainda. A coleta começa após este deploy — testes anteriores não enviavam o checklist.
                 </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
+                <div>
+                  <h3 className="font-semibold">PHQ-9 — média por questão</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Média da resposta (0 = nenhuma vez · 3 = quase todos os dias) entre {phq9Stats.count} testes com PHQ-9 nos últimos 30 dias.
+                    Score médio total: <strong className="text-foreground">{phq9Stats.avg}</strong>/27.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-phq9-respostas-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests
+                        .filter((t) => Array.isArray(t.phq9_answers) && t.phq9_answers.length === 9)
+                        .map((t) => ({
+                          id: t.id,
+                          created_at: t.created_at,
+                          age: t.age,
+                          severity: t.severity,
+                          score: t.score,
+                          functional_impact: t.functional_impact,
+                          q1: t.phq9_answers[0],
+                          q2: t.phq9_answers[1],
+                          q3: t.phq9_answers[2],
+                          q4: t.phq9_answers[3],
+                          q5: t.phq9_answers[4],
+                          q6: t.phq9_answers[5],
+                          q7: t.phq9_answers[6],
+                          q8: t.phq9_answers[7],
+                          q9: t.phq9_answers[8],
+                          country: t.country,
+                          city: t.city,
+                        }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> PHQ-9 detalhado
+                </Button>
+              </div>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={phq9ByQuestion} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" domain={[0, 3]} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={200} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v} (n=${p?.payload?.responses ?? 0})`, "Média"]}
+                  />
+                  <Bar dataKey="avg" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {phq9Stats.count === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma resposta detalhada de PHQ-9 ainda. A coleta começa após este deploy — testes anteriores guardavam apenas o score total.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-1">Impacto funcional (critério B do DSM-5)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                O quanto os sintomas dificultam o trabalho, tarefas em casa ou relacionamentos.
+              </p>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={functionalImpactDist} margin={{ left: 8, right: 16, top: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                  <Bar dataKey="value" fill="hsl(var(--warning))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {functionalImpactDist.every((d) => d.value === 0) && (
+                <p className="text-sm text-muted-foreground">Sem dados de impacto funcional ainda.</p>
               )}
             </Card>
 

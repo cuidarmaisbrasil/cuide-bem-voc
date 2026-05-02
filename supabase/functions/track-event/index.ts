@@ -91,9 +91,20 @@ Deno.serve(async (req) => {
       const symptoms = Array.isArray(symptomsRaw)
         ? symptomsRaw.filter((s: unknown) => typeof s === "string" && s.length <= 64).slice(0, 30)
         : null;
+      const phq9Raw = payload.phq9_answers;
+      const phq9Answers = Array.isArray(phq9Raw) && phq9Raw.length === 9 &&
+        phq9Raw.every((v: unknown) => typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 3)
+        ? phq9Raw.map((v: number) => Math.floor(v))
+        : null;
+      const fiRaw = payload.functional_impact;
+      const functionalImpact = typeof fiRaw === "number" && Number.isFinite(fiRaw) && fiRaw >= 0 && fiRaw <= 3
+        ? Math.floor(fiRaw)
+        : null;
       console.log("track-event/test", {
         hasAge: age !== null,
         symptomsCount: symptoms?.length ?? 0,
+        hasPhq9: phq9Answers !== null,
+        functionalImpact,
         utm_source: attrCols.utm_source,
         referrer: attrCols.referrer,
       });
@@ -102,6 +113,8 @@ Deno.serve(async (req) => {
         severity: payload.severity ?? null,
         age,
         symptoms,
+        phq9_answers: phq9Answers,
+        functional_impact: functionalImpact,
         ip_hash: ipHash,
         country: geo.country,
         region: geo.region,

@@ -34,6 +34,8 @@ const Index = () => {
         severity: interpretation.level,
         age: age ?? undefined,
         symptoms: a.symptoms,
+        phq9_answers: a.phq9,
+        functional_impact: a.functionalImpact,
       },
     });
     setAnswers(a);

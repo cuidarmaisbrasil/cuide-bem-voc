@@ -290,9 +290,11 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          functional_impact: number | null
           id: string
           ip_hash: string | null
           landing_path: string | null
+          phq9_answers: number[] | null
           referrer: string | null
           region: string | null
           score: number | null
@@ -310,9 +312,11 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          functional_impact?: number | null
           id?: string
           ip_hash?: string | null
           landing_path?: string | null
+          phq9_answers?: number[] | null
           referrer?: string | null
           region?: string | null
           score?: number | null
@@ -330,9 +334,11 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          functional_impact?: number | null
           id?: string
           ip_hash?: string | null
           landing_path?: string | null
+          phq9_answers?: number[] | null
           referrer?: string | null
           region?: string | null
           score?: number | null
