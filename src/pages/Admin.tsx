@@ -771,6 +771,86 @@ const Admin = () => {
             <Card className="p-4">
               <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
                 <div>
+                  <h3 className="font-semibold">PHQ-9 — média por questão</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Média da resposta (0 = nenhuma vez · 3 = quase todos os dias) entre {phq9Stats.count} testes com PHQ-9 nos últimos 30 dias.
+                    Score médio total: <strong className="text-foreground">{phq9Stats.avg}</strong>/27.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    downloadCSV(
+                      `cuidar-phq9-respostas-${format(new Date(), "yyyyMMdd")}.csv`,
+                      rawTests
+                        .filter((t) => Array.isArray(t.phq9_answers) && t.phq9_answers.length === 9)
+                        .map((t) => ({
+                          id: t.id,
+                          created_at: t.created_at,
+                          age: t.age,
+                          severity: t.severity,
+                          score: t.score,
+                          functional_impact: t.functional_impact,
+                          q1: t.phq9_answers[0],
+                          q2: t.phq9_answers[1],
+                          q3: t.phq9_answers[2],
+                          q4: t.phq9_answers[3],
+                          q5: t.phq9_answers[4],
+                          q6: t.phq9_answers[5],
+                          q7: t.phq9_answers[6],
+                          q8: t.phq9_answers[7],
+                          q9: t.phq9_answers[8],
+                          country: t.country,
+                          city: t.city,
+                        }))
+                    )
+                  }
+                >
+                  <Download className="h-4 w-4" /> PHQ-9 detalhado
+                </Button>
+              </div>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={phq9ByQuestion} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" domain={[0, 3]} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={200} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v} (n=${p?.payload?.responses ?? 0})`, "Média"]}
+                  />
+                  <Bar dataKey="avg" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {phq9Stats.count === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma resposta detalhada de PHQ-9 ainda. A coleta começa após este deploy — testes anteriores guardavam apenas o score total.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-1">Impacto funcional (critério B do DSM-5)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                O quanto os sintomas dificultam o trabalho, tarefas em casa ou relacionamentos.
+              </p>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={functionalImpactDist} margin={{ left: 8, right: 16, top: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }} />
+                  <Bar dataKey="value" fill="hsl(var(--warning))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {functionalImpactDist.every((d) => d.value === 0) && (
+                <p className="text-sm text-muted-foreground">Sem dados de impacto funcional ainda.</p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
+                <div>
                   <h3 className="font-semibold">Origem dos testes (atribuição)</h3>
                   <p className="text-xs text-muted-foreground mt-1 max-w-prose">
                     De onde vêm os usuários que completam o teste. Use links com <code className="text-[11px] bg-muted px-1 rounded">?utm_source=instagram&utm_medium=bio&utm_campaign=lancamento</code> para rastrear cada canal.
