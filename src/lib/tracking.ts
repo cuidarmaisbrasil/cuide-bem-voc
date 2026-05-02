@@ -3,7 +3,7 @@ import { gaEvent } from "@/lib/analytics";
 import { getAttribution } from "@/lib/attribution";
 
 type TrackPayload =
-  | { type: "test"; payload: { score: number; severity: string; age?: number; symptoms?: string[] } }
+  | { type: "test"; payload: { score: number; severity: string; age?: number; symptoms?: string[]; phq9_answers?: number[]; functional_impact?: number } }
   | {
       type: "click";
       payload: { link_type: "professional" | "sus" | "cvv" | "samu" | "platform" | "donation"; target_id?: string; target_label?: string };
