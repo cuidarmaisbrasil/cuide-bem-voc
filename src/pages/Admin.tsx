@@ -228,6 +228,55 @@ const Admin = () => {
       .sort((a, b) => b.count - a.count);
     setBySymptom(symRows);
 
+    // PHQ-9 por questão (média 0-3)
+    const phq9Labels = [
+      "Q1 · Pouco interesse/prazer",
+      "Q2 · Para baixo/sem perspectiva",
+      "Q3 · Sono",
+      "Q4 · Cansaço/pouca energia",
+      "Q5 · Apetite",
+      "Q6 · Sentir-se mal consigo",
+      "Q7 · Concentração",
+      "Q8 · Lentidão/agitação",
+      "Q9 · Pensamentos de auto-dano",
+    ];
+    const phq9Sums = Array(9).fill(0);
+    const phq9Counts = Array(9).fill(0);
+    let totalScoreSum = 0;
+    let totalScoreCount = 0;
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.phq9_answers) || t.phq9_answers.length !== 9) return;
+      let rowSum = 0;
+      let valid = true;
+      t.phq9_answers.forEach((v: any, i: number) => {
+        if (typeof v !== "number") { valid = false; return; }
+        phq9Sums[i] += v;
+        phq9Counts[i] += 1;
+        rowSum += v;
+      });
+      if (valid) { totalScoreSum += rowSum; totalScoreCount += 1; }
+    });
+    setPhq9ByQuestion(
+      phq9Labels.map((name, i) => ({
+        name,
+        avg: phq9Counts[i] > 0 ? +(phq9Sums[i] / phq9Counts[i]).toFixed(2) : 0,
+        responses: phq9Counts[i],
+      }))
+    );
+    setPhq9Stats({
+      avg: totalScoreCount > 0 ? +(totalScoreSum / totalScoreCount).toFixed(1) : 0,
+      count: totalScoreCount,
+    });
+
+    // Distribuição do impacto funcional (0-3)
+    const fiLabels = ["Nada difícil", "Um pouco difícil", "Muito difícil", "Extremamente difícil"];
+    const fiCounts = [0, 0, 0, 0];
+    tests.forEach((t: any) => {
+      const v = t.functional_impact;
+      if (typeof v === "number" && v >= 0 && v <= 3) fiCounts[v] += 1;
+    });
+    setFunctionalImpactDist(fiLabels.map((name, i) => ({ name, value: fiCounts[i] })));
+
     // attribution aggregations
     const aggBy = (field: string, items: any[]) => {
       const m = new Map<string, number>();
