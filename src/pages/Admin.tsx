@@ -184,6 +184,32 @@ const Admin = () => {
     setFeedback(data ?? []);
   }
 
+  async function exportFullBackup(table: "test_events" | "link_clicks" | "feedback", filename: string) {
+    const PAGE = 1000;
+    let from = 0;
+    const all: any[] = [];
+    toast.info("Exportando backup completo… isso pode demorar.");
+    try {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { data, error } = await supabase
+          .from(table)
+          .select("*")
+          .order("created_at", { ascending: true })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all.push(...data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      downloadCSV(filename, all);
+      toast.success(`Backup gerado: ${all.length} registros`);
+    } catch (e: any) {
+      toast.error("Falha no backup: " + (e?.message ?? String(e)));
+    }
+  }
+
   async function loadAnalytics() {
     const since = subDays(new Date(), 30).toISOString();
 
@@ -634,6 +660,33 @@ const Admin = () => {
                 >
                   <Download className="h-4 w-4" /> Sintomas (agregado)
                 </Button>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-border/60">
+                <h4 className="font-semibold text-sm">Backup completo (todo o histórico, todos os campos)</h4>
+                <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                  Exporta <strong>todas</strong> as linhas brutas de testes e cliques desde o início, sem agregação e sem o filtro de 30 dias. Use para arquivar uma cópia local periodicamente.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("test_events", `cuidar-backup-tests-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Testes
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("link_clicks", `cuidar-backup-clicks-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Cliques
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("feedback", `cuidar-backup-feedback-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Feedback
+                  </Button>
+                </div>
               </div>
             </Card>
 
