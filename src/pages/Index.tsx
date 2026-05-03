@@ -127,7 +127,7 @@ const Index = () => {
       {stage === "test" && <DepressionTest onComplete={handleComplete} />}
       {stage === "result" && answers && <Results answers={answers} age={age} onRestart={handleRestart} />}
 
-      <footer className="border-t border-border/60 mt-16 py-10 bg-muted/30">
+      <footer className="border-t border-border/60 mt-16 py-10 pb-28 md:pb-10 bg-muted/30">
         <div className="container max-w-3xl space-y-6 text-sm text-muted-foreground">
           <div className="text-center space-y-2">
             <p>
