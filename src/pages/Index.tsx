@@ -7,6 +7,7 @@ import { DonateCard } from "@/components/DonateCard";
 import { AgeGate } from "@/components/AgeGate";
 import { ReliabilityBadge } from "@/components/ReliabilityBadge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 import { interpretPhq9 } from "@/data/symptoms";
 import { track } from "@/lib/tracking";
