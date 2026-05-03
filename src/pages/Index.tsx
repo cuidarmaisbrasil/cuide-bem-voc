@@ -7,6 +7,7 @@ import { DonateCard } from "@/components/DonateCard";
 import { AgeGate } from "@/components/AgeGate";
 import { ReliabilityBadge } from "@/components/ReliabilityBadge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 import { interpretPhq9 } from "@/data/symptoms";
 import { track } from "@/lib/tracking";
@@ -69,38 +70,56 @@ const Index = () => {
         <>
           <Hero onStart={handleStart} />
 
-          <section id="sobre" className="container py-16">
-            <div className="max-w-4xl mx-auto space-y-8">
+          <section id="sobre" className="container py-12 md:py-16">
+            <div className="max-w-3xl mx-auto space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="font-display text-3xl md:text-4xl font-semibold">Como funciona</h2>
-                <p className="text-muted-foreground">
-                  Uma avaliação séria, baseada em instrumentos validados internacionalmente.
+                <h2 className="font-display text-2xl md:text-3xl font-semibold">Como funciona</h2>
+                <p className="text-sm text-muted-foreground">
+                  3 passos simples · feito por você, no seu tempo.
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-3 gap-3">
                 {[
-                  { icon: ClipboardList, title: "PHQ-9 + 10 sintomas", text: "Você responde 9 perguntas validadas pela OMS e marca quais dos 10 sintomas clássicos sente." },
-                  { icon: BookOpen, title: "Resultado fundamentado", text: "Pontuação interpretada conforme critérios do DSM-5 / CID-11. Se você tem 4+ sintomas, recomendamos buscar ajuda." },
-                  { icon: HeartHandshake, title: "Caminhos para ajuda", text: "Mostramos onde buscar atendimento gratuito pelo SUS na sua cidade e profissionais com valores acessíveis." },
+                  { n: "1", title: "Responda", text: "9 perguntas validadas pela OMS + checklist de sintomas." },
+                  { n: "2", title: "Receba seu resultado", text: "Pontuação interpretada conforme critérios DSM-5/CID-11." },
+                  { n: "3", title: "Encontre ajuda", text: "Onde buscar atendimento gratuito (SUS) ou acessível." },
                 ].map((s) => (
-                  <Card key={s.title} className="p-6 shadow-card border-border/60">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center mb-4">
-                      <s.icon className="h-5 w-5 text-primary-foreground" />
+                  <Card key={s.n} className="p-5 shadow-card border-border/60 text-left">
+                    <div className="h-8 w-8 rounded-full bg-gradient-hero flex items-center justify-center text-primary-foreground font-display font-semibold mb-3">
+                      {s.n}
                     </div>
-                    <h3 className="font-display text-lg font-semibold mb-2">{s.title}</h3>
+                    <h3 className="font-display text-base font-semibold mb-1">{s.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{s.text}</p>
                   </Card>
                 ))}
               </div>
 
-              <ReliabilityBadge />
+              <div className="text-center pt-2">
+                <Button
+                  size="lg"
+                  onClick={handleStart}
+                  className="bg-gradient-hero text-primary-foreground hover:opacity-90 transition-smooth shadow-soft"
+                >
+                  Começar minha avaliação
+                </Button>
+              </div>
 
               <EmergencyBanner />
 
               <DonateCard />
             </div>
           </section>
+
+          {/* CTA sticky mobile */}
+          <div className="md:hidden fixed bottom-0 inset-x-0 z-50 p-3 bg-background/95 backdrop-blur border-t border-border shadow-soft">
+            <Button
+              onClick={handleStart}
+              className="w-full h-12 bg-gradient-hero text-primary-foreground hover:opacity-90 transition-smooth"
+            >
+              Fazer meu teste agora · 3 min
+            </Button>
+          </div>
         </>
       )}
 
@@ -108,7 +127,7 @@ const Index = () => {
       {stage === "test" && <DepressionTest onComplete={handleComplete} />}
       {stage === "result" && answers && <Results answers={answers} age={age} onRestart={handleRestart} />}
 
-      <footer className="border-t border-border/60 mt-16 py-10 bg-muted/30">
+      <footer className="border-t border-border/60 mt-16 py-10 pb-28 md:pb-10 bg-muted/30">
         <div className="container max-w-3xl space-y-6 text-sm text-muted-foreground">
           <div className="text-center space-y-2">
             <p>
