@@ -635,6 +635,33 @@ const Admin = () => {
                   <Download className="h-4 w-4" /> Sintomas (agregado)
                 </Button>
               </div>
+
+              <div className="mt-4 pt-4 border-t border-border/60">
+                <h4 className="font-semibold text-sm">Backup completo (todo o histórico, todos os campos)</h4>
+                <p className="text-xs text-muted-foreground mt-1 max-w-prose">
+                  Exporta <strong>todas</strong> as linhas brutas de testes e cliques desde o início, sem agregação e sem o filtro de 30 dias. Use para arquivar uma cópia local periodicamente.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("test_events", `cuidar-backup-tests-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Testes
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("link_clicks", `cuidar-backup-clicks-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Cliques
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => exportFullBackup("feedback", `cuidar-backup-feedback-${format(new Date(), "yyyyMMdd")}.csv`)}
+                  >
+                    <Download className="h-4 w-4" /> Backup completo · Feedback
+                  </Button>
+                </div>
+              </div>
             </Card>
 
             <Card className="p-4">
