@@ -52,17 +52,6 @@ export const Hero = ({ onStart }: HeroProps) => {
             </p>
           </div>
 
-          {totalTests && totalTests > 10 && (
-            <div className="inline-flex items-center gap-2 rounded-full bg-card border border-border px-4 py-2 text-sm text-muted-foreground shadow-card animate-fade-in">
-              <Users className="h-4 w-4 text-primary" />
-              <span>
-                <strong className="text-foreground">
-                  {totalTests.toLocaleString("pt-BR")}
-                </strong>{" "}
-                pessoas já se avaliaram aqui
-              </span>
-            </div>
-          )}
 
           <div className="flex justify-center pt-2">
             <ReliabilityBadge variant="compact" />
