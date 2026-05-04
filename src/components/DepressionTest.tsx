@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, AlertCircle, ShieldCheck } from "lucide-react";
 import {
   phq9Questions,
   phq9Options,
@@ -17,6 +19,7 @@ export interface TestAnswers {
   phq9: number[];
   symptoms: string[];
   functionalImpact: number; // 0-3 (critério B do DSM-5)
+  age: number;
 }
 
 interface DepressionTestProps {
@@ -24,9 +27,11 @@ interface DepressionTestProps {
 }
 
 export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
-  // PHQ-9 (9) + impacto funcional + checklist
-  const totalSteps = phq9Questions.length + 2;
+  // Idade + PHQ-9 (9) + impacto funcional + checklist
+  const totalSteps = 1 + phq9Questions.length + 2;
   const [step, setStep] = useState(0);
+  const [age, setAge] = useState<string>("");
+  const [ageError, setAgeError] = useState<string | null>(null);
   const [phq9, setPhq9] = useState<(number | null)[]>(Array(phq9Questions.length).fill(null));
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [functionalImpact, setFunctionalImpact] = useState<number | null>(null);
