@@ -23,10 +23,10 @@ export const Hero = ({ onStart }: HeroProps) => {
             </span>
           </h1>
 
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Uma autoavaliação acolhedora baseada nos critérios da OMS (PHQ-9) e
-            DSM-5. Em poucos minutos, você entende seus sintomas e descobre
-            onde buscar ajuda no Brasil.
+            DSM-5. Em poucos minutos, você entende seus sintomas e descobre{" "}
+            <strong className="font-semibold text-foreground">onde encontrar ajuda</strong> no Brasil.
           </p>
 
           <div className="pt-2">
