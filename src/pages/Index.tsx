@@ -116,9 +116,8 @@ const Index = () => {
         </>
       )}
 
-      {stage === "age" && <AgeGate onConfirm={handleAgeConfirm} onCancel={handleRestart} />}
       {stage === "test" && <DepressionTest onComplete={handleComplete} />}
-      {stage === "result" && answers && <Results answers={answers} age={age} onRestart={handleRestart} />}
+      {stage === "result" && answers && <Results answers={answers} age={answers.age} onRestart={handleRestart} />}
 
       <footer className="border-t border-border/60 mt-16 py-10 pb-28 md:pb-10 bg-muted/30">
         <div className="container max-w-3xl space-y-6 text-sm text-muted-foreground">
