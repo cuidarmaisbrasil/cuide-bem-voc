@@ -121,17 +121,66 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
         </div>
 
         <Card className="p-6 md:p-8 shadow-card border-border/60">
-          {isPhq9Step ? (
+          {isAgeStep ? (
+            <div className="space-y-5">
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wider text-primary mb-1">
+                    Antes de começar
+                  </p>
+                  <h2 className="font-display text-xl md:text-2xl font-semibold leading-snug">
+                    Qual a sua idade?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    O PHQ-9 é validado para adultos (≥18 anos).
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="age" className="text-sm">Sua idade</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  min={1}
+                  max={120}
+                  inputMode="numeric"
+                  placeholder="Ex: 28"
+                  value={age}
+                  onChange={(e) => {
+                    setAge(e.target.value.slice(0, 3));
+                    setAgeError(null);
+                  }}
+                  className="mt-1"
+                />
+              </div>
+
+              {ageError && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                  <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-sm text-destructive">{ageError}</p>
+                </div>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                Sua idade é usada de forma anônima para validar a elegibilidade
+                e gerar estatísticas agregadas.
+              </p>
+            </div>
+          ) : isPhq9Step ? (
             <div className="space-y-6">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-primary mb-3">
-                  PHQ-9 · Pergunta {step + 1}
+                  PHQ-9 · Pergunta {phqIndex + 1}
                 </p>
                 <h2 className="font-display text-xl md:text-2xl font-semibold leading-snug">
                   Nas últimas 2 semanas, com que frequência você foi incomodado(a) por:
                 </h2>
                 <p className="text-lg text-foreground/90 mt-3">
-                  {phq9Questions[step]}
+                  {phq9Questions[phqIndex]}
                 </p>
               </div>
 
