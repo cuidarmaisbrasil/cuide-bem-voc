@@ -1,29 +1,12 @@
-import { useEffect, useState } from "react";
-import { Heart, ShieldCheck, Sparkles, Clock, Users } from "lucide-react";
+import { Heart, ShieldCheck, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReliabilityBadge } from "./ReliabilityBadge";
-import { supabase } from "@/integrations/supabase/client";
 
 interface HeroProps {
   onStart: () => void;
 }
 
 export const Hero = ({ onStart }: HeroProps) => {
-  const [totalTests, setTotalTests] = useState<number | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    supabase.functions
-      .invoke("public-stats")
-      .then(({ data }) => {
-        if (active && data?.total_tests) setTotalTests(data.total_tests);
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, []);
-
   return (
     <section className="relative overflow-hidden bg-gradient-soft">
       <div className="container py-10 md:py-20">
@@ -69,17 +52,6 @@ export const Hero = ({ onStart }: HeroProps) => {
             </p>
           </div>
 
-          {totalTests && totalTests > 10 && (
-            <div className="inline-flex items-center gap-2 rounded-full bg-card border border-border px-4 py-2 text-sm text-muted-foreground shadow-card animate-fade-in">
-              <Users className="h-4 w-4 text-primary" />
-              <span>
-                <strong className="text-foreground">
-                  {totalTests.toLocaleString("pt-BR")}
-                </strong>{" "}
-                pessoas já se avaliaram aqui
-              </span>
-            </div>
-          )}
 
           <div className="flex justify-center pt-2">
             <ReliabilityBadge variant="compact" />
