@@ -40,20 +40,41 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
     gaEvent("test_started");
   }, []);
 
-  const isPhq9Step = step < phq9Questions.length;
-  const isFunctionalStep = step === phq9Questions.length;
-  const isChecklistStep = step === phq9Questions.length + 1;
+  const isAgeStep = step === 0;
+  const phqIndex = step - 1;
+  const isPhq9Step = !isAgeStep && phqIndex < phq9Questions.length;
+  const isFunctionalStep = step === 1 + phq9Questions.length;
+  const isChecklistStep = step === 1 + phq9Questions.length + 1;
 
-  const currentPhqAnswer = isPhq9Step ? phq9[step] : null;
-  const canAdvance = isPhq9Step
-    ? currentPhqAnswer !== null
-    : isFunctionalStep
-      ? functionalImpact !== null
-      : true;
+  const currentPhqAnswer = isPhq9Step ? phq9[phqIndex] : null;
+
+  const validateAge = (): number | null => {
+    const n = parseInt(age, 10);
+    if (!Number.isFinite(n) || n < 1 || n > 120) {
+      setAgeError("Informe uma idade válida.");
+      return null;
+    }
+    if (n < 18) {
+      setAgeError(
+        "Este teste foi validado apenas para adultos (≥18 anos). Para adolescentes existem instrumentos específicos (PHQ-A). Procure um profissional ou ligue 188 (CVV)."
+      );
+      return null;
+    }
+    setAgeError(null);
+    return n;
+  };
+
+  const canAdvance = isAgeStep
+    ? age.trim().length > 0
+    : isPhq9Step
+      ? currentPhqAnswer !== null
+      : isFunctionalStep
+        ? functionalImpact !== null
+        : true;
 
   const handlePhq9 = (value: number) => {
     const next = [...phq9];
-    next[step] = value;
+    next[phqIndex] = value;
     setPhq9(next);
   };
 
@@ -62,14 +83,19 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
   };
 
   const handleNext = () => {
+    if (isAgeStep) {
+      if (validateAge() === null) return;
+    }
     if (step < totalSteps - 1) {
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+      const n = parseInt(age, 10);
       onComplete({
         phq9: phq9.map((v) => v ?? 0),
         symptoms,
         functionalImpact: functionalImpact ?? 0,
+        age: n,
       });
     }
   };
