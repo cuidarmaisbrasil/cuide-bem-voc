@@ -4,24 +4,18 @@ import { DepressionTest, TestAnswers } from "@/components/DepressionTest";
 import { Results } from "@/components/Results";
 import { EmergencyBanner } from "@/components/EmergencyBanner";
 import { DonateCard } from "@/components/DonateCard";
-import { AgeGate } from "@/components/AgeGate";
-import { ReliabilityBadge } from "@/components/ReliabilityBadge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, ClipboardList, HeartHandshake } from "lucide-react";
 import { interpretPhq9 } from "@/data/symptoms";
 import { track } from "@/lib/tracking";
 
-type Stage = "intro" | "age" | "test" | "result";
+type Stage = "intro" | "test" | "result";
 
 const Index = () => {
   const [stage, setStage] = useState<Stage>("intro");
   const [answers, setAnswers] = useState<TestAnswers | null>(null);
-  const [age, setAge] = useState<number | null>(null);
 
-  const handleStart = () => setStage("age");
-  const handleAgeConfirm = (a: number) => {
-    setAge(a);
+  const handleStart = () => {
     setStage("test");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -33,7 +27,7 @@ const Index = () => {
       payload: {
         score,
         severity: interpretation.level,
-        age: age ?? undefined,
+        age: a.age,
         symptoms: a.symptoms,
         phq9_answers: a.phq9,
         functional_impact: a.functionalImpact,
@@ -45,7 +39,6 @@ const Index = () => {
   };
   const handleRestart = () => {
     setAnswers(null);
-    setAge(null);
     setStage("intro");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
