@@ -19,7 +19,7 @@ export const Hero = ({ onStart }: HeroProps) => {
           <h1 className="font-display text-3xl md:text-6xl font-semibold leading-tight text-foreground">
             Depressão?{" "}
             <span className="block text-accent text-2xl md:text-4xl font-medium mt-2">
-              Vamos entender juntos o que você está sentindo.
+              Entenda o que você está sentindo.
             </span>
           </h1>
 
