@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.public-stats]
 verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = true
