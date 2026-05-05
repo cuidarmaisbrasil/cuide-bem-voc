@@ -11,6 +11,7 @@ import CityHelp from "./pages/CityHelp.tsx";
 import Privacidade from "./pages/Privacidade.tsx";
 import Termos from "./pages/Termos.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Unsubscribe from "./pages/Unsubscribe.tsx";
 
 const queryClient = new QueryClient();
 
