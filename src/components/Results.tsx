@@ -292,6 +292,11 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
           </a>
         </div>
 
+        {/* Lembrete por e-mail em 15 dias (apenas para severidades médias/altas) */}
+        {RETEST_REMINDER_LEVELS.includes(interpretation.level) && (
+          <RetestReminderCard severity={interpretation.level} />
+        )}
+
         {/* Risco imediato — após o card de resultado e antes do disclaimer "Importante" */}
         {hasSuicidalThoughts && <EmergencyBanner />}
 
