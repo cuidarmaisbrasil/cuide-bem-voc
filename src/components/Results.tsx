@@ -155,8 +155,8 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
                 <span className="font-display text-5xl font-semibold">{score}</span>
                 <span className="text-muted-foreground">/27</span>
               </div>
-              <Badge variant="outline" className={`${levelColorClass} font-medium`}>
-                {interpretation.level}
+              <Badge variant="outline" className={`${levelColorClass} font-bold`}>
+                Depressão {interpretation.level}
               </Badge>
               <p className="text-sm text-foreground/80 mt-3">{interpretation.description}</p>
               {(aiLoading || aiSummary) && (
