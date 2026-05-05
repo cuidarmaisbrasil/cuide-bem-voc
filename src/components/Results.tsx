@@ -17,6 +17,9 @@ import { ReliabilityBadge } from "./ReliabilityBadge";
 import { FeedbackForm } from "./FeedbackForm";
 import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { RetestReminderCard } from "./RetestReminderCard";
+
+const RETEST_REMINDER_LEVELS = ["Moderada", "Moderadamente grave", "Grave"];
 
 interface ResultsProps {
   answers: TestAnswers;
