@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.process-retest-reminders]
 verify_jwt = true
+
+[functions.track-session]
+verify_jwt = false

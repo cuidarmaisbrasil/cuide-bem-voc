@@ -338,6 +338,63 @@ export type Database = {
         }
         Relationships: []
       }
+      sessions: {
+        Row: {
+          city: string | null
+          country: string | null
+          id: string
+          ip_hash: string | null
+          landing_path: string | null
+          last_seen_at: string
+          referrer: string | null
+          region: string | null
+          session_id: string
+          started_at: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          id?: string
+          ip_hash?: string | null
+          landing_path?: string | null
+          last_seen_at?: string
+          referrer?: string | null
+          region?: string | null
+          session_id: string
+          started_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          id?: string
+          ip_hash?: string | null
+          landing_path?: string | null
+          last_seen_at?: string
+          referrer?: string | null
+          region?: string | null
+          session_id?: string
+          started_at?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       severity_articles: {
         Row: {
           active: boolean
