@@ -73,7 +73,8 @@ function downloadCSV(filename: string, rows: Record<string, any>[]) {
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, isAdmin, isViewer, canView, loading, signOut } = useAuth();
+  const readOnly = !isAdmin;
 
   const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
@@ -105,6 +106,11 @@ const Admin = () => {
   const [platforms, setPlatforms] = useState<any[]>([]);
   const [articles, setArticles] = useState<any[]>([]);
 
+  // Acessos (admin only)
+  const [accessRoles, setAccessRoles] = useState<any[]>([]);
+  const [grantEmail, setGrantEmail] = useState("");
+  const [grantBusy, setGrantBusy] = useState(false);
+
   const [newProf, setNewProf] = useState<any>({
     name: "", title: "", specialty: "", modality: "", city: "", country: "BR",
     price_from: "", contact: "", whatsapp: "", bio: "",
@@ -119,8 +125,8 @@ const Admin = () => {
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (isAdmin) loadAll();
-  }, [isAdmin]);
+    if (canView) loadAll();
+  }, [canView, isAdmin]);
 
   async function loadAll() {
     await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps(), loadArticles()]);
