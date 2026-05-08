@@ -73,7 +73,8 @@ function downloadCSV(filename: string, rows: Record<string, any>[]) {
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, isAdmin, isViewer, canView, loading, signOut } = useAuth();
+  const readOnly = !isAdmin;
 
   const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
@@ -105,6 +106,11 @@ const Admin = () => {
   const [platforms, setPlatforms] = useState<any[]>([]);
   const [articles, setArticles] = useState<any[]>([]);
 
+  // Acessos (admin only)
+  const [accessRoles, setAccessRoles] = useState<any[]>([]);
+  const [grantEmail, setGrantEmail] = useState("");
+  const [grantBusy, setGrantBusy] = useState(false);
+
   const [newProf, setNewProf] = useState<any>({
     name: "", title: "", specialty: "", modality: "", city: "", country: "BR",
     price_from: "", contact: "", whatsapp: "", bio: "",
@@ -119,11 +125,56 @@ const Admin = () => {
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (isAdmin) loadAll();
-  }, [isAdmin]);
+    if (canView) loadAll();
+  }, [canView, isAdmin]);
 
   async function loadAll() {
     await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps(), loadArticles()]);
+    if (isAdmin) loadAccess();
+  }
+
+  async function loadAccess() {
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", { body: { action: "list" } });
+      if (error) throw error;
+      setAccessRoles((data as any)?.roles ?? []);
+    } catch (e: any) {
+      console.error(e);
+    }
+  }
+
+  async function grantViewer() {
+    if (!grantEmail.trim()) return;
+    setGrantBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", {
+        body: { action: "grant", email: grantEmail.trim() },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("Acesso de leitura concedido");
+      setGrantEmail("");
+      await loadAccess();
+    } catch (e: any) {
+      toast.error("Falha: " + (e?.message ?? String(e)));
+    } finally {
+      setGrantBusy(false);
+    }
+  }
+
+  async function revokeViewer(email: string) {
+    if (!confirm(`Remover acesso de leitura de ${email}?`)) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", {
+        body: { action: "revoke", email },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("Acesso removido");
+      await loadAccess();
+    } catch (e: any) {
+      toast.error("Falha: " + (e?.message ?? String(e)));
+    }
   }
 
   async function loadArticles() {
@@ -498,13 +549,13 @@ const Admin = () => {
 
   if (loading) return <main className="min-h-screen flex items-center justify-center">Carregando...</main>;
 
-  if (!isAdmin) {
+  if (!canView) {
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
         <Card className="p-6 max-w-md text-center space-y-3">
           <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
           <p className="text-sm text-muted-foreground">
-            Sua conta ({user?.email}) ainda não tem o papel <code>admin</code>.
+            Sua conta ({user?.email}) ainda não tem permissão de acesso ao painel.
             Peça ao administrador para conceder o acesso.
           </p>
           <Button onClick={signOut} variant="outline"><LogOut className="h-4 w-4 mr-2" /> Sair</Button>
@@ -517,9 +568,12 @@ const Admin = () => {
     <main className="min-h-screen bg-background">
       <header className="border-b bg-background sticky top-0 z-40">
         <div className="container flex items-center justify-between h-14 gap-2 px-3 sm:px-4">
-          <h1 className="font-display font-semibold text-sm sm:text-base truncate">
+          <h1 className="font-display font-semibold text-sm sm:text-base truncate flex items-center gap-2">
             <span className="hidden sm:inline">Cuidar+ — Painel Admin</span>
             <span className="sm:hidden">Cuidar+ Admin</span>
+            {readOnly && (
+              <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">somente leitura</Badge>
+            )}
           </h1>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted-foreground hidden md:block truncate max-w-[180px]">{user?.email}</span>
@@ -537,7 +591,9 @@ const Admin = () => {
                 <p className="text-sm font-medium">{a.alert_type === "quota" ? "⚠️ Saldo/Quota do Lovable Cloud" : a.alert_type === "volume" ? "📊 Volume alto de uso" : "Alerta"}</p>
                 <p className="text-sm text-muted-foreground break-words">{a.message}</p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => resolveAlert(a.id)}>OK</Button>
+              {!readOnly && (
+                <Button size="sm" variant="ghost" onClick={() => resolveAlert(a.id)}>OK</Button>
+              )}
             </Card>
           ))}
         </div>
@@ -550,10 +606,11 @@ const Admin = () => {
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
-              <TabsTrigger value="professionals">Profissionais</TabsTrigger>
-              <TabsTrigger value="platforms">Plataformas</TabsTrigger>
-              <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
-              <TabsTrigger value="articles">Artigos</TabsTrigger>
+              {!readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
             </TabsList>
           </div>
 
@@ -1330,6 +1387,69 @@ const Admin = () => {
               </p>
             </Card>
           </TabsContent>
+
+          {!readOnly && (
+            <TabsContent value="access" className="space-y-4 pt-4">
+              <Card className="p-4 space-y-3">
+                <div>
+                  <h3 className="font-semibold">Conceder acesso somente leitura</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A pessoa deve primeiro criar uma conta em <code>/auth</code>. Em seguida, informe o email dela aqui para liberar o painel em modo somente leitura (sem alterar dados, profissionais, plataformas, IPs ou artigos).
+                  </p>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <Input
+                    type="email"
+                    placeholder="email@exemplo.com"
+                    value={grantEmail}
+                    onChange={(e) => setGrantEmail(e.target.value)}
+                    className="max-w-sm"
+                  />
+                  <Button onClick={grantViewer} disabled={grantBusy || !grantEmail.trim()}>
+                    <Plus className="h-4 w-4" /> {grantBusy ? "Concedendo..." : "Conceder acesso"}
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Pessoas com acesso</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Papel</TableHead>
+                      <TableHead>Concedido em</TableHead>
+                      <TableHead className="text-right">Ação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {accessRoles.length === 0 && (
+                      <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground text-sm">Nenhum acesso registrado.</TableCell></TableRow>
+                    )}
+                    {accessRoles.map((r) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="text-sm">{r.email ?? <span className="text-muted-foreground">(sem email)</span>}</TableCell>
+                        <TableCell>
+                          <Badge variant={r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {r.created_at ? format(new Date(r.created_at), "dd/MM/yyyy") : "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {r.role === "viewer" && r.email && (
+                            <Button size="sm" variant="ghost" onClick={() => revokeViewer(r.email)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          )}
+
         </Tabs>
       </div>
     </main>
