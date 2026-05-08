@@ -1387,6 +1387,69 @@ const Admin = () => {
               </p>
             </Card>
           </TabsContent>
+
+          {!readOnly && (
+            <TabsContent value="access" className="space-y-4 pt-4">
+              <Card className="p-4 space-y-3">
+                <div>
+                  <h3 className="font-semibold">Conceder acesso somente leitura</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    A pessoa deve primeiro criar uma conta em <code>/auth</code>. Em seguida, informe o email dela aqui para liberar o painel em modo somente leitura (sem alterar dados, profissionais, plataformas, IPs ou artigos).
+                  </p>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  <Input
+                    type="email"
+                    placeholder="email@exemplo.com"
+                    value={grantEmail}
+                    onChange={(e) => setGrantEmail(e.target.value)}
+                    className="max-w-sm"
+                  />
+                  <Button onClick={grantViewer} disabled={grantBusy || !grantEmail.trim()}>
+                    <Plus className="h-4 w-4" /> {grantBusy ? "Concedendo..." : "Conceder acesso"}
+                  </Button>
+                </div>
+              </Card>
+
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3">Pessoas com acesso</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Papel</TableHead>
+                      <TableHead>Concedido em</TableHead>
+                      <TableHead className="text-right">Ação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {accessRoles.length === 0 && (
+                      <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground text-sm">Nenhum acesso registrado.</TableCell></TableRow>
+                    )}
+                    {accessRoles.map((r) => (
+                      <TableRow key={r.id}>
+                        <TableCell className="text-sm">{r.email ?? <span className="text-muted-foreground">(sem email)</span>}</TableCell>
+                        <TableCell>
+                          <Badge variant={r.role === "admin" ? "default" : "secondary"}>{r.role}</Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {r.created_at ? format(new Date(r.created_at), "dd/MM/yyyy") : "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {r.role === "viewer" && r.email && (
+                            <Button size="sm" variant="ghost" onClick={() => revokeViewer(r.email)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          )}
+
         </Tabs>
       </div>
     </main>
