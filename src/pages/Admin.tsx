@@ -549,13 +549,13 @@ const Admin = () => {
 
   if (loading) return <main className="min-h-screen flex items-center justify-center">Carregando...</main>;
 
-  if (!isAdmin) {
+  if (!canView) {
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
         <Card className="p-6 max-w-md text-center space-y-3">
           <h1 className="font-display text-xl font-semibold">Acesso restrito</h1>
           <p className="text-sm text-muted-foreground">
-            Sua conta ({user?.email}) ainda não tem o papel <code>admin</code>.
+            Sua conta ({user?.email}) ainda não tem permissão de acesso ao painel.
             Peça ao administrador para conceder o acesso.
           </p>
           <Button onClick={signOut} variant="outline"><LogOut className="h-4 w-4 mr-2" /> Sair</Button>
@@ -568,9 +568,12 @@ const Admin = () => {
     <main className="min-h-screen bg-background">
       <header className="border-b bg-background sticky top-0 z-40">
         <div className="container flex items-center justify-between h-14 gap-2 px-3 sm:px-4">
-          <h1 className="font-display font-semibold text-sm sm:text-base truncate">
+          <h1 className="font-display font-semibold text-sm sm:text-base truncate flex items-center gap-2">
             <span className="hidden sm:inline">Cuidar+ — Painel Admin</span>
             <span className="sm:hidden">Cuidar+ Admin</span>
+            {readOnly && (
+              <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">somente leitura</Badge>
+            )}
           </h1>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted-foreground hidden md:block truncate max-w-[180px]">{user?.email}</span>
@@ -588,7 +591,9 @@ const Admin = () => {
                 <p className="text-sm font-medium">{a.alert_type === "quota" ? "⚠️ Saldo/Quota do Lovable Cloud" : a.alert_type === "volume" ? "📊 Volume alto de uso" : "Alerta"}</p>
                 <p className="text-sm text-muted-foreground break-words">{a.message}</p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => resolveAlert(a.id)}>OK</Button>
+              {!readOnly && (
+                <Button size="sm" variant="ghost" onClick={() => resolveAlert(a.id)}>OK</Button>
+              )}
             </Card>
           ))}
         </div>
@@ -601,10 +606,11 @@ const Admin = () => {
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
-              <TabsTrigger value="professionals">Profissionais</TabsTrigger>
-              <TabsTrigger value="platforms">Plataformas</TabsTrigger>
-              <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>
-              <TabsTrigger value="articles">Artigos</TabsTrigger>
+              {!readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
             </TabsList>
           </div>
 
