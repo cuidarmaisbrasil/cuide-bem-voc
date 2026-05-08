@@ -130,6 +130,51 @@ const Admin = () => {
 
   async function loadAll() {
     await Promise.all([loadAnalytics(), loadProfessionals(), loadPlatforms(), loadAlerts(), loadFeedback(), loadAdminIps(), loadArticles()]);
+    if (isAdmin) loadAccess();
+  }
+
+  async function loadAccess() {
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", { body: { action: "list" } });
+      if (error) throw error;
+      setAccessRoles((data as any)?.roles ?? []);
+    } catch (e: any) {
+      console.error(e);
+    }
+  }
+
+  async function grantViewer() {
+    if (!grantEmail.trim()) return;
+    setGrantBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", {
+        body: { action: "grant", email: grantEmail.trim() },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("Acesso de leitura concedido");
+      setGrantEmail("");
+      await loadAccess();
+    } catch (e: any) {
+      toast.error("Falha: " + (e?.message ?? String(e)));
+    } finally {
+      setGrantBusy(false);
+    }
+  }
+
+  async function revokeViewer(email: string) {
+    if (!confirm(`Remover acesso de leitura de ${email}?`)) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-viewer", {
+        body: { action: "revoke", email },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success("Acesso removido");
+      await loadAccess();
+    } catch (e: any) {
+      toast.error("Falha: " + (e?.message ?? String(e)));
+    }
   }
 
   async function loadArticles() {
