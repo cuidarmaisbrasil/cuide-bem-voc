@@ -1452,6 +1452,12 @@ const Admin = () => {
             </TabsContent>
           )}
 
+          {!readOnly && (
+            <TabsContent value="campaign" className="space-y-4 pt-4">
+              <CampaignComposer baseUrl={typeof window !== "undefined" ? window.location.origin : "https://cuidarmaisbrasil.life"} />
+            </TabsContent>
+          )}
+
         </Tabs>
       </div>
     </main>
