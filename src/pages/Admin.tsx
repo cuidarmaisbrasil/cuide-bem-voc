@@ -19,6 +19,7 @@ import {
 import { Shield, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { format, subDays } from "date-fns";
+import { CampaignComposer } from "@/components/admin/CampaignComposer";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
@@ -610,6 +611,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
               {!readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
               {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
               {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
             </TabsList>
           </div>
@@ -1447,6 +1449,12 @@ const Admin = () => {
                   </TableBody>
                 </Table>
               </Card>
+            </TabsContent>
+          )}
+
+          {!readOnly && (
+            <TabsContent value="campaign" className="space-y-4 pt-4">
+              <CampaignComposer baseUrl={typeof window !== "undefined" ? window.location.origin : "https://cuidarmaisbrasil.life"} />
             </TabsContent>
           )}
 
