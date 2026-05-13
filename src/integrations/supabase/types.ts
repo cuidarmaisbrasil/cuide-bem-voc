@@ -77,6 +77,128 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          allowed_versions: string[]
+          approved_at: string | null
+          cnpj: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          default_version: string
+          id: string
+          name: string
+          notes: string | null
+          owner_user_id: string
+          sector: string | null
+          size_range: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_versions?: string[]
+          approved_at?: string | null
+          cnpj?: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          default_version?: string
+          id?: string
+          name: string
+          notes?: string | null
+          owner_user_id: string
+          sector?: string | null
+          size_range?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_versions?: string[]
+          approved_at?: string | null
+          cnpj?: string | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          default_version?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_user_id?: string
+          sector?: string | null
+          size_range?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      copsoq_responses: {
+        Row: {
+          age_range: string | null
+          answers: Json
+          city: string | null
+          company_id: string
+          country: string | null
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          ip_hash: string | null
+          region: string | null
+          scores: Json | null
+          tenure_range: string | null
+          user_agent: string | null
+          version: string
+        }
+        Insert: {
+          age_range?: string | null
+          answers: Json
+          city?: string | null
+          company_id: string
+          country?: string | null
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          ip_hash?: string | null
+          region?: string | null
+          scores?: Json | null
+          tenure_range?: string | null
+          user_agent?: string | null
+          version: string
+        }
+        Update: {
+          age_range?: string | null
+          answers?: Json
+          city?: string | null
+          company_id?: string
+          country?: string | null
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          ip_hash?: string | null
+          region?: string | null
+          scores?: Json | null
+          tenure_range?: string | null
+          user_agent?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copsoq_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -614,7 +736,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user" | "viewer"
+      app_role: "admin" | "user" | "viewer" | "company"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -742,7 +864,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "viewer"],
+      app_role: ["admin", "user", "viewer", "company"],
     },
   },
 } as const
