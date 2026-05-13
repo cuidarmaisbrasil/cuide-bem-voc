@@ -12,6 +12,8 @@ import Privacidade from "./pages/Privacidade.tsx";
 import Termos from "./pages/Termos.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
+import Trabalho from "./pages/Trabalho.tsx";
+import CopsoqResponder from "./pages/CopsoqResponder.tsx";
 
 const queryClient = new QueryClient();
 
