@@ -11,9 +11,76 @@ import { track } from "@/lib/tracking";
 
 type Stage = "intro" | "test" | "result";
 
+const FAQ_ITEMS = [
+  {
+    q: "O teste de depressão do Cuidar+ é confiável?",
+    a: "Sim. Usamos o PHQ-9, instrumento validado pela OMS com α de Cronbach 0,89, combinado com os critérios diagnósticos do DSM-5 e CID-11. É um rastreio educativo, não substitui diagnóstico clínico.",
+  },
+  {
+    q: "O teste é gratuito e anônimo?",
+    a: "Sim. 100% gratuito, anônimo e sem cadastro. Leva cerca de 5 minutos.",
+  },
+  {
+    q: "Onde encontro ajuda gratuita para depressão no Brasil?",
+    a: "Pelo SUS você pode procurar a UBS mais próxima ou um CAPS (Centro de Atenção Psicossocial). Em emergência ligue CVV 188 (24h, gratuito) ou SAMU 192.",
+  },
+  {
+    q: "Estou em crise. O que fazer agora?",
+    a: "Ligue imediatamente para o CVV 188 (gratuito, 24 horas) ou SAMU 192. Se houver risco imediato à vida, vá ao pronto-socorro mais próximo.",
+  },
+];
+
 const Index = () => {
   const [stage, setStage] = useState<Stage>("intro");
   const [answers, setAnswers] = useState<TestAnswers | null>(null);
+
+  // Inject MedicalWebPage + FAQPage JSON-LD only on the homepage (not on /auth, /admin, etc.)
+  useEffect(() => {
+    const medicalLd = {
+      "@context": "https://schema.org",
+      "@type": "MedicalWebPage",
+      name: "Cuidar+ · Teste de depressão online",
+      url: "https://cuidarmaisbrasil.life/",
+      inLanguage: "pt-BR",
+      description:
+        "Autoavaliação gratuita de depressão baseada no PHQ-9 (validado pela OMS) e nos critérios do DSM-5. Receba orientações sobre atendimento gratuito no SUS.",
+      audience: {
+        "@type": "Audience",
+        audienceType: "Adultos (18+)",
+        geographicArea: { "@type": "Country", name: "Brasil" },
+      },
+      about: {
+        "@type": "MedicalCondition",
+        name: "Transtorno Depressivo Maior",
+        code: { "@type": "MedicalCode", code: "6A70", codingSystem: "ICD-11" },
+      },
+      publisher: { "@type": "Organization", name: "Cuidar+", url: "https://cuidarmaisbrasil.life/" },
+      lastReviewed: "2026-04-20",
+    };
+
+    const faqLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQ_ITEMS.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: { "@type": "Answer", text: item.a },
+      })),
+    };
+
+    const scripts = [medicalLd, faqLd].map((data) => {
+      const el = document.createElement("script");
+      el.type = "application/ld+json";
+      el.dataset.page = "home";
+      el.text = JSON.stringify(data);
+      document.head.appendChild(el);
+      return el;
+    });
+
+    return () => {
+      scripts.forEach((s) => s.remove());
+    };
+  }, []);
 
   const handleStart = () => {
     setStage("test");
