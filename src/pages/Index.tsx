@@ -171,6 +171,25 @@ const Index = () => {
             </div>
           </section>
 
+          <section id="faq" className="container pb-12 md:pb-16">
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center space-y-2 mb-6">
+                <h2 className="font-display text-2xl md:text-3xl font-semibold">Perguntas frequentes</h2>
+                <p className="text-sm text-muted-foreground">
+                  O que as pessoas mais perguntam antes de fazer o teste.
+                </p>
+              </div>
+              <div className="space-y-3">
+                {FAQ_ITEMS.map((item) => (
+                  <Card key={item.q} className="p-5 shadow-card border-border/60 text-left">
+                    <h3 className="font-display text-base font-semibold mb-1.5">{item.q}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.a}</p>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+
           {/* CTA sticky mobile */}
           <div className="md:hidden fixed bottom-0 inset-x-0 z-50 p-3 bg-background/95 backdrop-blur border-t border-border shadow-soft">
             <Button
