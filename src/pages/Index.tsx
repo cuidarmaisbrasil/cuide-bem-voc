@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Hero } from "@/components/Hero";
 import { DepressionTest, TestAnswers } from "@/components/DepressionTest";
 import { Results } from "@/components/Results";
