@@ -1460,6 +1460,12 @@ const Admin = () => {
             </TabsContent>
           )}
 
+          {!readOnly && (
+            <TabsContent value="companies" className="space-y-4 pt-4">
+              <CompaniesAdmin />
+            </TabsContent>
+          )}
+
         </Tabs>
       </div>
     </main>
