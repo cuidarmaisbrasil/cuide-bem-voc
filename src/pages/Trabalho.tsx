@@ -201,12 +201,47 @@ const Trabalho = () => {
                 </Card>
 
                 <Card className="p-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                     <h2 className="font-display text-lg font-semibold">Resultados agregados</h2>
-                    <Badge variant="secondary">{responses.length} resposta{responses.length !== 1 ? "s" : ""}</Badge>
+                    <Badge variant="secondary">
+                      {filteredResponses.length} de {responses.length} resposta{responses.length !== 1 ? "s" : ""}
+                    </Badge>
                   </div>
+
+                  {responses.length > 0 && (departments.length > 0 || ageRanges.length > 0) && (
+                    <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                      {departments.length > 0 && (
+                        <div>
+                          <Label className="text-xs">Departamento</Label>
+                          <Select value={filterDept} onValueChange={setFilterDept}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__all">Todos</SelectItem>
+                              {departments.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      {ageRanges.length > 0 && (
+                        <div>
+                          <Label className="text-xs">Faixa etária</Label>
+                          <Select value={filterAge} onValueChange={setFilterAge}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__all">Todas</SelectItem>
+                              {ageRanges.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {responses.length === 0 && <p className="text-sm text-muted-foreground">Ainda não há respostas.</p>}
-                  {responses.length > 0 && (
+                  {responses.length > 0 && filteredResponses.length === 0 && (
+                    <p className="text-sm text-muted-foreground">Nenhuma resposta corresponde aos filtros selecionados.</p>
+                  )}
+                  {filteredResponses.length > 0 && (
                     <div className="space-y-2">
                       {aggregates.map((row) => (
                         <div key={row.scaleId} className="flex items-center justify-between border-b border-border/40 pb-2">
