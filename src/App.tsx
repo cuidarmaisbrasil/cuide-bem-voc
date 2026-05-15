@@ -14,6 +14,8 @@ import NotFound from "./pages/NotFound.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Trabalho from "./pages/Trabalho.tsx";
 import CopsoqResponder from "./pages/CopsoqResponder.tsx";
+import Imprensa from "./pages/Imprensa.tsx";
+import BlogRH from "./pages/BlogRH.tsx";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/trabalho" element={<Trabalho />} />
             <Route path="/trabalho/r/:slug" element={<CopsoqResponder />} />
+            <Route path="/imprensa" element={<Imprensa />} />
+            <Route path="/blog/rh-saude-mental-trabalho" element={<BlogRH />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
