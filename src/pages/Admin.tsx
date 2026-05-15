@@ -614,6 +614,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
               {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
               {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
             </TabsList>
           </div>
 
