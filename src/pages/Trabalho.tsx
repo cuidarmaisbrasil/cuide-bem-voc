@@ -72,18 +72,37 @@ const Trabalho = () => {
     } finally { setSubmitting(false); }
   };
 
+  const [filterDept, setFilterDept] = useState<string>("__all");
+  const [filterAge, setFilterAge] = useState<string>("__all");
+
+  const departments = useMemo(
+    () => Array.from(new Set(responses.map((r) => r.department).filter(Boolean))) as string[],
+    [responses],
+  );
+  const ageRanges = useMemo(
+    () => Array.from(new Set(responses.map((r) => r.age_range).filter(Boolean))) as string[],
+    [responses],
+  );
+
+  const filteredResponses = useMemo(() => {
+    return responses.filter((r) => {
+      if (filterDept !== "__all" && r.department !== filterDept) return false;
+      if (filterAge !== "__all" && r.age_range !== filterAge) return false;
+      return true;
+    });
+  }, [responses, filterDept, filterAge]);
+
   const aggregates = useMemo(() => {
-    if (!responses.length) return [];
-    const all: ScaleScore[][] = responses.map((r) => {
+    if (!filteredResponses.length) return [];
+    const all: ScaleScore[][] = filteredResponses.map((r) => {
       const sc = r.scores || {};
       return Object.entries(sc).map(([scaleId, v]: [string, any]) => ({
         scaleId, name: scaleId, type: "negative" as const,
         mean: v.mean ?? 0, band: "warning" as const, itemCount: v.n ?? 1,
       }));
     });
-    // Re-evaluate band properly using copsoqScales metadata
     return aggregateScales(all);
-  }, [responses]);
+  }, [filteredResponses]);
 
   if (loading) return <div className="container py-20 text-center text-muted-foreground">Carregando…</div>;
 
