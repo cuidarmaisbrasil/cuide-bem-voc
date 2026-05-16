@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 import { CampaignComposer } from "@/components/admin/CampaignComposer";
 import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
+import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
@@ -90,6 +91,7 @@ const Admin = () => {
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [bySymptom, setBySymptom] = useState<any[]>([]);
   const [phq9ByQuestion, setPhq9ByQuestion] = useState<any[]>([]);
+  const [phq9LatencyByQuestion, setPhq9LatencyByQuestion] = useState<any[]>([]);
   const [functionalImpactDist, setFunctionalImpactDist] = useState<any[]>([]);
   const [phq9Stats, setPhq9Stats] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
   const [bySource, setBySource] = useState<any[]>([]);
