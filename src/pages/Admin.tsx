@@ -965,6 +965,30 @@ const Admin = () => {
             </Card>
 
             <Card className="p-4">
+              <h3 className="font-semibold mb-1">PHQ-9 — tempo médio por clique (latência)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Tempo médio (em segundos) entre exibir cada pergunta e o usuário clicar na resposta. Indica hesitação ou complexidade percebida.
+              </p>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={phq9LatencyByQuestion} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} unit="s" />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={200} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v}s (n=${p?.payload?.responses ?? 0})`, "Tempo médio"]}
+                  />
+                  <Bar dataKey="avgSec" fill="hsl(var(--accent))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {phq9LatencyByQuestion.every((d) => d.avgSec === 0) && (
+                <p className="text-sm text-muted-foreground">
+                  Sem dados de tempo ainda. A coleta começa após este deploy.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
               <h3 className="font-semibold mb-1">Impacto funcional (critério B do DSM-5)</h3>
               <p className="text-xs text-muted-foreground mb-3">
                 O quanto os sintomas dificultam o trabalho, tarefas em casa ou relacionamentos.
