@@ -636,6 +636,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
               {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
               {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
             </TabsList>
           </div>
 
@@ -1508,6 +1509,12 @@ const Admin = () => {
           {!readOnly && (
             <TabsContent value="companies" className="space-y-4 pt-4">
               <CompaniesAdmin />
+            </TabsContent>
+          )}
+
+          {!readOnly && (
+            <TabsContent value="trabalho" className="space-y-4 pt-4">
+              <TrabalhoAdmin />
             </TabsContent>
           )}
 
