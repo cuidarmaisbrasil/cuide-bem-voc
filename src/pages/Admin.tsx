@@ -349,6 +349,25 @@ const Admin = () => {
       count: totalScoreCount,
     });
 
+    // PHQ-9 latência média por questão (segundos)
+    const latSums = Array(9).fill(0);
+    const latCounts = Array(9).fill(0);
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.phq9_latencies_ms) || t.phq9_latencies_ms.length !== 9) return;
+      t.phq9_latencies_ms.forEach((v: any, i: number) => {
+        if (typeof v !== "number" || v <= 0) return;
+        latSums[i] += v;
+        latCounts[i] += 1;
+      });
+    });
+    setPhq9LatencyByQuestion(
+      phq9Labels.map((name, i) => ({
+        name,
+        avgSec: latCounts[i] > 0 ? +(latSums[i] / latCounts[i] / 1000).toFixed(2) : 0,
+        responses: latCounts[i],
+      }))
+    );
+
     // Distribuição do impacto funcional (0-3)
     const fiLabels = ["Nada difícil", "Um pouco difícil", "Muito difícil", "Extremamente difícil"];
     const fiCounts = [0, 0, 0, 0];
