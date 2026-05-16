@@ -137,6 +137,83 @@ export type Database = {
         }
         Relationships: []
       }
+      copsoq_company_notes: {
+        Row: {
+          company_id: string
+          created_at: string
+          notes: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          notes?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          notes?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copsoq_company_notes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copsoq_question_overrides: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          n: number
+          text_override: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          n: number
+          text_override: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          n?: number
+          text_override?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      copsoq_report_template: {
+        Row: {
+          blocks: Json
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          blocks?: Json
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          blocks?: Json
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       copsoq_responses: {
         Row: {
           age_range: string | null
@@ -618,6 +695,7 @@ export type Database = {
           ip_hash: string | null
           landing_path: string | null
           phq9_answers: number[] | null
+          phq9_latencies_ms: number[] | null
           referrer: string | null
           region: string | null
           score: number | null
@@ -640,6 +718,7 @@ export type Database = {
           ip_hash?: string | null
           landing_path?: string | null
           phq9_answers?: number[] | null
+          phq9_latencies_ms?: number[] | null
           referrer?: string | null
           region?: string | null
           score?: number | null
@@ -662,6 +741,7 @@ export type Database = {
           ip_hash?: string | null
           landing_path?: string | null
           phq9_answers?: number[] | null
+          phq9_latencies_ms?: number[] | null
           referrer?: string | null
           region?: string | null
           score?: number | null
