@@ -28,6 +28,8 @@ const Trabalho = () => {
   const [submitting, setSubmitting] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
   const [responses, setResponses] = useState<any[]>([]);
+  const [reportBlocks, setReportBlocks] = useState<Array<{ id: string; title: string; body: string }>>([]);
+  const [adminNotes, setAdminNotes] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +42,10 @@ const Trabalho = () => {
     if (!company) return;
     supabase.from("copsoq_responses").select("*").eq("company_id", company.id).order("created_at", { ascending: false })
       .then(({ data }) => setResponses(data ?? []));
+    supabase.from("copsoq_report_template").select("blocks").eq("id", 1).maybeSingle()
+      .then(({ data }) => setReportBlocks((data?.blocks as any) ?? []));
+    supabase.from("copsoq_company_notes").select("notes").eq("company_id", company.id).maybeSingle()
+      .then(({ data }) => setAdminNotes(data?.notes ?? ""));
   }, [company]);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -257,6 +263,24 @@ const Trabalho = () => {
                     </div>
                   )}
                 </Card>
+
+                {(reportBlocks.length > 0 || adminNotes) && (
+                  <Card className="p-6 space-y-4">
+                    <h2 className="font-display text-lg font-semibold">Relatório</h2>
+                    {reportBlocks.map((b) => (
+                      <section key={b.id} className="space-y-1">
+                        <h3 className="font-semibold text-foreground text-sm">{b.title}</h3>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{b.body}</p>
+                      </section>
+                    ))}
+                    {adminNotes && (
+                      <section className="space-y-1 border-t pt-3">
+                        <h3 className="font-semibold text-foreground text-sm">Observações do consultor</h3>
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{adminNotes}</p>
+                      </section>
+                    )}
+                  </Card>
+                )}
               </>
             )}
           </>

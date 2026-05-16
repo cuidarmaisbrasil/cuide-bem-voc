@@ -17,6 +17,8 @@ import { gaEvent } from "@/lib/analytics";
 
 export interface TestAnswers {
   phq9: number[];
+  /** Latência (ms) entre exibir a pergunta e o clique de resposta, por questão PHQ-9 */
+  phq9LatenciesMs: number[];
   symptoms: string[];
   functionalImpact: number; // 0-3 (critério B do DSM-5)
   age: number;
@@ -33,6 +35,7 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
   const [age, setAge] = useState<string>("");
   const [ageError, setAgeError] = useState<string | null>(null);
   const [phq9, setPhq9] = useState<(number | null)[]>(Array(phq9Questions.length).fill(null));
+  const [phq9Latencies, setPhq9Latencies] = useState<(number | null)[]>(Array(phq9Questions.length).fill(null));
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [functionalImpact, setFunctionalImpact] = useState<number | null>(null);
 
@@ -45,6 +48,12 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
   const isPhq9Step = !isAgeStep && phqIndex < phq9Questions.length;
   const isFunctionalStep = step === 1 + phq9Questions.length;
   const isChecklistStep = step === 1 + phq9Questions.length + 1;
+
+  // Marca o instante em que cada pergunta PHQ-9 entrou na tela
+  const [phqShownAt, setPhqShownAt] = useState<number | null>(null);
+  useEffect(() => {
+    if (isPhq9Step) setPhqShownAt(Date.now());
+  }, [isPhq9Step, phqIndex]);
 
   const currentPhqAnswer = isPhq9Step ? phq9[phqIndex] : null;
 
@@ -76,6 +85,12 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
     const next = [...phq9];
     next[phqIndex] = value;
     setPhq9(next);
+    if (phqShownAt != null) {
+      const lat = Math.max(0, Math.min(600000, Date.now() - phqShownAt));
+      const nextLat = [...phq9Latencies];
+      nextLat[phqIndex] = lat;
+      setPhq9Latencies(nextLat);
+    }
   };
 
   const toggleSymptom = (id: string) => {
@@ -93,6 +108,7 @@ export const DepressionTest = ({ onComplete }: DepressionTestProps) => {
       const n = parseInt(age, 10);
       onComplete({
         phq9: phq9.map((v) => v ?? 0),
+        phq9LatenciesMs: phq9Latencies.map((v) => v ?? 0),
         symptoms,
         functionalImpact: functionalImpact ?? 0,
         age: n,

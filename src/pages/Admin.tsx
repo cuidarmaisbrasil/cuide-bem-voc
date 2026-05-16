@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { format, subDays } from "date-fns";
 import { CampaignComposer } from "@/components/admin/CampaignComposer";
 import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
+import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
@@ -90,6 +91,7 @@ const Admin = () => {
   const [linksByType, setLinksByType] = useState<any[]>([]);
   const [bySymptom, setBySymptom] = useState<any[]>([]);
   const [phq9ByQuestion, setPhq9ByQuestion] = useState<any[]>([]);
+  const [phq9LatencyByQuestion, setPhq9LatencyByQuestion] = useState<any[]>([]);
   const [functionalImpactDist, setFunctionalImpactDist] = useState<any[]>([]);
   const [phq9Stats, setPhq9Stats] = useState<{ avg: number; count: number }>({ avg: 0, count: 0 });
   const [bySource, setBySource] = useState<any[]>([]);
@@ -346,6 +348,25 @@ const Admin = () => {
       avg: totalScoreCount > 0 ? +(totalScoreSum / totalScoreCount).toFixed(1) : 0,
       count: totalScoreCount,
     });
+
+    // PHQ-9 latência média por questão (segundos)
+    const latSums = Array(9).fill(0);
+    const latCounts = Array(9).fill(0);
+    tests.forEach((t: any) => {
+      if (!Array.isArray(t.phq9_latencies_ms) || t.phq9_latencies_ms.length !== 9) return;
+      t.phq9_latencies_ms.forEach((v: any, i: number) => {
+        if (typeof v !== "number" || v <= 0) return;
+        latSums[i] += v;
+        latCounts[i] += 1;
+      });
+    });
+    setPhq9LatencyByQuestion(
+      phq9Labels.map((name, i) => ({
+        name,
+        avgSec: latCounts[i] > 0 ? +(latSums[i] / latCounts[i] / 1000).toFixed(2) : 0,
+        responses: latCounts[i],
+      }))
+    );
 
     // Distribuição do impacto funcional (0-3)
     const fiLabels = ["Nada difícil", "Um pouco difícil", "Muito difícil", "Extremamente difícil"];
@@ -615,6 +636,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
               {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
               {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
             </TabsList>
           </div>
 
@@ -939,6 +961,30 @@ const Admin = () => {
               {phq9Stats.count === 0 && (
                 <p className="text-sm text-muted-foreground">
                   Nenhuma resposta detalhada de PHQ-9 ainda. A coleta começa após este deploy — testes anteriores guardavam apenas o score total.
+                </p>
+              )}
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="font-semibold mb-1">PHQ-9 — tempo médio por clique (latência)</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Tempo médio (em segundos) entre exibir cada pergunta e o usuário clicar na resposta. Indica hesitação ou complexidade percebida.
+              </p>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart data={phq9LatencyByQuestion} layout="vertical" margin={{ left: 8, right: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={11} unit="s" />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={11} width={200} />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))" }}
+                    formatter={(v: any, _n: any, p: any) => [`${v}s (n=${p?.payload?.responses ?? 0})`, "Tempo médio"]}
+                  />
+                  <Bar dataKey="avgSec" fill="hsl(var(--accent))" />
+                </BarChart>
+              </ResponsiveContainer>
+              {phq9LatencyByQuestion.every((d) => d.avgSec === 0) && (
+                <p className="text-sm text-muted-foreground">
+                  Sem dados de tempo ainda. A coleta começa após este deploy.
                 </p>
               )}
             </Card>
@@ -1463,6 +1509,12 @@ const Admin = () => {
           {!readOnly && (
             <TabsContent value="companies" className="space-y-4 pt-4">
               <CompaniesAdmin />
+            </TabsContent>
+          )}
+
+          {!readOnly && (
+            <TabsContent value="trabalho" className="space-y-4 pt-4">
+              <TrabalhoAdmin />
             </TabsContent>
           )}
 

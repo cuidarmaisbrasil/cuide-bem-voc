@@ -100,10 +100,16 @@ Deno.serve(async (req) => {
       const functionalImpact = typeof fiRaw === "number" && Number.isFinite(fiRaw) && fiRaw >= 0 && fiRaw <= 3
         ? Math.floor(fiRaw)
         : null;
+      const latRaw = payload.phq9_latencies_ms;
+      const phq9Latencies = Array.isArray(latRaw) && latRaw.length === 9 &&
+        latRaw.every((v: unknown) => typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 600000)
+        ? latRaw.map((v: number) => Math.floor(v))
+        : null;
       console.log("track-event/test", {
         hasAge: age !== null,
         symptomsCount: symptoms?.length ?? 0,
         hasPhq9: phq9Answers !== null,
+        hasLatencies: phq9Latencies !== null,
         functionalImpact,
         utm_source: attrCols.utm_source,
         referrer: attrCols.referrer,
@@ -114,6 +120,7 @@ Deno.serve(async (req) => {
         age,
         symptoms,
         phq9_answers: phq9Answers,
+        phq9_latencies_ms: phq9Latencies,
         functional_impact: functionalImpact,
         ip_hash: ipHash,
         country: geo.country,

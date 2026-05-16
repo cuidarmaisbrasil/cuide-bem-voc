@@ -97,6 +97,7 @@ const Index = () => {
         age: a.age,
         symptoms: a.symptoms,
         phq9_answers: a.phq9,
+        phq9_latencies_ms: a.phq9LatenciesMs,
         functional_impact: a.functionalImpact,
       },
     });

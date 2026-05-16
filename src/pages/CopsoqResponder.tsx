@@ -13,7 +13,24 @@ const CopsoqResponder = () => {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
   const version = (params.get("v") as CopsoqVersion) || "short";
-  const questions = useMemo(() => getCopsoq(version), [version]);
+  const baseQuestions = useMemo(() => getCopsoq(version), [version]);
+  const [overrides, setOverrides] = useState<Record<number, { text: string; active: boolean }>>({});
+
+  useEffect(() => {
+    supabase.from("copsoq_question_overrides").select("n,text_override,active").eq("version", version)
+      .then(({ data }) => {
+        const map: Record<number, { text: string; active: boolean }> = {};
+        (data ?? []).forEach((r: any) => { map[r.n] = { text: r.text_override, active: r.active }; });
+        setOverrides(map);
+      });
+  }, [version]);
+
+  const questions = useMemo(
+    () => baseQuestions
+      .filter((q) => overrides[q.n]?.active !== false)
+      .map((q) => overrides[q.n]?.text ? { ...q, text: overrides[q.n].text } : q),
+    [baseQuestions, overrides],
+  );
 
   const [company, setCompany] = useState<{ id: string; name: string; allowed_versions: string[] } | null>(null);
   const [loading, setLoading] = useState(true);
