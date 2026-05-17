@@ -1,0 +1,18 @@
+# Cuidar+ Brasil
+
+> Plataforma gratuita brasileira de triagem em saúde mental: teste PHQ-9 de depressão para indivíduos e questionário COPSOQ II de riscos psicossociais no trabalho para empresas (apoio à NR-1).
+
+Cuidar+ Brasil oferece dois instrumentos validados cientificamente: o PHQ-9 para autoavaliação de sintomas depressivos com encaminhamento ao SUS e profissionais, e o COPSOQ II (curta/média/longa) para empresas mapearem riscos psicossociais entre colaboradores de forma anônima e agregada. Todo o conteúdo é em português, gratuito e voltado ao contexto brasileiro.
+
+## Páginas
+
+- [Início — teste PHQ-9 de depressão](/): Autoavaliação gratuita e anônima de sintomas depressivos com base no PHQ-9, com orientações sobre SUS, CAPS e profissionais.
+- [Cuidar+ Trabalho — COPSOQ II para empresas](/trabalho): Cadastro de empresas e painel para aplicar o questionário COPSOQ II de riscos psicossociais no trabalho (apoio à NR-1).
+- [Imprensa / Press Kit](/imprensa): Materiais para jornalistas, fatos rápidos, descrição dos instrumentos e contato.
+- [Blog RH — NR-1 e saúde mental no trabalho](/blog/rh-saude-mental-trabalho): O que o RH precisa medir em 2026 sobre saúde mental, NR-1 e COPSOQ II.
+- [Política de Privacidade](/privacidade): Como tratamos dados anonimizados, LGPD e direitos do usuário.
+- [Termos de Uso](/termos): Condições de uso da plataforma e limitações da triagem.
+
+## Optional
+
+- [Cancelar e-mails](/unsubscribe): Remoção da lista de lembretes de reteste.
