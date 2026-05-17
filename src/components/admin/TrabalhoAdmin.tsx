@@ -93,33 +93,42 @@ export const TrabalhoAdmin = () => {
 
   // ===== Report template =====
   const [blocks, setBlocks] = useState<Array<{ id: string; title: string; body: string }>>([]);
-  const [templateDirty, setTemplateDirty] = useState(false);
+  const [templateLoaded, setTemplateLoaded] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   async function loadTemplate() {
     const { data } = await supabase.from("copsoq_report_template").select("blocks").eq("id", 1).maybeSingle();
     setBlocks((data?.blocks as any) ?? []);
-    setTemplateDirty(false);
+    setTemplateLoaded(true);
   }
   useEffect(() => { loadTemplate(); }, []);
 
-  async function saveTemplate() {
-    const { error } = await supabase.from("copsoq_report_template").update({ blocks }).eq("id", 1);
-    if (error) return toast.error(error.message);
-    toast.success("Template salvo");
-    setTemplateDirty(false);
-  }
+  // Auto-save with debounce
+  useEffect(() => {
+    if (!templateLoaded) return;
+    setSaveState("saving");
+    const t = setTimeout(async () => {
+      const { error } = await supabase
+        .from("copsoq_report_template")
+        .upsert({ id: 1, blocks, updated_at: new Date().toISOString() }, { onConflict: "id" });
+      if (error) {
+        setSaveState("error");
+        toast.error(`Erro ao salvar: ${error.message}`);
+      } else {
+        setSaveState("saved");
+      }
+    }, 800);
+    return () => clearTimeout(t);
+  }, [blocks, templateLoaded]);
 
   function updateBlock(idx: number, patch: Partial<{ title: string; body: string }>) {
     setBlocks((b) => b.map((x, i) => (i === idx ? { ...x, ...patch } : x)));
-    setTemplateDirty(true);
   }
   function addBlock() {
     setBlocks((b) => [...b, { id: `b${Date.now()}`, title: "Novo bloco", body: "" }]);
-    setTemplateDirty(true);
   }
   function removeBlock(idx: number) {
     setBlocks((b) => b.filter((_, i) => i !== idx));
-    setTemplateDirty(true);
   }
   function moveBlock(idx: number, dir: -1 | 1) {
     setBlocks((b) => {
@@ -129,7 +138,6 @@ export const TrabalhoAdmin = () => {
       [next[idx], next[j]] = [next[j], next[idx]];
       return next;
     });
-    setTemplateDirty(true);
   }
 
   // ===== Sample preview =====
