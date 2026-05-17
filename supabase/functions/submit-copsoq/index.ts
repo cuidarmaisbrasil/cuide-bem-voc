@@ -16,7 +16,7 @@ function rawToScore(raw: number, reverse = false) {
 
 interface Body {
   slug: string;
-  version: "short" | "medium" | "long";
+  version: "short" | "medium" | "long" | "short_pt" | "medium_pt" | "long_pt" | "short_br" | "medium_br" | "long_br";
   answers: Record<string, number>; // {"1": 3, "2": 5, ...}
   questions: Array<{ n: number; scale: string; reverse?: boolean }>;
   demographics?: {
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (!["short", "medium", "long"].includes(body.version)) {
+    if (!["short","medium","long","short_pt","medium_pt","long_pt","short_br","medium_br","long_br"].includes(body.version)) {
       return new Response(JSON.stringify({ error: "Versão inválida" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

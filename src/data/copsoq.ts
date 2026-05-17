@@ -1,16 +1,16 @@
 // COPSOQ II — Versões Curta, Média e Longa
-// Tradução portuguesa: Silva, C. et al., 2011 (Universidade de Aveiro)
+// PT-PT: Silva, C. et al., 2011 (Universidade de Aveiro)
+// PT-BR: adaptação brasileira para Cuidar+ Brasil (2026), baseada na versão portuguesa
 // Original: Kristensen, T. et al., 2001 (Danish National Institute for Occupational Health)
 //
 // Escala de resposta: 1=Nunca/quase nunca ... 5=Sempre  (ou 1=Nada/quase nada ... 5=Extremamente)
 // Pontuação COPSOQ II padrão: 1→0, 2→25, 3→50, 4→75, 5→100
-//
-// Cada pergunta pertence a uma "escala". As escalas são classificadas como:
-//   - "positive" (recurso): valor alto = bom (ex: apoio social, influência)
-//   - "negative" (exigência/risco): valor alto = ruim (ex: stress, exigências)
-// Itens com `reverse: true` invertem antes da média da escala.
 
-export type CopsoqVersion = "short" | "medium" | "long";
+export type CopsoqVersion =
+  | "short_pt" | "medium_pt" | "long_pt"
+  | "short_br" | "medium_br" | "long_br"
+  // legados — equivalentes às versões PT
+  | "short" | "medium" | "long";
 
 export type CopsoqScaleType = "positive" | "negative";
 
@@ -18,7 +18,6 @@ export interface CopsoqScale {
   id: string;
   name: string;
   type: CopsoqScaleType;
-  /** Faixa "Risco / Atenção / Saudável" — valores 0-100 normalizados */
   description?: string;
 }
 
@@ -27,7 +26,6 @@ export interface CopsoqQuestion {
   text: string;
   scale: string;
   reverse?: boolean;
-  /** "freq" = 1-Nunca…5-Sempre | "intens" = 1-Nada…5-Extremamente | "saude" = 1-Excelente…5-Deficitária */
   responseSet: "freq" | "intens" | "saude";
 }
 
@@ -37,7 +35,6 @@ export const responseLabels = {
   saude: ["Excelente", "Muito boa", "Boa", "Razoável", "Deficitária"],
 } as const;
 
-/** Escalas usadas em qualquer das versões. */
 export const copsoqScales: Record<string, CopsoqScale> = {
   quantitative_demands: { id: "quantitative_demands", name: "Exigências quantitativas", type: "negative" },
   work_pace: { id: "work_pace", name: "Ritmo de trabalho", type: "negative" },
@@ -62,21 +59,25 @@ export const copsoqScales: Record<string, CopsoqScale> = {
   vertical_trust: { id: "vertical_trust", name: "Confiança vertical", type: "positive" },
   horizontal_trust: { id: "horizontal_trust", name: "Confiança horizontal", type: "positive" },
   justice: { id: "justice", name: "Justiça e respeito", type: "positive" },
-  self_efficacy: { id: "self_efficacy", name: "Auto-eficácia", type: "positive" },
+  self_efficacy: { id: "self_efficacy", name: "Autoeficácia", type: "positive" },
   general_health: { id: "general_health", name: "Saúde geral", type: "positive" },
   work_family_conflict: { id: "work_family_conflict", name: "Conflito trabalho–família", type: "negative" },
   family_work_conflict: { id: "family_work_conflict", name: "Conflito família–trabalho", type: "negative" },
   sleep: { id: "sleep", name: "Problemas de sono", type: "negative" },
   burnout: { id: "burnout", name: "Burnout", type: "negative" },
-  stress: { id: "stress", name: "Stress", type: "negative" },
+  stress: { id: "stress", name: "Estresse", type: "negative" },
   depressive: { id: "depressive", name: "Sintomas depressivos", type: "negative" },
-  somatic: { id: "somatic", name: "Sintomas somáticos de stress", type: "negative" },
-  cognitive_stress: { id: "cognitive_stress", name: "Sintomas cognitivos de stress", type: "negative" },
+  somatic: { id: "somatic", name: "Sintomas somáticos de estresse", type: "negative" },
+  cognitive_stress: { id: "cognitive_stress", name: "Sintomas cognitivos de estresse", type: "negative" },
   offensive: { id: "offensive", name: "Comportamentos ofensivos", type: "negative" },
 };
 
-// --------- VERSÃO CURTA (41 itens) ---------
-export const copsoqShort: CopsoqQuestion[] = [
+// ============================================================
+// PORTUGUÊS DE PORTUGAL (PT-PT) — tradução Silva et al. 2011
+// ============================================================
+
+// --------- VERSÃO CURTA PT (41 itens) ---------
+export const copsoqShortPT: CopsoqQuestion[] = [
   { n: 1, text: "A sua carga de trabalho acumula-se por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 2, text: "Com que frequência não tem tempo para completar todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 3, text: "Precisa trabalhar muito rapidamente?", scale: "work_pace", responseSet: "freq" },
@@ -120,9 +121,8 @@ export const copsoqShort: CopsoqQuestion[] = [
   { n: 41, text: "Tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
 ];
 
-// --------- VERSÃO MÉDIA (76 itens) ---------
-// (extraídos do manual COPSOQ II PT — Silva et al., 2011)
-export const copsoqMedium: CopsoqQuestion[] = [
+// --------- VERSÃO MÉDIA PT (76 itens) ---------
+export const copsoqMediumPT: CopsoqQuestion[] = [
   { n: 1, text: "A sua carga de trabalho acumula-se por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 2, text: "Com que frequência não tem tempo para completar todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 3, text: "Precisa fazer horas-extra?", scale: "quantitative_demands", responseSet: "freq" },
@@ -201,9 +201,8 @@ export const copsoqMedium: CopsoqQuestion[] = [
   { n: 76, text: "Tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
 ];
 
-// --------- VERSÃO LONGA (119 itens) ---------
-export const copsoqLong: CopsoqQuestion[] = [
-  // Demands (1-14)
+// --------- VERSÃO LONGA PT (119 itens) ---------
+export const copsoqLongPT: CopsoqQuestion[] = [
   { n: 1, text: "A sua carga de trabalho acumula-se por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 2, text: "Com que frequência não tem tempo para completar todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
   { n: 3, text: "Precisa fazer horas-extra?", scale: "quantitative_demands", responseSet: "freq" },
@@ -218,7 +217,6 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 12, text: "O seu trabalho requer que esconda os seus sentimentos?", scale: "hide_emotions", responseSet: "freq" },
   { n: 13, text: "É-lhe exigido que trate todas as pessoas de forma igual embora não se sinta satisfeito com isso?", scale: "hide_emotions", responseSet: "freq" },
   { n: 14, text: "É-lhe exigido que seja simpático com todos, embora sinta que o mesmo não lhe é retribuído?", scale: "hide_emotions", responseSet: "freq" },
-  // Work organization (15-22)
   { n: 15, text: "Tem um elevado grau de influência no seu trabalho?", scale: "influence", responseSet: "freq" },
   { n: 16, text: "Participa na escolha das pessoas com quem trabalha?", scale: "influence", responseSet: "freq" },
   { n: 17, text: "Pode influenciar a quantidade de trabalho que lhe compete a si?", scale: "influence", responseSet: "freq" },
@@ -227,7 +225,6 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 20, text: "O seu trabalho permite-lhe aprender coisas novas?", scale: "development", responseSet: "freq" },
   { n: 21, text: "O seu trabalho permite-lhe usar as suas habilidades ou perícias?", scale: "development", responseSet: "freq" },
   { n: 22, text: "O seu trabalho é variado?", scale: "variation", responseSet: "freq" },
-  // Information / role (23-31)
   { n: 23, text: "É informado com antecedência sobre decisões importantes, mudanças ou planos para o futuro?", scale: "predictability", responseSet: "freq" },
   { n: 24, text: "Recebe toda a informação de que necessita para fazer bem o seu trabalho?", scale: "predictability", responseSet: "freq" },
   { n: 25, text: "O seu trabalho apresenta objectivos claros?", scale: "role_clarity", responseSet: "freq" },
@@ -237,12 +234,10 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 29, text: "Há boas perspectivas no seu emprego?", scale: "recognition", responseSet: "freq" },
   { n: 30, text: "A gerência do seu local de trabalho respeita-o?", scale: "recognition", responseSet: "freq" },
   { n: 31, text: "É tratado de forma justa no seu local de trabalho?", scale: "justice", responseSet: "freq" },
-  // Role conflict (32-35)
   { n: 32, text: "Faz coisas no seu trabalho que uns concordam mas outros não?", scale: "role_conflict", responseSet: "freq" },
   { n: 33, text: "No seu trabalho são-lhe colocadas exigências contraditórias?", scale: "role_conflict", responseSet: "freq" },
   { n: 34, text: "Por vezes tem que fazer coisas que deveriam ser feitas de outra maneira?", scale: "role_conflict", responseSet: "freq" },
   { n: 35, text: "Por vezes tem que fazer coisas que considera desnecessárias?", scale: "role_conflict", responseSet: "freq" },
-  // Social support (36-44)
   { n: 36, text: "Com que frequência tem ajuda e apoio dos seus colegas de trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
   { n: 37, text: "Com que frequência os seus colegas estão dispostos a ouvi-lo(a) sobre os seus problemas de trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
   { n: 38, text: "Com que frequência os seus colegas falam consigo acerca do seu desempenho laboral?", scale: "social_support_colleagues", responseSet: "freq" },
@@ -252,12 +247,10 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 42, text: "Existe um bom ambiente de trabalho entre si e os seus colegas?", scale: "community", responseSet: "freq" },
   { n: 43, text: "Existe uma boa cooperação entre os colegas de trabalho?", scale: "community", responseSet: "freq" },
   { n: 44, text: "No seu local de trabalho sente-se parte de uma comunidade?", scale: "community", responseSet: "freq" },
-  // Leadership (45-48)
   { n: 45, text: "A chefia oferece aos indivíduos e ao grupo boas oportunidades de desenvolvimento?", scale: "leadership_quality", responseSet: "freq" },
   { n: 46, text: "A chefia dá prioridade à satisfação no trabalho?", scale: "leadership_quality", responseSet: "freq" },
   { n: 47, text: "A chefia é boa no planeamento do trabalho?", scale: "leadership_quality", responseSet: "freq" },
   { n: 48, text: "A chefia é boa a resolver conflitos?", scale: "leadership_quality", responseSet: "freq" },
-  // Trust / justice (49-62)
   { n: 49, text: "Os funcionários ocultam informações uns dos outros?", scale: "horizontal_trust", responseSet: "freq", reverse: true },
   { n: 50, text: "Os funcionários ocultam informação à gerência?", scale: "vertical_trust", responseSet: "freq", reverse: true },
   { n: 51, text: "Os funcionários confiam uns nos outros de um modo geral?", scale: "horizontal_trust", responseSet: "freq" },
@@ -272,7 +265,6 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 60, text: "Existe lugar para funcionários de diferentes raças e religiões?", scale: "community", responseSet: "freq" },
   { n: 61, text: "Existe lugar para funcionários com doenças ou deficiências?", scale: "community", responseSet: "freq" },
   { n: 62, text: "Existe lugar para funcionários da terceira idade?", scale: "community", responseSet: "freq" },
-  // Meaning / commitment / satisfaction (63-72)
   { n: 63, text: "O seu trabalho tem significado?", scale: "meaning", responseSet: "intens" },
   { n: 64, text: "Sente que o seu trabalho é importante?", scale: "meaning", responseSet: "intens" },
   { n: 65, text: "Sente-se motivado e envolvido com o seu trabalho?", scale: "commitment", responseSet: "intens" },
@@ -283,25 +275,20 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 70, text: "Quão satisfeito está com as condições físicas do seu local de trabalho?", scale: "job_satisfaction", responseSet: "intens" },
   { n: 71, text: "Quão satisfeito está com a forma como as suas capacidades são utilizadas?", scale: "job_satisfaction", responseSet: "intens" },
   { n: 72, text: "Quão satisfeito está com o seu trabalho de uma forma global?", scale: "job_satisfaction", responseSet: "intens" },
-  // Insecurity (73-76)
   { n: 73, text: "Sente-se preocupado em ficar desempregado?", scale: "insecurity", responseSet: "intens" },
   { n: 74, text: "Sente-se preocupado que uma nova tecnologia o torne dispensável?", scale: "insecurity", responseSet: "intens" },
   { n: 75, text: "Sente-se preocupado com a dificuldade em conseguir outro trabalho caso ficasse desempregado?", scale: "insecurity", responseSet: "intens" },
   { n: 76, text: "Sente-se preocupado em ser transferido para outro local de trabalho contra a sua vontade?", scale: "insecurity", responseSet: "intens" },
-  // Health (77)
   { n: 77, text: "Em geral, sente que a sua saúde é:", scale: "general_health", responseSet: "saude", reverse: true },
-  // Work-life (78-82)
   { n: 78, text: "Sente que o seu trabalho lhe exige muita energia que acaba por afectar a sua vida privada negativamente?", scale: "work_family_conflict", responseSet: "intens" },
   { n: 79, text: "Sente que o seu trabalho lhe exige muito tempo que acaba por afectar a sua vida privada negativamente?", scale: "work_family_conflict", responseSet: "intens" },
   { n: 80, text: "A sua família e os seus amigos dizem-lhe que trabalha demais?", scale: "work_family_conflict", responseSet: "intens" },
   { n: 81, text: "Sente que a sua vida privada lhe exige muita energia e que acaba por afectar o seu trabalho negativamente?", scale: "family_work_conflict", responseSet: "intens" },
   { n: 82, text: "Sente que a sua vida privada lhe exige muito tempo e que acaba por afectar o seu trabalho negativamente?", scale: "family_work_conflict", responseSet: "intens" },
-  // Sleep (83-86)
   { n: 83, text: "Teve dificuldade em adormecer?", scale: "sleep", responseSet: "freq" },
   { n: 84, text: "Dormiu mal e de forma sobressaltada?", scale: "sleep", responseSet: "freq" },
   { n: 85, text: "Acordou demasiado cedo e depois teve dificuldade em adormecer novamente?", scale: "sleep", responseSet: "freq" },
   { n: 86, text: "Acordou várias vezes durante a noite e depois não conseguia adormecer novamente?", scale: "sleep", responseSet: "freq" },
-  // Burnout / stress (87-95)
   { n: 87, text: "Sentiu-se cansado?", scale: "burnout", responseSet: "freq" },
   { n: 88, text: "Sentiu-se esgotado?", scale: "burnout", responseSet: "freq" },
   { n: 89, text: "Sentiu-se fisicamente exausto?", scale: "burnout", responseSet: "freq" },
@@ -311,29 +298,24 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 93, text: "Sentiu-se tenso?", scale: "stress", responseSet: "freq" },
   { n: 94, text: "Sentiu-se ansioso?", scale: "stress", responseSet: "freq" },
   { n: 95, text: "Sentiu-se triste?", scale: "depressive", responseSet: "freq" },
-  // Depressive (96-98)
   { n: 96, text: "Sentiu falta de auto-confiança?", scale: "depressive", responseSet: "freq" },
   { n: 97, text: "Sentiu peso na consciência ou sentimento de culpa?", scale: "depressive", responseSet: "freq" },
   { n: 98, text: "Sentiu falta de interesse por coisas quotidianas?", scale: "depressive", responseSet: "freq" },
-  // Somatic (99-103)
   { n: 99, text: "Teve dores de barriga?", scale: "somatic", responseSet: "freq" },
   { n: 100, text: "Teve aperto ou dor no peito?", scale: "somatic", responseSet: "freq" },
   { n: 101, text: "Teve dores de cabeça?", scale: "somatic", responseSet: "freq" },
   { n: 102, text: "Teve palpitações?", scale: "somatic", responseSet: "freq" },
   { n: 103, text: "Teve tensão em vários músculos?", scale: "somatic", responseSet: "freq" },
-  // Cognitive stress (104-107)
   { n: 104, text: "Teve dificuldade em concentrar-se?", scale: "cognitive_stress", responseSet: "freq" },
   { n: 105, text: "Teve dificuldade em tomar decisões?", scale: "cognitive_stress", responseSet: "freq" },
   { n: 106, text: "Teve dificuldade em lembrar-se de algo?", scale: "cognitive_stress", responseSet: "freq" },
   { n: 107, text: "Teve dificuldade em pensar claramente?", scale: "cognitive_stress", responseSet: "freq" },
-  // Self-efficacy (108-113)
   { n: 108, text: "Sou sempre capaz de resolver problemas, se tentar o suficiente.", scale: "self_efficacy", responseSet: "freq" },
   { n: 109, text: "Mesmo que as pessoas trabalhem contra mim, encontro sempre forma de atingir o que pretendo.", scale: "self_efficacy", responseSet: "freq" },
   { n: 110, text: "É-me fácil seguir os meus planos e atingir os meus objectivos.", scale: "self_efficacy", responseSet: "freq" },
   { n: 111, text: "Sinto-me confiante em lidar com acontecimentos inesperados.", scale: "self_efficacy", responseSet: "freq" },
   { n: 112, text: "Quando tenho um problema, usualmente tenho várias maneiras de lidar com o mesmo.", scale: "self_efficacy", responseSet: "freq" },
   { n: 113, text: "Independentemente do que acontecer, costumo encontrar soluções para os meus problemas.", scale: "self_efficacy", responseSet: "freq" },
-  // Offensive behavior (114-119)
   { n: 114, text: "Tem-se envolvido em conflitos ou discussões no trabalho?", scale: "offensive", responseSet: "freq" },
   { n: 115, text: "Tem sido alvo de rumores ou calúnias no trabalho?", scale: "offensive", responseSet: "freq" },
   { n: 116, text: "Tem sido alvo de insultos ou provocações verbais no trabalho?", scale: "offensive", responseSet: "freq" },
@@ -342,14 +324,290 @@ export const copsoqLong: CopsoqQuestion[] = [
   { n: 119, text: "Tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
 ];
 
+// ============================================================
+// PORTUGUÊS DO BRASIL (PT-BR) — adaptação Cuidar+ Brasil
+// ============================================================
+
+// --------- VERSÃO CURTA BR (41 itens) ---------
+export const copsoqShortBR: CopsoqQuestion[] = [
+  { n: 1, text: "Sua carga de trabalho se acumula por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 2, text: "Com que frequência você não tem tempo para concluir todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 3, text: "Você precisa trabalhar muito rapidamente?", scale: "work_pace", responseSet: "freq" },
+  { n: 4, text: "Seu trabalho exige sua atenção constante?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 5, text: "Seu trabalho exige que você tome decisões difíceis?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 6, text: "Seu trabalho exige muito de você emocionalmente?", scale: "emotional_demands", responseSet: "freq" },
+  { n: 7, text: "Você tem um alto grau de influência sobre o seu trabalho?", scale: "influence", responseSet: "freq" },
+  { n: 8, text: "Seu trabalho exige que você tenha iniciativa?", scale: "development", responseSet: "freq" },
+  { n: 9, text: "Seu trabalho permite que você aprenda coisas novas?", scale: "development", responseSet: "freq" },
+  { n: 10, text: "No seu trabalho, você é informado com antecedência sobre decisões importantes, mudanças ou planos para o futuro?", scale: "predictability", responseSet: "freq" },
+  { n: 11, text: "Você recebe todas as informações necessárias para fazer bem o seu trabalho?", scale: "predictability", responseSet: "freq" },
+  { n: 12, text: "Você sabe exatamente quais são as suas responsabilidades?", scale: "role_clarity", responseSet: "freq" },
+  { n: 13, text: "Seu trabalho é reconhecido e valorizado pela gestão?", scale: "recognition", responseSet: "freq" },
+  { n: 14, text: "Você é tratado de forma justa no seu local de trabalho?", scale: "justice", responseSet: "freq" },
+  { n: 15, text: "Com que frequência você recebe ajuda e apoio do seu superior imediato?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 16, text: "Existe um bom clima de trabalho entre você e seus colegas?", scale: "community", responseSet: "freq" },
+  { n: 17, text: "A liderança oferece aos indivíduos e à equipe boas oportunidades de desenvolvimento?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 18, text: "A liderança é boa em planejar o trabalho?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 19, text: "A gestão confia que os funcionários fazem bem o seu trabalho?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 20, text: "Você confia nas informações transmitidas pela gestão?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 21, text: "Os conflitos são resolvidos de forma justa?", scale: "justice", responseSet: "freq" },
+  { n: 22, text: "O trabalho é distribuído de forma equilibrada entre os funcionários?", scale: "justice", responseSet: "freq" },
+  { n: 23, text: "Eu sempre consigo resolver problemas, se tentar o suficiente.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 24, text: "Seu trabalho tem algum significado para você?", scale: "meaning", responseSet: "intens" },
+  { n: 25, text: "Você sente que seu trabalho é importante?", scale: "meaning", responseSet: "intens" },
+  { n: 26, text: "Você sente que os problemas do seu trabalho também são seus?", scale: "commitment", responseSet: "intens" },
+  { n: 27, text: "De forma geral, quão satisfeito você está com o seu trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 28, text: "Você se sente preocupado em ficar desempregado?", scale: "insecurity", responseSet: "intens" },
+  { n: 29, text: "De modo geral, você sente que sua saúde é:", scale: "general_health", responseSet: "saude", reverse: true },
+  { n: 30, text: "Você sente que seu trabalho exige tanta energia que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 31, text: "Você sente que seu trabalho exige tanto tempo que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 32, text: "Você acordou várias vezes durante a noite e depois não conseguiu voltar a dormir?", scale: "sleep", responseSet: "freq" },
+  { n: 33, text: "Você se sentiu fisicamente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 34, text: "Você se sentiu emocionalmente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 35, text: "Você se sentiu irritado?", scale: "stress", responseSet: "freq" },
+  { n: 36, text: "Você se sentiu ansioso?", scale: "stress", responseSet: "freq" },
+  { n: 37, text: "Você se sentiu triste?", scale: "depressive", responseSet: "freq" },
+  { n: 38, text: "Você tem sido alvo de insultos ou provocações verbais no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 39, text: "Você tem sido exposto a assédio sexual indesejado no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 40, text: "Você tem sido exposto a ameaças de violência no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 41, text: "Você tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
+];
+
+// --------- VERSÃO MÉDIA BR (76 itens) ---------
+export const copsoqMediumBR: CopsoqQuestion[] = [
+  { n: 1, text: "Sua carga de trabalho se acumula por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 2, text: "Com que frequência você não tem tempo para concluir todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 3, text: "Você precisa fazer horas extras?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 4, text: "Você precisa trabalhar muito rapidamente?", scale: "work_pace", responseSet: "freq" },
+  { n: 5, text: "Seu trabalho exige sua atenção constante?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 6, text: "Seu trabalho exige que você seja bom em propor novas ideias?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 7, text: "Seu trabalho exige que você tome decisões difíceis?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 8, text: "Seu trabalho exige muito de você emocionalmente?", scale: "emotional_demands", responseSet: "freq" },
+  { n: 9, text: "Você tem um alto grau de influência sobre o seu trabalho?", scale: "influence", responseSet: "freq" },
+  { n: 10, text: "Você participa da escolha das pessoas com quem trabalha?", scale: "influence", responseSet: "freq" },
+  { n: 11, text: "Você pode influenciar a quantidade de trabalho que cabe a você?", scale: "influence", responseSet: "freq" },
+  { n: 12, text: "Você tem alguma influência sobre o tipo de tarefas que executa?", scale: "influence", responseSet: "freq" },
+  { n: 13, text: "Seu trabalho exige que você tenha iniciativa?", scale: "development", responseSet: "freq" },
+  { n: 14, text: "Seu trabalho permite que você aprenda coisas novas?", scale: "development", responseSet: "freq" },
+  { n: 15, text: "Seu trabalho permite que você use suas habilidades?", scale: "development", responseSet: "freq" },
+  { n: 16, text: "Você é informado com antecedência sobre decisões importantes, mudanças ou planos para o futuro?", scale: "predictability", responseSet: "freq" },
+  { n: 17, text: "Você recebe todas as informações necessárias para fazer bem o seu trabalho?", scale: "predictability", responseSet: "freq" },
+  { n: 18, text: "Seu trabalho apresenta objetivos claros?", scale: "role_clarity", responseSet: "freq" },
+  { n: 19, text: "Você sabe exatamente quais são as suas responsabilidades?", scale: "role_clarity", responseSet: "freq" },
+  { n: 20, text: "Você sabe exatamente o que é esperado de você?", scale: "role_clarity", responseSet: "freq" },
+  { n: 21, text: "Seu trabalho é reconhecido e valorizado pela gestão?", scale: "recognition", responseSet: "freq" },
+  { n: 22, text: "A gestão do seu local de trabalho respeita você?", scale: "recognition", responseSet: "freq" },
+  { n: 23, text: "Você é tratado de forma justa no seu local de trabalho?", scale: "justice", responseSet: "freq" },
+  { n: 24, text: "Você faz coisas no trabalho com as quais uns concordam e outros não?", scale: "role_conflict", responseSet: "freq" },
+  { n: 25, text: "Às vezes você tem que fazer coisas que deveriam ser feitas de outra maneira?", scale: "role_conflict", responseSet: "freq" },
+  { n: 26, text: "Às vezes você tem que fazer coisas que considera desnecessárias?", scale: "role_conflict", responseSet: "freq" },
+  { n: 27, text: "Com que frequência você tem ajuda e apoio dos seus colegas de trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 28, text: "Com que frequência seus colegas estão dispostos a ouvir você sobre seus problemas no trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 29, text: "Com que frequência seus colegas falam com você sobre o seu desempenho no trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 30, text: "Com que frequência seu superior imediato fala com você sobre como está indo o seu trabalho?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 31, text: "Com que frequência você tem ajuda e apoio do seu superior imediato?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 32, text: "Com que frequência seu superior imediato fala com você sobre o seu desempenho no trabalho?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 33, text: "Existe um bom clima de trabalho entre você e seus colegas?", scale: "community", responseSet: "freq" },
+  { n: 34, text: "Existe uma boa cooperação entre os colegas de trabalho?", scale: "community", responseSet: "freq" },
+  { n: 35, text: "No seu local de trabalho, você se sente parte de uma comunidade?", scale: "community", responseSet: "freq" },
+  { n: 36, text: "A liderança oferece aos indivíduos e à equipe boas oportunidades de desenvolvimento?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 37, text: "A liderança dá prioridade à satisfação no trabalho?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 38, text: "A liderança é boa em planejar o trabalho?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 39, text: "A liderança é boa em resolver conflitos?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 40, text: "Os funcionários escondem informações uns dos outros?", scale: "horizontal_trust", responseSet: "freq", reverse: true },
+  { n: 41, text: "Os funcionários escondem informações da gestão?", scale: "vertical_trust", responseSet: "freq", reverse: true },
+  { n: 42, text: "Os funcionários, de modo geral, confiam uns nos outros?", scale: "horizontal_trust", responseSet: "freq" },
+  { n: 43, text: "A gestão confia que os funcionários fazem bem o seu trabalho?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 44, text: "Você confia nas informações transmitidas pela gestão?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 45, text: "A gestão esconde informações dos funcionários?", scale: "vertical_trust", responseSet: "freq", reverse: true },
+  { n: 46, text: "Os conflitos são resolvidos de forma justa?", scale: "justice", responseSet: "freq" },
+  { n: 47, text: "As sugestões dos funcionários são tratadas com seriedade pela gestão?", scale: "justice", responseSet: "freq" },
+  { n: 48, text: "O trabalho é distribuído de forma equilibrada entre os funcionários?", scale: "justice", responseSet: "freq" },
+  { n: 49, text: "Eu sempre consigo resolver problemas, se tentar o suficiente.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 50, text: "É fácil para mim seguir meus planos e atingir meus objetivos.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 51, text: "Seu trabalho tem algum significado para você?", scale: "meaning", responseSet: "intens" },
+  { n: 52, text: "Você sente que seu trabalho é importante?", scale: "meaning", responseSet: "intens" },
+  { n: 53, text: "Você se sente motivado e engajado com seu trabalho?", scale: "commitment", responseSet: "intens" },
+  { n: 54, text: "Você gosta de falar com outras pessoas sobre o seu local de trabalho?", scale: "commitment", responseSet: "intens" },
+  { n: 55, text: "Você sente que os problemas do seu trabalho também são seus?", scale: "commitment", responseSet: "intens" },
+  { n: 56, text: "Quão satisfeito você está com suas perspectivas de trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 57, text: "Quão satisfeito você está com as condições físicas do seu local de trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 58, text: "Quão satisfeito você está com a forma como suas capacidades são utilizadas?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 59, text: "De forma geral, quão satisfeito você está com o seu trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 60, text: "Você se sente preocupado em ficar desempregado?", scale: "insecurity", responseSet: "intens" },
+  { n: 61, text: "De modo geral, você sente que sua saúde é:", scale: "general_health", responseSet: "saude", reverse: true },
+  { n: 62, text: "Você sente que seu trabalho exige tanta energia que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 63, text: "Você sente que seu trabalho exige tanto tempo que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 64, text: "Sua família e seus amigos dizem que você trabalha demais?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 65, text: "Você teve dificuldade para pegar no sono?", scale: "sleep", responseSet: "freq" },
+  { n: 66, text: "Você acordou várias vezes durante a noite e depois não conseguiu voltar a dormir?", scale: "sleep", responseSet: "freq" },
+  { n: 67, text: "Você se sentiu fisicamente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 68, text: "Você se sentiu emocionalmente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 69, text: "Você se sentiu irritado?", scale: "stress", responseSet: "freq" },
+  { n: 70, text: "Você se sentiu ansioso?", scale: "stress", responseSet: "freq" },
+  { n: 71, text: "Você se sentiu triste?", scale: "depressive", responseSet: "freq" },
+  { n: 72, text: "Você sentiu falta de interesse pelas coisas do dia a dia?", scale: "depressive", responseSet: "freq" },
+  { n: 73, text: "Você tem sido alvo de insultos ou provocações verbais no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 74, text: "Você tem sido exposto a assédio sexual indesejado no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 75, text: "Você tem sido exposto a ameaças de violência no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 76, text: "Você tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
+];
+
+// --------- VERSÃO LONGA BR (119 itens) ---------
+export const copsoqLongBR: CopsoqQuestion[] = [
+  { n: 1, text: "Sua carga de trabalho se acumula por ser mal distribuída?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 2, text: "Com que frequência você não tem tempo para concluir todas as tarefas do seu trabalho?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 3, text: "Você precisa fazer horas extras?", scale: "quantitative_demands", responseSet: "freq" },
+  { n: 4, text: "Você precisa trabalhar muito rapidamente?", scale: "work_pace", responseSet: "freq" },
+  { n: 5, text: "Seu trabalho exige sua atenção constante?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 6, text: "Seu trabalho exige que você seja bom em propor novas ideias?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 7, text: "Seu trabalho exige que você tome decisões difíceis?", scale: "cognitive_demands", responseSet: "freq" },
+  { n: 8, text: "Seu trabalho coloca você em situações emocionalmente perturbadoras?", scale: "emotional_demands", responseSet: "freq" },
+  { n: 9, text: "Seu trabalho exige muito de você emocionalmente?", scale: "emotional_demands", responseSet: "freq" },
+  { n: 10, text: "Você se sente emocionalmente envolvido com o seu trabalho?", scale: "emotional_demands", responseSet: "freq" },
+  { n: 11, text: "Seu trabalho exige que você não manifeste sua opinião?", scale: "hide_emotions", responseSet: "freq" },
+  { n: 12, text: "Seu trabalho exige que você esconda seus sentimentos?", scale: "hide_emotions", responseSet: "freq" },
+  { n: 13, text: "É exigido de você que trate todas as pessoas de forma igual, mesmo que isso não te agrade?", scale: "hide_emotions", responseSet: "freq" },
+  { n: 14, text: "É exigido de você ser simpático com todos, mesmo sentindo que isso não é retribuído?", scale: "hide_emotions", responseSet: "freq" },
+  { n: 15, text: "Você tem um alto grau de influência sobre o seu trabalho?", scale: "influence", responseSet: "freq" },
+  { n: 16, text: "Você participa da escolha das pessoas com quem trabalha?", scale: "influence", responseSet: "freq" },
+  { n: 17, text: "Você pode influenciar a quantidade de trabalho que cabe a você?", scale: "influence", responseSet: "freq" },
+  { n: 18, text: "Você tem alguma influência sobre o tipo de tarefas que executa?", scale: "influence", responseSet: "freq" },
+  { n: 19, text: "Seu trabalho exige que você tenha iniciativa?", scale: "development", responseSet: "freq" },
+  { n: 20, text: "Seu trabalho permite que você aprenda coisas novas?", scale: "development", responseSet: "freq" },
+  { n: 21, text: "Seu trabalho permite que você use suas habilidades?", scale: "development", responseSet: "freq" },
+  { n: 22, text: "Seu trabalho é variado?", scale: "variation", responseSet: "freq" },
+  { n: 23, text: "Você é informado com antecedência sobre decisões importantes, mudanças ou planos para o futuro?", scale: "predictability", responseSet: "freq" },
+  { n: 24, text: "Você recebe todas as informações necessárias para fazer bem o seu trabalho?", scale: "predictability", responseSet: "freq" },
+  { n: 25, text: "Seu trabalho apresenta objetivos claros?", scale: "role_clarity", responseSet: "freq" },
+  { n: 26, text: "Você sabe exatamente quais são as suas responsabilidades?", scale: "role_clarity", responseSet: "freq" },
+  { n: 27, text: "Você sabe exatamente o que é esperado de você?", scale: "role_clarity", responseSet: "freq" },
+  { n: 28, text: "Seu trabalho é reconhecido e valorizado pela gestão?", scale: "recognition", responseSet: "freq" },
+  { n: 29, text: "Existem boas perspectivas no seu emprego?", scale: "recognition", responseSet: "freq" },
+  { n: 30, text: "A gestão do seu local de trabalho respeita você?", scale: "recognition", responseSet: "freq" },
+  { n: 31, text: "Você é tratado de forma justa no seu local de trabalho?", scale: "justice", responseSet: "freq" },
+  { n: 32, text: "Você faz coisas no trabalho com as quais uns concordam e outros não?", scale: "role_conflict", responseSet: "freq" },
+  { n: 33, text: "No seu trabalho lhe são feitas exigências contraditórias?", scale: "role_conflict", responseSet: "freq" },
+  { n: 34, text: "Às vezes você tem que fazer coisas que deveriam ser feitas de outra maneira?", scale: "role_conflict", responseSet: "freq" },
+  { n: 35, text: "Às vezes você tem que fazer coisas que considera desnecessárias?", scale: "role_conflict", responseSet: "freq" },
+  { n: 36, text: "Com que frequência você tem ajuda e apoio dos seus colegas de trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 37, text: "Com que frequência seus colegas estão dispostos a ouvir você sobre seus problemas no trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 38, text: "Com que frequência seus colegas falam com você sobre o seu desempenho no trabalho?", scale: "social_support_colleagues", responseSet: "freq" },
+  { n: 39, text: "Com que frequência seu superior imediato fala com você sobre como está indo o seu trabalho?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 40, text: "Com que frequência você tem ajuda e apoio do seu superior imediato?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 41, text: "Com que frequência seu superior imediato fala com você sobre o seu desempenho no trabalho?", scale: "social_support_supervisors", responseSet: "freq" },
+  { n: 42, text: "Existe um bom clima de trabalho entre você e seus colegas?", scale: "community", responseSet: "freq" },
+  { n: 43, text: "Existe uma boa cooperação entre os colegas de trabalho?", scale: "community", responseSet: "freq" },
+  { n: 44, text: "No seu local de trabalho, você se sente parte de uma comunidade?", scale: "community", responseSet: "freq" },
+  { n: 45, text: "A liderança oferece aos indivíduos e à equipe boas oportunidades de desenvolvimento?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 46, text: "A liderança dá prioridade à satisfação no trabalho?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 47, text: "A liderança é boa em planejar o trabalho?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 48, text: "A liderança é boa em resolver conflitos?", scale: "leadership_quality", responseSet: "freq" },
+  { n: 49, text: "Os funcionários escondem informações uns dos outros?", scale: "horizontal_trust", responseSet: "freq", reverse: true },
+  { n: 50, text: "Os funcionários escondem informações da gestão?", scale: "vertical_trust", responseSet: "freq", reverse: true },
+  { n: 51, text: "Os funcionários, de modo geral, confiam uns nos outros?", scale: "horizontal_trust", responseSet: "freq" },
+  { n: 52, text: "A gestão confia que os funcionários fazem bem o seu trabalho?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 53, text: "Você confia nas informações transmitidas pela gestão?", scale: "vertical_trust", responseSet: "freq" },
+  { n: 54, text: "A gestão esconde informações dos funcionários?", scale: "vertical_trust", responseSet: "freq", reverse: true },
+  { n: 55, text: "Os conflitos são resolvidos de forma justa?", scale: "justice", responseSet: "freq" },
+  { n: 56, text: "Os funcionários são valorizados quando fazem um bom trabalho?", scale: "justice", responseSet: "freq" },
+  { n: 57, text: "As sugestões dos funcionários são tratadas com seriedade pela gestão?", scale: "justice", responseSet: "freq" },
+  { n: 58, text: "O trabalho é distribuído de forma equilibrada entre os funcionários?", scale: "justice", responseSet: "freq" },
+  { n: 59, text: "Homens e mulheres são tratados da mesma forma?", scale: "justice", responseSet: "freq" },
+  { n: 60, text: "Existe espaço para funcionários de diferentes raças e religiões?", scale: "community", responseSet: "freq" },
+  { n: 61, text: "Existe espaço para funcionários com doenças ou deficiências?", scale: "community", responseSet: "freq" },
+  { n: 62, text: "Existe espaço para funcionários da terceira idade?", scale: "community", responseSet: "freq" },
+  { n: 63, text: "Seu trabalho tem significado?", scale: "meaning", responseSet: "intens" },
+  { n: 64, text: "Você sente que seu trabalho é importante?", scale: "meaning", responseSet: "intens" },
+  { n: 65, text: "Você se sente motivado e engajado com seu trabalho?", scale: "commitment", responseSet: "intens" },
+  { n: 66, text: "Você gosta de falar com outras pessoas sobre o seu local de trabalho?", scale: "commitment", responseSet: "intens" },
+  { n: 67, text: "Você sente que os problemas do seu trabalho também são seus?", scale: "commitment", responseSet: "intens" },
+  { n: 68, text: "Seu local de trabalho tem grande importância pessoal para você?", scale: "commitment", responseSet: "intens" },
+  { n: 69, text: "Quão satisfeito você está com suas perspectivas de trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 70, text: "Quão satisfeito você está com as condições físicas do seu local de trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 71, text: "Quão satisfeito você está com a forma como suas capacidades são utilizadas?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 72, text: "De forma geral, quão satisfeito você está com o seu trabalho?", scale: "job_satisfaction", responseSet: "intens" },
+  { n: 73, text: "Você se sente preocupado em ficar desempregado?", scale: "insecurity", responseSet: "intens" },
+  { n: 74, text: "Você se sente preocupado que uma nova tecnologia possa torná-lo dispensável?", scale: "insecurity", responseSet: "intens" },
+  { n: 75, text: "Você se sente preocupado com a dificuldade de conseguir outro emprego caso ficasse desempregado?", scale: "insecurity", responseSet: "intens" },
+  { n: 76, text: "Você se sente preocupado em ser transferido para outro local de trabalho contra a sua vontade?", scale: "insecurity", responseSet: "intens" },
+  { n: 77, text: "De modo geral, você sente que sua saúde é:", scale: "general_health", responseSet: "saude", reverse: true },
+  { n: 78, text: "Você sente que seu trabalho exige tanta energia que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 79, text: "Você sente que seu trabalho exige tanto tempo que acaba afetando negativamente sua vida pessoal?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 80, text: "Sua família e seus amigos dizem que você trabalha demais?", scale: "work_family_conflict", responseSet: "intens" },
+  { n: 81, text: "Você sente que sua vida pessoal exige tanta energia que acaba afetando negativamente seu trabalho?", scale: "family_work_conflict", responseSet: "intens" },
+  { n: 82, text: "Você sente que sua vida pessoal exige tanto tempo que acaba afetando negativamente seu trabalho?", scale: "family_work_conflict", responseSet: "intens" },
+  { n: 83, text: "Você teve dificuldade para pegar no sono?", scale: "sleep", responseSet: "freq" },
+  { n: 84, text: "Você dormiu mal e de forma agitada?", scale: "sleep", responseSet: "freq" },
+  { n: 85, text: "Você acordou muito cedo e depois teve dificuldade para voltar a dormir?", scale: "sleep", responseSet: "freq" },
+  { n: 86, text: "Você acordou várias vezes durante a noite e depois não conseguiu voltar a dormir?", scale: "sleep", responseSet: "freq" },
+  { n: 87, text: "Você se sentiu cansado?", scale: "burnout", responseSet: "freq" },
+  { n: 88, text: "Você se sentiu esgotado?", scale: "burnout", responseSet: "freq" },
+  { n: 89, text: "Você se sentiu fisicamente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 90, text: "Você se sentiu emocionalmente exausto?", scale: "burnout", responseSet: "freq" },
+  { n: 91, text: "Você teve dificuldade para relaxar?", scale: "stress", responseSet: "freq" },
+  { n: 92, text: "Você se sentiu irritado?", scale: "stress", responseSet: "freq" },
+  { n: 93, text: "Você se sentiu tenso?", scale: "stress", responseSet: "freq" },
+  { n: 94, text: "Você se sentiu ansioso?", scale: "stress", responseSet: "freq" },
+  { n: 95, text: "Você se sentiu triste?", scale: "depressive", responseSet: "freq" },
+  { n: 96, text: "Você sentiu falta de autoconfiança?", scale: "depressive", responseSet: "freq" },
+  { n: 97, text: "Você sentiu peso na consciência ou sentimento de culpa?", scale: "depressive", responseSet: "freq" },
+  { n: 98, text: "Você sentiu falta de interesse pelas coisas do dia a dia?", scale: "depressive", responseSet: "freq" },
+  { n: 99, text: "Você teve dores de barriga?", scale: "somatic", responseSet: "freq" },
+  { n: 100, text: "Você teve aperto ou dor no peito?", scale: "somatic", responseSet: "freq" },
+  { n: 101, text: "Você teve dores de cabeça?", scale: "somatic", responseSet: "freq" },
+  { n: 102, text: "Você teve palpitações?", scale: "somatic", responseSet: "freq" },
+  { n: 103, text: "Você teve tensão em vários músculos?", scale: "somatic", responseSet: "freq" },
+  { n: 104, text: "Você teve dificuldade para se concentrar?", scale: "cognitive_stress", responseSet: "freq" },
+  { n: 105, text: "Você teve dificuldade para tomar decisões?", scale: "cognitive_stress", responseSet: "freq" },
+  { n: 106, text: "Você teve dificuldade para lembrar de alguma coisa?", scale: "cognitive_stress", responseSet: "freq" },
+  { n: 107, text: "Você teve dificuldade para pensar com clareza?", scale: "cognitive_stress", responseSet: "freq" },
+  { n: 108, text: "Eu sempre consigo resolver problemas, se tentar o suficiente.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 109, text: "Mesmo que as pessoas trabalhem contra mim, sempre encontro um jeito de conseguir o que quero.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 110, text: "É fácil para mim seguir meus planos e atingir meus objetivos.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 111, text: "Eu me sinto confiante para lidar com acontecimentos inesperados.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 112, text: "Quando tenho um problema, normalmente tenho várias formas de lidar com ele.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 113, text: "Independentemente do que aconteça, costumo encontrar soluções para meus problemas.", scale: "self_efficacy", responseSet: "freq" },
+  { n: 114, text: "Você tem se envolvido em conflitos ou discussões no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 115, text: "Você tem sido alvo de boatos ou calúnias no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 116, text: "Você tem sido alvo de insultos ou provocações verbais no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 117, text: "Você tem sido exposto a assédio sexual indesejado no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 118, text: "Você tem sido exposto a ameaças de violência no trabalho?", scale: "offensive", responseSet: "freq" },
+  { n: 119, text: "Você tem sido exposto a violência física no trabalho?", scale: "offensive", responseSet: "freq" },
+];
+
+// Aliases para compatibilidade — usuários existentes podem ter as 3 chaves antigas em allowed_versions
+export const copsoqShort = copsoqShortPT;
+export const copsoqMedium = copsoqMediumPT;
+export const copsoqLong = copsoqLongPT;
+
 export function getCopsoq(version: CopsoqVersion): CopsoqQuestion[] {
-  if (version === "short") return copsoqShort;
-  if (version === "medium") return copsoqMedium;
-  return copsoqLong;
+  switch (version) {
+    case "short_br": return copsoqShortBR;
+    case "medium_br": return copsoqMediumBR;
+    case "long_br": return copsoqLongBR;
+    case "short_pt":
+    case "short": return copsoqShortPT;
+    case "medium_pt":
+    case "medium": return copsoqMediumPT;
+    case "long_pt":
+    case "long": return copsoqLongPT;
+  }
 }
 
-export const versionMeta: Record<CopsoqVersion, { label: string; minutes: string; count: number }> = {
-  short: { label: "Curta", minutes: "5–7 min", count: copsoqShort.length },
-  medium: { label: "Média", minutes: "12–15 min", count: copsoqMedium.length },
-  long: { label: "Longa", minutes: "20–25 min", count: copsoqLong.length },
+export const versionMeta: Record<CopsoqVersion, { label: string; minutes: string; count: number; locale: "pt-PT" | "pt-BR" }> = {
+  short_br: { label: "Curta (PT-BR)", minutes: "5–7 min", count: copsoqShortBR.length, locale: "pt-BR" },
+  medium_br: { label: "Média (PT-BR)", minutes: "12–15 min", count: copsoqMediumBR.length, locale: "pt-BR" },
+  long_br: { label: "Longa (PT-BR)", minutes: "20–25 min", count: copsoqLongBR.length, locale: "pt-BR" },
+  short_pt: { label: "Curta (PT-PT)", minutes: "5–7 min", count: copsoqShortPT.length, locale: "pt-PT" },
+  medium_pt: { label: "Média (PT-PT)", minutes: "12–15 min", count: copsoqMediumPT.length, locale: "pt-PT" },
+  long_pt: { label: "Longa (PT-PT)", minutes: "20–25 min", count: copsoqLongPT.length, locale: "pt-PT" },
+  short: { label: "Curta (PT-PT)", minutes: "5–7 min", count: copsoqShortPT.length, locale: "pt-PT" },
+  medium: { label: "Média (PT-PT)", minutes: "12–15 min", count: copsoqMediumPT.length, locale: "pt-PT" },
+  long: { label: "Longa (PT-PT)", minutes: "20–25 min", count: copsoqLongPT.length, locale: "pt-PT" },
 };
+
+export const COPSOQ_VERSION_OPTIONS: CopsoqVersion[] = [
+  "short_br", "medium_br", "long_br",
+  "short_pt", "medium_pt", "long_pt",
+];

@@ -195,11 +195,16 @@ const Trabalho = () => {
                   <h2 className="font-display text-lg font-semibold">Link público para colaboradores</h2>
                   <p className="text-sm text-muted-foreground">Compartilhe este link. As respostas são anônimas. Você verá apenas dados agregados.</p>
                   <div className="flex gap-2">
-                    {(["short", "medium", "long"] as const).filter(v => company.allowed_versions.includes(v)).map(v => {
+                    {(["short_br","medium_br","long_br","short_pt","medium_pt","long_pt","short","medium","long"] as const).filter(v => company.allowed_versions.includes(v)).map(v => {
                       const url = `${window.location.origin}/trabalho/r/${company.slug}?v=${v}`;
+                      const labels: Record<string,string> = {
+                        short_br: "curta (PT-BR)", medium_br: "média (PT-BR)", long_br: "longa (PT-BR)",
+                        short_pt: "curta (PT-PT)", medium_pt: "média (PT-PT)", long_pt: "longa (PT-PT)",
+                        short: "curta (PT-PT)", medium: "média (PT-PT)", long: "longa (PT-PT)",
+                      };
                       return (
                         <Button key={v} variant="outline" size="sm" onClick={() => { navigator.clipboard.writeText(url); toast.success("Link copiado"); }}>
-                          Copiar link · versão {v === "short" ? "curta" : v === "medium" ? "média" : "longa"}
+                          Copiar link · versão {labels[v]}
                         </Button>
                       );
                     })}
