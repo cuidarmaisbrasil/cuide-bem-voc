@@ -260,9 +260,13 @@ export const TrabalhoAdmin = () => {
               <h3 className="font-semibold">Template global do relatório COPSOQ</h3>
               <p className="text-xs text-muted-foreground">Aplicado a todas as empresas. Blocos aparecem nessa ordem no relatório.</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground" aria-live="polite">
+                {saveState === "saving" && "Salvando…"}
+                {saveState === "saved" && "✓ Salvo automaticamente"}
+                {saveState === "error" && "Erro ao salvar"}
+              </span>
               <Button size="sm" variant="outline" onClick={addBlock}><Plus className="h-4 w-4 mr-1" /> Novo bloco</Button>
-              <Button size="sm" disabled={!templateDirty} onClick={saveTemplate}>Salvar template</Button>
             </div>
           </div>
 
