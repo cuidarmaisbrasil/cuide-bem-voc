@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (!["short", "medium", "long"].includes(body.version)) {
+    if (!["short","medium","long","short_pt","medium_pt","long_pt","short_br","medium_br","long_br"].includes(body.version)) {
       return new Response(JSON.stringify({ error: "Versão inválida" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
