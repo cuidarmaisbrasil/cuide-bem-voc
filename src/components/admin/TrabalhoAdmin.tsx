@@ -37,7 +37,7 @@ function buildSampleAggregates(version: CopsoqVersion) {
 
 export const TrabalhoAdmin = () => {
   // ===== Question overrides =====
-  const [version, setVersion] = useState<CopsoqVersion>("short");
+  const [version, setVersion] = useState<CopsoqVersion>("short_br");
   const baseQuestions = useMemo(() => getCopsoq(version), [version]);
   const [overrides, setOverrides] = useState<Record<number, Override>>({});
   const [edits, setEdits] = useState<Record<number, string>>({});
