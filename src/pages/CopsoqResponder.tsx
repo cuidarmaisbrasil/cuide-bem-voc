@@ -12,7 +12,7 @@ import { getCopsoq, responseLabels, versionMeta, type CopsoqVersion } from "@/da
 const CopsoqResponder = () => {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
-  const version = (params.get("v") as CopsoqVersion) || "short";
+  const version = (params.get("v") as CopsoqVersion) || "short_br";
   const baseQuestions = useMemo(() => getCopsoq(version), [version]);
   const [overrides, setOverrides] = useState<Record<number, { text: string; active: boolean }>>({});
 
