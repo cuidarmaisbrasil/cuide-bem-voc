@@ -198,9 +198,12 @@ export const TrabalhoAdmin = () => {
           <Select value={version} onValueChange={(v) => setVersion(v as CopsoqVersion)}>
             <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="short">Curta (41 itens)</SelectItem>
-              <SelectItem value="medium">Média (76 itens)</SelectItem>
-              <SelectItem value="long">Longa</SelectItem>
+              <SelectItem value="short_br">Curta · PT-BR (41 itens)</SelectItem>
+              <SelectItem value="medium_br">Média · PT-BR (76 itens)</SelectItem>
+              <SelectItem value="long_br">Longa · PT-BR (119 itens)</SelectItem>
+              <SelectItem value="short_pt">Curta · PT-PT (41 itens)</SelectItem>
+              <SelectItem value="medium_pt">Média · PT-PT (76 itens)</SelectItem>
+              <SelectItem value="long_pt">Longa · PT-PT (119 itens)</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
