@@ -226,6 +226,8 @@ export type Database = {
           gender: string | null
           id: string
           ip_hash: string | null
+          latencies_ms: Json | null
+          participant_token_hash: string | null
           region: string | null
           scores: Json | null
           tenure_range: string | null
@@ -243,6 +245,8 @@ export type Database = {
           gender?: string | null
           id?: string
           ip_hash?: string | null
+          latencies_ms?: Json | null
+          participant_token_hash?: string | null
           region?: string | null
           scores?: Json | null
           tenure_range?: string | null
@@ -260,6 +264,8 @@ export type Database = {
           gender?: string | null
           id?: string
           ip_hash?: string | null
+          latencies_ms?: Json | null
+          participant_token_hash?: string | null
           region?: string | null
           scores?: Json | null
           tenure_range?: string | null
@@ -269,6 +275,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "copsoq_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ecig_responses: {
+        Row: {
+          age_range: string | null
+          answers: Json
+          company_id: string
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          latencies_ms: Json
+          participant_token_hash: string
+          scores: Json | null
+          tenure_range: string | null
+        }
+        Insert: {
+          age_range?: string | null
+          answers: Json
+          company_id: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms: Json
+          participant_token_hash: string
+          scores?: Json | null
+          tenure_range?: string | null
+        }
+        Update: {
+          age_range?: string | null
+          answers?: Json
+          company_id?: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms?: Json
+          participant_token_hash?: string
+          scores?: Json | null
+          tenure_range?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ecig_responses_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -396,6 +452,48 @@ export type Database = {
         }
         Relationships: []
       }
+      instrument_questions: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          instrument: string
+          meta: Json | null
+          n: number
+          response_set: string | null
+          reverse: boolean
+          scale: string | null
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          instrument: string
+          meta?: Json | null
+          n: number
+          response_set?: string | null
+          reverse?: boolean
+          scale?: string | null
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          instrument?: string
+          meta?: Json | null
+          n?: number
+          response_set?: string | null
+          reverse?: boolean
+          scale?: string | null
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       link_clicks: {
         Row: {
           city: string | null
@@ -452,6 +550,68 @@ export type Database = {
           utm_term?: string | null
         }
         Relationships: []
+      }
+      phq9_company_responses: {
+        Row: {
+          age: number | null
+          age_range: string | null
+          answers: Json
+          company_id: string
+          created_at: string
+          department: string | null
+          functional_impact: number | null
+          gender: string | null
+          id: string
+          latencies_ms: Json
+          participant_token_hash: string
+          score: number | null
+          severity: string | null
+          symptoms: string[] | null
+          tenure_range: string | null
+        }
+        Insert: {
+          age?: number | null
+          age_range?: string | null
+          answers: Json
+          company_id: string
+          created_at?: string
+          department?: string | null
+          functional_impact?: number | null
+          gender?: string | null
+          id?: string
+          latencies_ms: Json
+          participant_token_hash: string
+          score?: number | null
+          severity?: string | null
+          symptoms?: string[] | null
+          tenure_range?: string | null
+        }
+        Update: {
+          age?: number | null
+          age_range?: string | null
+          answers?: Json
+          company_id?: string
+          created_at?: string
+          department?: string | null
+          functional_impact?: number | null
+          gender?: string | null
+          id?: string
+          latencies_ms?: Json
+          participant_token_hash?: string
+          score?: number | null
+          severity?: string | null
+          symptoms?: string[] | null
+          tenure_range?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phq9_company_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       professionals: {
         Row: {
@@ -776,6 +936,97 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      wellness_invitations: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          opened_at: string | null
+          participant_id: string
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          wave: string
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          opened_at?: string | null
+          participant_id: string
+          scheduled_at: string
+          sent_at?: string | null
+          status?: string
+          wave: string
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          opened_at?: string | null
+          participant_id?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          wave?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_invitations_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_participants: {
+        Row: {
+          company_id: string
+          created_at: string
+          email: string
+          enrolled_at: string
+          id: string
+          token: string
+          token_hash: string | null
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          email: string
+          enrolled_at?: string
+          id?: string
+          token?: string
+          token_hash?: string | null
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          email?: string
+          enrolled_at?: string
+          id?: string
+          token?: string
+          token_hash?: string | null
+          unsubscribed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_participants_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -22,6 +22,7 @@ import { format, subDays } from "date-fns";
 import { CampaignComposer } from "@/components/admin/CampaignComposer";
 import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
 import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
+import { WellnessAdmin } from "@/components/admin/WellnessAdmin";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
@@ -637,6 +638,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
               {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
               {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
             </TabsList>
           </div>
 
@@ -1517,6 +1519,13 @@ const Admin = () => {
               <TrabalhoAdmin />
             </TabsContent>
           )}
+
+          {!readOnly && (
+            <TabsContent value="wellness" className="space-y-4 pt-4">
+              <WellnessAdmin />
+            </TabsContent>
+          )}
+
 
         </Tabs>
       </div>
