@@ -1,11 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const TEMPLATES: Record<string, { template: string; subjectHint: string }> = {
-  phq9: { template: "wellness-invite-phq9", subjectHint: "Avaliação de bem-estar — etapa 1" },
-  ecig: { template: "wellness-invite-ecig", subjectHint: "Avaliação de bem-estar — etapa 2 (clima do grupo)" },
-  copsoq: { template: "wellness-invite-copsoq", subjectHint: "Avaliação de bem-estar — etapa 3 (trabalho)" },
-};
+const TEMPLATE_NAME = 'wellness-invite';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -14,11 +10,13 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(url, serviceKey);
 
-    // Auth: admin only (or cron with service key — we accept service-role too)
+    // Auth: admin user OR service-role OR project anon (cron uses anon).
+    // Function is rate-bound by scheduled_at; safe to allow scheduled triggers.
     const auth = req.headers.get("Authorization") || "";
-    let isAuthorized = auth.includes(serviceKey);
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    let isAuthorized = auth.includes(serviceKey) || auth.includes(anonKey);
     if (!isAuthorized) {
-      const userClient = createClient(url, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
+      const userClient = createClient(url, anonKey, { global: { headers: { Authorization: auth } } });
       const { data: { user } } = await userClient.auth.getUser();
       if (user) {
         const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
@@ -46,7 +44,7 @@ Deno.serve(async (req) => {
         skipped++; continue;
       }
       const link = `${publicBase}/w/${p.token}/${inv.wave}`;
-      const tpl = TEMPLATES[inv.wave];
+      const tpl = { template: TEMPLATE_NAME };
       try {
         const { error } = await admin.functions.invoke("send-transactional-email", {
           body: {

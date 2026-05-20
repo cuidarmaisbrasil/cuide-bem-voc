@@ -96,6 +96,7 @@ export const WellnessAdmin = () => {
         <TabsList>
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+          <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
 
         <TabsContent value="program" className="space-y-4 pt-4">
@@ -180,7 +181,86 @@ export const WellnessAdmin = () => {
             {!items.length && <p className="text-sm text-muted-foreground">Sem itens para este instrumento.</p>}
           </div>
         </TabsContent>
+
+        <TabsContent value="latency" className="space-y-4 pt-4">
+          <LatencyPanel companyId={companyId} companies={companies} onSelectCompany={setCompanyId} />
+        </TabsContent>
       </Tabs>
     </div>
   );
 };
+
+function median(arr: number[]) {
+  if (!arr.length) return 0;
+  const s = [...arr].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
+function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
+  const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq">("phq9");
+  const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!companyId) return;
+    setLoading(true);
+    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : "copsoq_responses";
+    (supabase as any).from(table).select("latencies_ms").eq("company_id", companyId).then(({ data }: any) => {
+      const acc: Record<string, number[]> = {};
+      (data ?? []).forEach((r: any) => {
+        const lat = r.latencies_ms || {};
+        const entries = Array.isArray(lat) ? lat.map((v: number, i: number) => [String(i + 1), v]) : Object.entries(lat);
+        for (const [k, v] of entries as [string, number][]) {
+          if (typeof v !== "number") continue;
+          (acc[k] = acc[k] || []).push(v);
+        }
+      });
+      const out = Object.entries(acc).sort((a, b) => +a[0] - +b[0]).map(([n, arr]) => ({
+        n,
+        mean: Math.round(arr.reduce((s, v) => s + v, 0) / arr.length),
+        median: Math.round(median(arr)),
+        n_resp: arr.length,
+        outliers: arr.filter((v) => v < 500 || v > 120000).length,
+      }));
+      setRows(out);
+      setLoading(false);
+    });
+  }, [companyId, wave]);
+
+  return (
+    <Card className="p-4 space-y-3">
+      <div className="flex flex-wrap gap-3 items-end">
+        <div className="w-64">
+          <Label>Empresa</Label>
+          <Select value={companyId} onValueChange={onSelectCompany}>
+            <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <SelectContent>{companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div className="w-48">
+          <Label>Onda</Label>
+          <Select value={wave} onValueChange={(v) => setWave(v as any)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="phq9">PHQ-9</SelectItem>
+              <SelectItem value="ecig">ECIG</SelectItem>
+              <SelectItem value="copsoq">COPSOQ</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      {loading ? <p className="text-sm text-muted-foreground">Carregando…</p> : (
+        <div className="overflow-auto">
+          <table className="w-full text-sm">
+            <thead className="text-muted-foreground"><tr><th className="text-left p-2">Questão</th><th className="text-right p-2">Média (ms)</th><th className="text-right p-2">Mediana (ms)</th><th className="text-right p-2">N</th><th className="text-right p-2">Outliers (&lt;0.5s / &gt;2min)</th></tr></thead>
+            <tbody>{rows.map((r) => (
+              <tr key={r.n} className="border-t"><td className="p-2">#{r.n}</td><td className="p-2 text-right">{r.mean.toLocaleString()}</td><td className="p-2 text-right">{r.median.toLocaleString()}</td><td className="p-2 text-right">{r.n_resp}</td><td className="p-2 text-right">{r.outliers}</td></tr>
+            ))}</tbody>
+          </table>
+          {!rows.length && <p className="text-sm text-muted-foreground p-2">Sem dados ainda para esta onda.</p>}
+        </div>
+      )}
+    </Card>
+  );
+}
