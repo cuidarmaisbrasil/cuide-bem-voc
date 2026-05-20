@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
         skipped++; continue;
       }
       const link = `${publicBase}/w/${p.token}/${inv.wave}`;
-      const tpl = TEMPLATES[inv.wave];
+      const tpl = { template: TEMPLATE_NAME };
       try {
         const { error } = await admin.functions.invoke("send-transactional-email", {
           body: {
