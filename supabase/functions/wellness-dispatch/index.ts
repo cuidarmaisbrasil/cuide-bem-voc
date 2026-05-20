@@ -1,11 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const TEMPLATES: Record<string, { template: string; subjectHint: string }> = {
-  phq9: { template: "wellness-invite-phq9", subjectHint: "Avaliação de bem-estar — etapa 1" },
-  ecig: { template: "wellness-invite-ecig", subjectHint: "Avaliação de bem-estar — etapa 2 (clima do grupo)" },
-  copsoq: { template: "wellness-invite-copsoq", subjectHint: "Avaliação de bem-estar — etapa 3 (trabalho)" },
-};
+const TEMPLATE_NAME = 'wellness-invite';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
