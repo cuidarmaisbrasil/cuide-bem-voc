@@ -96,6 +96,7 @@ export const WellnessAdmin = () => {
         <TabsList>
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+          <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
 
         <TabsContent value="program" className="space-y-4 pt-4">
