@@ -181,6 +181,10 @@ export const WellnessAdmin = () => {
             {!items.length && <p className="text-sm text-muted-foreground">Sem itens para este instrumento.</p>}
           </div>
         </TabsContent>
+
+        <TabsContent value="latency" className="space-y-4 pt-4">
+          <LatencyPanel companyId={companyId} companies={companies} onSelectCompany={setCompanyId} />
+        </TabsContent>
       </Tabs>
     </div>
   );
