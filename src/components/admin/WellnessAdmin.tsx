@@ -150,6 +150,7 @@ export const WellnessAdmin = () => {
                 <SelectContent>
                   <SelectItem value="phq9">PHQ-9 (depressão)</SelectItem>
                   <SelectItem value="ecig">ECIG (conflito intragrupo)</SelectItem>
+                  <SelectItem value="lipt60">LIPT-60 (assédio moral / mobbing)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
