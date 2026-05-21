@@ -200,14 +200,22 @@ function median(arr: number[]) {
 
 function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
   const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq">("phq9");
+  const [period, setPeriod] = useState<"30d" | "all">("30d");
   const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
+  const [totalN, setTotalN] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!companyId) return;
     setLoading(true);
     const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : "copsoq_responses";
-    (supabase as any).from(table).select("latencies_ms").eq("company_id", companyId).then(({ data }: any) => {
+    let q = (supabase as any).from(table).select("latencies_ms,created_at").eq("company_id", companyId);
+    if (period === "30d") {
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      q = q.gte("created_at", since);
+    }
+    q.then(({ data }: any) => {
+      setTotalN((data ?? []).length);
       const acc: Record<string, number[]> = {};
       (data ?? []).forEach((r: any) => {
         const lat = r.latencies_ms || {};
@@ -227,7 +235,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
       setRows(out);
       setLoading(false);
     });
-  }, [companyId, wave]);
+  }, [companyId, wave, period]);
 
   return (
     <Card className="p-4 space-y-3">
@@ -249,6 +257,19 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
               <SelectItem value="copsoq">COPSOQ</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="w-48">
+          <Label>Período</Label>
+          <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
+              <SelectItem value="all">Todo o histórico</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="ml-auto text-sm text-muted-foreground">
+          Respostas no recorte: <b className="text-foreground">{totalN}</b>
         </div>
       </div>
       {loading ? <p className="text-sm text-muted-foreground">Carregando…</p> : (
