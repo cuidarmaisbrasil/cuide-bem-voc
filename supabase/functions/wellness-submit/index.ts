@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
         department: demo.department,
         tenure_range: demo.tenure_range,
       });
-    } else {
+    } else if (wave === "copsoq") {
       // copsoq — reuse existing table, add token_hash + latencies
       await admin.from("copsoq_responses").insert({
         company_id: p.company_id,
@@ -94,6 +94,43 @@ Deno.serve(async (req) => {
         answers,
         latencies_ms,
         scores: extras?.scores ?? null,
+        age_range: demo.age_range,
+        gender: demo.gender,
+        department: demo.department,
+        tenure_range: demo.tenure_range,
+      });
+    } else {
+      // psicossocial — LIPT-60 (escala 0..4). Score por subescala (média dos itens respondidos).
+      const { data: qs } = await admin
+        .from("instrument_questions")
+        .select("n,scale,reverse")
+        .eq("instrument", "lipt60")
+        .eq("active", true);
+      const sums: Record<string, { sum: number; n: number }> = {};
+      const all: number[] = [];
+      (qs ?? []).forEach((q: any) => {
+        const raw = answers[String(q.n)];
+        if (raw === undefined || raw === null) return;
+        const v = q.reverse ? 4 - Number(raw) : Number(raw);
+        const scale = q.scale || "geral";
+        sums[scale] = sums[scale] || { sum: 0, n: 0 };
+        sums[scale].sum += v;
+        sums[scale].n += 1;
+        all.push(v);
+      });
+      const scores: Record<string, number> = {};
+      for (const k of Object.keys(sums)) scores[k] = +(sums[k].sum / sums[k].n).toFixed(2);
+      if (all.length) {
+        scores.IGAP = +(all.reduce((a, b) => a + b, 0) / all.length).toFixed(2); // índice global Leymann
+        scores.NEAP = all.filter((v) => v > 0).length; // número de estratégias de assédio percebidas
+      }
+      await admin.from("psicossocial_responses").insert({
+        company_id: p.company_id,
+        participant_token_hash: p.token_hash,
+        instrument: "lipt60",
+        answers,
+        latencies_ms,
+        scores,
         age_range: demo.age_range,
         gender: demo.gender,
         department: demo.department,
