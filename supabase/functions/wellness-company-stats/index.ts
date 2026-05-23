@@ -17,6 +17,7 @@ Deno.serve(async (req) => {
 
     const u = new URL(req.url);
     const company_id = u.searchParams.get("company_id");
+    const period = u.searchParams.get("period") || "all"; // '30d' | 'all'
     if (!company_id) return j({ error: "bad_request" }, 400);
 
     if (!isAdmin) {
@@ -24,16 +25,21 @@ Deno.serve(async (req) => {
       if (!co || co.owner_user_id !== user.id) return j({ error: "forbidden" }, 403);
     }
 
-    // Aggregate counts per wave
-    const { data: invs } = await admin
+    let q = admin
       .from("wellness_invitations")
       .select("wave,status,scheduled_at,sent_at,completed_at, wellness_participants!inner(company_id)")
       .eq("wellness_participants.company_id", company_id);
+    if (period === "30d") {
+      const since = new Date(Date.now() - 30 * 86400000).toISOString();
+      q = q.gte("scheduled_at", since);
+    }
+    const { data: invs } = await q;
 
     const summary: Record<string, { scheduled: number; sent: number; completed: number }> = {
       phq9: { scheduled: 0, sent: 0, completed: 0 },
       ecig: { scheduled: 0, sent: 0, completed: 0 },
       copsoq: { scheduled: 0, sent: 0, completed: 0 },
+      psicossocial: { scheduled: 0, sent: 0, completed: 0 },
     };
     (invs ?? []).forEach((i: any) => {
       const s = summary[i.wave];
@@ -43,7 +49,7 @@ Deno.serve(async (req) => {
       if (i.status === "completed") s.completed++;
     });
 
-    return j({ summary });
+    return j({ summary, period });
   } catch (e: any) {
     return j({ error: e.message }, 500);
   }

@@ -1,0 +1,1 @@
+UPDATE public.instrument_questions SET response_set = 'lipt_5' WHERE instrument = 'lipt60' AND (response_set IS NULL OR response_set = '');

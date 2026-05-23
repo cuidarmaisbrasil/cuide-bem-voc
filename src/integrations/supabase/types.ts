@@ -664,6 +664,66 @@ export type Database = {
         }
         Relationships: []
       }
+      psicossocial_responses: {
+        Row: {
+          age_range: string | null
+          answers: Json
+          city: string | null
+          company_id: string
+          country: string | null
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          instrument: string
+          ip_hash: string | null
+          latencies_ms: Json
+          participant_token_hash: string
+          region: string | null
+          scores: Json | null
+          tenure_range: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          age_range?: string | null
+          answers: Json
+          city?: string | null
+          company_id: string
+          country?: string | null
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          instrument?: string
+          ip_hash?: string | null
+          latencies_ms: Json
+          participant_token_hash: string
+          region?: string | null
+          scores?: Json | null
+          tenure_range?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          age_range?: string | null
+          answers?: Json
+          city?: string | null
+          company_id?: string
+          country?: string | null
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          instrument?: string
+          ip_hash?: string | null
+          latencies_ms?: Json
+          participant_token_hash?: string
+          region?: string | null
+          scores?: Json | null
+          tenure_range?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       retest_reminders: {
         Row: {
           created_at: string

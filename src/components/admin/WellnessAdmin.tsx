@@ -18,7 +18,8 @@ export const WellnessAdmin = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [emails, setEmails] = useState("");
-  const [intervals, setIntervals] = useState({ phq9: 0, ecig: 15, copsoq: 30 });
+  const [intervals, setIntervals] = useState({ phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45 });
+  const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
 
@@ -36,12 +37,12 @@ export const WellnessAdmin = () => {
       .then(({ data }) => setItems((data as any) || []));
   }, [instrument]);
 
-  useEffect(() => { if (companyId) loadStats(); }, [companyId]);
+  useEffect(() => { if (companyId) loadStats(); }, [companyId, statsPeriod]);
 
   async function loadStats() {
     const base = import.meta.env.VITE_SUPABASE_URL;
     const { data: { session } } = await supabase.auth.getSession();
-    const res = await fetch(`${base}/functions/v1/wellness-company-stats?company_id=${companyId}`, {
+    const res = await fetch(`${base}/functions/v1/wellness-company-stats?company_id=${companyId}&period=${statsPeriod}`, {
       headers: { Authorization: `Bearer ${session?.access_token}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
     });
     setStats(await res.json());
@@ -109,10 +110,11 @@ export const WellnessAdmin = () => {
               </SelectContent>
             </Select>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
               <div><Label>Dias até ECIG</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
               <div><Label>Dias até COPSOQ</Label><Input type="number" value={intervals.copsoq} onChange={(e) => setIntervals({ ...intervals, copsoq: +e.target.value })} /></div>
+              <div><Label>Dias até Psicossocial (LIPT-60)</Label><Input type="number" value={intervals.psicossocial} onChange={(e) => setIntervals({ ...intervals, psicossocial: +e.target.value })} /></div>
             </div>
 
             <Label>E-mails dos trabalhadores (um por linha ou separados por vírgula)</Label>
@@ -126,14 +128,28 @@ export const WellnessAdmin = () => {
 
           {stats?.summary && (
             <Card className="p-4">
-              <h3 className="font-semibold mb-3">Progresso</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {(["phq9", "ecig", "copsoq"] as const).map((w) => (
+              <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+                <h3 className="font-semibold">Progresso</h3>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs">Período</Label>
+                  <div className="w-44">
+                    <Select value={statsPeriod} onValueChange={(v) => setStatsPeriod(v as any)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="30d">Últimos 30 dias</SelectItem>
+                        <SelectItem value="all">Todo o histórico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {(["phq9", "ecig", "copsoq", "psicossocial"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
-                    <div className="text-sm mt-1">Agendados: <b>{stats.summary[w].scheduled}</b></div>
-                    <div className="text-sm">Enviados: <b>{stats.summary[w].sent}</b></div>
-                    <div className="text-sm">Concluídos: <b>{stats.summary[w].completed}</b></div>
+                    <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
+                    <div className="text-sm">Enviados: <b>{stats.summary[w]?.sent ?? 0}</b></div>
+                    <div className="text-sm">Concluídos: <b>{stats.summary[w]?.completed ?? 0}</b></div>
                   </div>
                 ))}
               </div>
@@ -199,7 +215,7 @@ function median(arr: number[]) {
 }
 
 function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
-  const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq">("phq9");
+  const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq" | "psicossocial">("phq9");
   const [period, setPeriod] = useState<"30d" | "all">("30d");
   const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
   const [totalN, setTotalN] = useState(0);
@@ -208,7 +224,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   useEffect(() => {
     if (!companyId) return;
     setLoading(true);
-    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : "copsoq_responses";
+    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : wave === "copsoq" ? "copsoq_responses" : "psicossocial_responses";
     let q = (supabase as any).from(table).select("latencies_ms,created_at").eq("company_id", companyId);
     if (period === "30d") {
       const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -255,6 +271,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
               <SelectItem value="phq9">PHQ-9</SelectItem>
               <SelectItem value="ecig">ECIG</SelectItem>
               <SelectItem value="copsoq">COPSOQ</SelectItem>
+              <SelectItem value="psicossocial">Psicossocial (LIPT-60)</SelectItem>
             </SelectContent>
           </Select>
         </div>

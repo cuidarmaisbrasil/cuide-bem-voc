@@ -9,7 +9,7 @@ const SITE_NAME = 'Cuidar+'
 interface Props {
   companyName?: string
   link?: string
-  wave?: 'phq9' | 'ecig' | 'copsoq'
+  wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial'
 }
 
 const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string; subject: string }> = {
@@ -27,9 +27,15 @@ const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string;
   },
   copsoq: {
     title: 'Etapa 3: como está o seu trabalho?',
-    intro: 'Esta última etapa avalia fatores psicossociais do seu trabalho (exigências, autonomia, apoio, reconhecimento). É anônima.',
+    intro: 'Esta etapa avalia fatores psicossociais do seu trabalho (exigências, autonomia, apoio, reconhecimento). É anônima.',
     minutes: '8 a 15 minutos',
     subject: 'Avaliação de bem-estar — etapa 3 (trabalho)',
+  },
+  psicossocial: {
+    title: 'Etapa 4: clima psicossocial e situações no trabalho',
+    intro: 'Esta etapa avalia a frequência de situações de assédio moral, hostilidade e exclusão (Inventário de Leymann — LIPT-60). É anônima e estritamente confidencial.',
+    minutes: '6 a 10 minutos',
+    subject: 'Avaliação de bem-estar — etapa 4 (clima psicossocial)',
   },
 }
 
