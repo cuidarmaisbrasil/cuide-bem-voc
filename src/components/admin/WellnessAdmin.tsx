@@ -37,12 +37,12 @@ export const WellnessAdmin = () => {
       .then(({ data }) => setItems((data as any) || []));
   }, [instrument]);
 
-  useEffect(() => { if (companyId) loadStats(); }, [companyId]);
+  useEffect(() => { if (companyId) loadStats(); }, [companyId, statsPeriod]);
 
   async function loadStats() {
     const base = import.meta.env.VITE_SUPABASE_URL;
     const { data: { session } } = await supabase.auth.getSession();
-    const res = await fetch(`${base}/functions/v1/wellness-company-stats?company_id=${companyId}`, {
+    const res = await fetch(`${base}/functions/v1/wellness-company-stats?company_id=${companyId}&period=${statsPeriod}`, {
       headers: { Authorization: `Bearer ${session?.access_token}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
     });
     setStats(await res.json());
