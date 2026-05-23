@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
-type Wave = "phq9" | "ecig" | "copsoq";
+type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
 
@@ -39,12 +39,20 @@ const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
     { value: 4, label: "Frequentemente" },
     { value: 5, label: "Sempre" },
   ],
+  lipt_5: [
+    { value: 0, label: "Nunca" },
+    { value: 1, label: "Raramente" },
+    { value: 2, label: "Algumas vezes/mês" },
+    { value: 3, label: "Várias vezes/semana" },
+    { value: 4, label: "Diariamente" },
+  ],
 };
 
 const WAVE_TITLES: Record<Wave, string> = {
   phq9: "Como você tem se sentido (PHQ-9)",
   ecig: "Clima no seu grupo de trabalho (ECIG)",
   copsoq: "Bem-estar no trabalho (COPSOQ)",
+  psicossocial: "Clima psicossocial / situações no trabalho (LIPT-60)",
 };
 
 const WellnessResponder = () => {
