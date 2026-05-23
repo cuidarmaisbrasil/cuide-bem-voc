@@ -110,10 +110,11 @@ export const WellnessAdmin = () => {
               </SelectContent>
             </Select>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
               <div><Label>Dias até ECIG</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
               <div><Label>Dias até COPSOQ</Label><Input type="number" value={intervals.copsoq} onChange={(e) => setIntervals({ ...intervals, copsoq: +e.target.value })} /></div>
+              <div><Label>Dias até Psicossocial (LIPT-60)</Label><Input type="number" value={intervals.psicossocial} onChange={(e) => setIntervals({ ...intervals, psicossocial: +e.target.value })} /></div>
             </div>
 
             <Label>E-mails dos trabalhadores (um por linha ou separados por vírgula)</Label>
