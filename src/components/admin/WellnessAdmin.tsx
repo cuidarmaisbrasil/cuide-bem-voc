@@ -128,14 +128,28 @@ export const WellnessAdmin = () => {
 
           {stats?.summary && (
             <Card className="p-4">
-              <h3 className="font-semibold mb-3">Progresso</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {(["phq9", "ecig", "copsoq"] as const).map((w) => (
+              <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+                <h3 className="font-semibold">Progresso</h3>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs">Período</Label>
+                  <div className="w-44">
+                    <Select value={statsPeriod} onValueChange={(v) => setStatsPeriod(v as any)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="30d">Últimos 30 dias</SelectItem>
+                        <SelectItem value="all">Todo o histórico</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {(["phq9", "ecig", "copsoq", "psicossocial"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
-                    <div className="text-sm mt-1">Agendados: <b>{stats.summary[w].scheduled}</b></div>
-                    <div className="text-sm">Enviados: <b>{stats.summary[w].sent}</b></div>
-                    <div className="text-sm">Concluídos: <b>{stats.summary[w].completed}</b></div>
+                    <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
+                    <div className="text-sm">Enviados: <b>{stats.summary[w]?.sent ?? 0}</b></div>
+                    <div className="text-sm">Concluídos: <b>{stats.summary[w]?.completed ?? 0}</b></div>
                   </div>
                 ))}
               </div>
