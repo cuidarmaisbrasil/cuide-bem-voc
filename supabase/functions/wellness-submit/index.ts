@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { token, wave, answers, latencies_ms, demographics, extras } = body as {
       token: string;
-      wave: "phq9" | "ecig" | "copsoq";
+      wave: "phq9" | "ecig" | "copsoq" | "psicossocial";
       answers: Record<string, number>;
       latencies_ms: Record<string, number>;
       demographics?: { age_range?: string; gender?: string; department?: string; tenure_range?: string };
