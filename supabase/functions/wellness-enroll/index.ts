@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { company_id, emails, intervals_days } = body as {
-      company_id: string; emails: string[]; intervals_days?: { phq9: number; ecig: number; copsoq: number };
+      company_id: string; emails: string[]; intervals_days?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
     };
 
     // Authorization: admin OR company owner
