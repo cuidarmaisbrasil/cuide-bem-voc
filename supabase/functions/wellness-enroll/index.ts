@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       .filter((e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))));
     if (!cleaned.length) return j({ error: "no_valid_emails" }, 400);
 
-    const iv = { phq9: 0, ecig: 15, copsoq: 30, ...(intervals_days || {}) };
+    const iv = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, ...(intervals_days || {}) };
     const now = new Date();
 
     const created: any[] = [];
@@ -47,10 +47,10 @@ Deno.serve(async (req) => {
         .single();
       if (error || !p) continue;
 
-      const invites = (["phq9", "ecig", "copsoq"] as const).map((wave) => ({
+      const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => ({
         participant_id: p.id,
         wave,
-        scheduled_at: new Date(now.getTime() + iv[wave] * 86400000).toISOString(),
+        scheduled_at: new Date(now.getTime() + (iv as any)[wave] * 86400000).toISOString(),
         status: "pending",
       }));
       await admin.from("wellness_invitations").upsert(invites, { onConflict: "participant_id,wave", ignoreDuplicates: true });
