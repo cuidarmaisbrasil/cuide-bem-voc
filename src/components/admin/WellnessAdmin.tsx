@@ -224,7 +224,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   useEffect(() => {
     if (!companyId) return;
     setLoading(true);
-    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : "copsoq_responses";
+    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : wave === "copsoq" ? "copsoq_responses" : "psicossocial_responses";
     let q = (supabase as any).from(table).select("latencies_ms,created_at").eq("company_id", companyId);
     if (period === "30d") {
       const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
