@@ -94,7 +94,7 @@ export const WellnessAdmin = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="program">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
@@ -158,8 +158,8 @@ export const WellnessAdmin = () => {
         </TabsContent>
 
         <TabsContent value="items" className="space-y-4 pt-4">
-          <div className="flex gap-2 items-end">
-            <div className="w-64">
+          <div className="flex flex-wrap gap-2 items-end">
+            <div className="w-full sm:w-64">
               <Label>Instrumento</Label>
               <Select value={instrument} onValueChange={setInstrument}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -216,7 +216,7 @@ function median(arr: number[]) {
 
 function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
   const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq" | "psicossocial">("phq9");
-  const [period, setPeriod] = useState<"30d" | "all">("30d");
+  const [period, setPeriod] = useState<"30d" | "all">("all");
   const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
   const [totalN, setTotalN] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -256,14 +256,14 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   return (
     <Card className="p-4 space-y-3">
       <div className="flex flex-wrap gap-3 items-end">
-        <div className="w-64">
+        <div className="w-full sm:w-64">
           <Label>Empresa</Label>
           <Select value={companyId} onValueChange={onSelectCompany}>
             <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
             <SelectContent>{companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <Label>Onda</Label>
           <Select value={wave} onValueChange={(v) => setWave(v as any)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -275,17 +275,17 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
             </SelectContent>
           </Select>
         </div>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <Label>Período</Label>
           <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="30d">Últimos 30 dias</SelectItem>
               <SelectItem value="all">Todo o histórico</SelectItem>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="ml-auto text-sm text-muted-foreground">
+        <div className="sm:ml-auto text-sm text-muted-foreground">
           Respostas no recorte: <b className="text-foreground">{totalN}</b>
         </div>
       </div>
