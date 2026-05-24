@@ -256,14 +256,14 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   return (
     <Card className="p-4 space-y-3">
       <div className="flex flex-wrap gap-3 items-end">
-        <div className="w-64">
+        <div className="w-full sm:w-64">
           <Label>Empresa</Label>
           <Select value={companyId} onValueChange={onSelectCompany}>
             <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
             <SelectContent>{companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <Label>Onda</Label>
           <Select value={wave} onValueChange={(v) => setWave(v as any)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -275,17 +275,17 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
             </SelectContent>
           </Select>
         </div>
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <Label>Período</Label>
           <Select value={period} onValueChange={(v) => setPeriod(v as any)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="30d">Últimos 30 dias</SelectItem>
               <SelectItem value="all">Todo o histórico</SelectItem>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="ml-auto text-sm text-muted-foreground">
+        <div className="sm:ml-auto text-sm text-muted-foreground">
           Respostas no recorte: <b className="text-foreground">{totalN}</b>
         </div>
       </div>
