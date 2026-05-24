@@ -94,7 +94,7 @@ export const WellnessAdmin = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="program">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
