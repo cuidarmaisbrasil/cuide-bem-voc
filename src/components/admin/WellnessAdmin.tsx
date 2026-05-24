@@ -158,8 +158,8 @@ export const WellnessAdmin = () => {
         </TabsContent>
 
         <TabsContent value="items" className="space-y-4 pt-4">
-          <div className="flex gap-2 items-end">
-            <div className="w-64">
+          <div className="flex flex-wrap gap-2 items-end">
+            <div className="w-full sm:w-64">
               <Label>Instrumento</Label>
               <Select value={instrument} onValueChange={setInstrument}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
