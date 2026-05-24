@@ -216,7 +216,7 @@ function median(arr: number[]) {
 
 function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
   const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq" | "psicossocial">("phq9");
-  const [period, setPeriod] = useState<"30d" | "all">("30d");
+  const [period, setPeriod] = useState<"30d" | "all">("all");
   const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
   const [totalN, setTotalN] = useState(0);
   const [loading, setLoading] = useState(false);
