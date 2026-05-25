@@ -124,14 +124,148 @@ const Trabalho = () => {
         </div>
       </header>
 
-      <div className="container max-w-3xl py-8 space-y-6">
+      {!user && (
+        <>
+          {/* HERO */}
+          <section className="border-b border-border/60 bg-gradient-soft">
+            <div className="container max-w-5xl py-16 md:py-24">
+              <div className="max-w-3xl space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-1 text-xs font-medium text-primary">
+                  Programa gratuito de prevenção
+                </div>
+                <h1 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-foreground">
+                  Antecipe-se ao adoecimento.<br />
+                  <span className="text-primary">Reduza custos, eleve o bem-estar.</span>
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                  O Cuidar+ Trabalho oferece monitoramento psicossocial contínuo e gratuito para sua empresa.
+                  Identificamos áreas de risco <strong className="text-foreground">antes</strong> que se tornem
+                  afastamentos, processos ou intervenções clínicas caras.
+                </p>
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button size="lg" onClick={() => document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" })} className="bg-gradient-hero text-primary-foreground hover:opacity-90">
+                    Cadastrar minha empresa
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
+                    Como funciona
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground pt-1">
+                  100% gratuito · Anonimato garantido aos colaboradores · Metodologia científica validada
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* BENEFÍCIOS */}
+          <section className="border-b border-border/60">
+            <div className="container max-w-5xl py-16">
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  { t: "Prevenção real", d: "Detectamos sinais precoces de sobrecarga, conflito e exaustão antes que se tornem licença médica." },
+                  { t: "Custo evitado", d: "Cada afastamento por saúde mental custa milhares em produtividade, reposição e encargos. Prevenir é mais barato." },
+                  { t: "Engajamento", d: "Empresas que cuidam ativamente reduzem turnover, melhoram o clima e fortalecem a marca empregadora." },
+                ].map((b) => (
+                  <div key={b.t} className="rounded-lg border border-border bg-card p-6 shadow-card">
+                    <h3 className="font-display text-lg font-semibold mb-2 text-foreground">{b.t}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{b.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* COMO FUNCIONA — 3 ONDAS */}
+          <section id="como-funciona" className="border-b border-border/60 bg-muted/30">
+            <div className="container max-w-5xl py-16">
+              <div className="max-w-2xl mb-10">
+                <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-3">
+                  Monitoramento em 3 ondas
+                </h2>
+                <p className="text-muted-foreground">
+                  Os testes de rastreio de bem-estar psicossocial são aplicados em três ondas sequenciais de disparo,
+                  permitindo acompanhar a evolução do clima e identificar tendências ao longo do tempo.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  { n: "01", t: "Onda inicial", d: "Diagnóstico de linha de base. Mapeamos demandas, controle, suporte, reconhecimento e exposição a violência no trabalho." },
+                  { n: "02", t: "Onda intermediária", d: "Reaplicação focada após ações iniciais. Mede sensibilidade às intervenções e identifica áreas resistentes." },
+                  { n: "03", t: "Onda de consolidação", d: "Fechamento do ciclo. Compara evolução, valida resultados e orienta o próximo ciclo de cuidado." },
+                ].map((s) => (
+                  <div key={s.n} className="rounded-lg border border-border bg-card p-6">
+                    <div className="text-xs font-mono text-primary mb-2">{s.n}</div>
+                    <h3 className="font-display text-lg font-semibold mb-2 text-foreground">{s.t}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{s.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* RELATÓRIO */}
+          <section className="border-b border-border/60">
+            <div className="container max-w-5xl py-16">
+              <div className="grid md:grid-cols-2 gap-10 items-start">
+                <div className="space-y-4">
+                  <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
+                    Relatório gratuito com áreas de atenção
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Ao final de cada onda, sua empresa recebe — também gratuitamente — um relatório agregado e anônimo
+                    apontando quais dimensões exigem atenção e sugestões práticas de atuação.
+                  </p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    O foco é direcionar pequenas mudanças que reduzem custos com afastamentos, rotatividade e processos,
+                    enquanto elevam o bem-estar antes que intervenções clínicas caras se tornem necessárias.
+                  </p>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    "Dados agregados por área, departamento e faixa etária",
+                    "Identificação de dimensões em risco (demanda, controle, suporte, justiça, violência)",
+                    "Sugestões práticas de atuação por dimensão",
+                    "Comparação entre ondas e evolução do clima",
+                    "Total preservação do anonimato individual",
+                  ].map((i) => (
+                    <li key={i} className="flex gap-3 text-sm">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                      <span className="text-foreground">{i}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* SEGURANÇA / CIÊNCIA */}
+          <section className="border-b border-border/60 bg-muted/30">
+            <div className="container max-w-5xl py-16">
+              <div className="grid md:grid-cols-3 gap-6">
+                {[
+                  { t: "Cientificamente aprovado", d: "Baseado no COPSOQ II (Copenhagen Psychosocial Questionnaire), instrumento validado internacionalmente para riscos psicossociais." },
+                  { t: "Anonimato garantido", d: "Colaboradores respondem por link único. A empresa nunca vê respostas individuais — apenas dados agregados." },
+                  { t: "Avaliação segura", d: "Infraestrutura com criptografia, controles de acesso e conformidade com a LGPD. Sigilo profissional." },
+                ].map((s) => (
+                  <div key={s.t} className="rounded-lg border border-border bg-card p-6">
+                    <h3 className="font-display text-base font-semibold mb-2 text-foreground">{s.t}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{s.d}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </>
+      )}
+
+      <div className="container max-w-3xl py-10 space-y-6">
         {!user && (
-          <Card className="p-6">
+          <Card className="p-6" id="cadastro">
             <div className="mb-4">
-              <h1 className="font-display text-2xl font-semibold mb-1">Bem-estar psicossocial no trabalho</h1>
+              <h2 className="font-display text-2xl font-semibold mb-1">Cadastre sua empresa</h2>
               <p className="text-sm text-muted-foreground">
-                Avalie o ambiente psicossocial da sua empresa com o questionário <strong>COPSOQ II</strong>
-                {" "}(Copenhagen Psychosocial Questionnaire). Acesso restrito a empresas aprovadas.
+                Acesso restrito a empresas aprovadas. Após o cadastro, nossa equipe valida e libera o painel
+                gratuito de monitoramento.
               </p>
             </div>
             <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as any)}>
@@ -149,7 +283,7 @@ const Trabalho = () => {
                   </div>
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
-                  <Button type="submit" className="w-full" disabled={submitting}>Solicitar cadastro</Button>
+                  <Button type="submit" className="w-full" disabled={submitting}>Solicitar cadastro gratuito</Button>
                 </form>
               </TabsContent>
               <TabsContent value="login">
