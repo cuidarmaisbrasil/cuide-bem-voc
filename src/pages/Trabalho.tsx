@@ -56,8 +56,8 @@ const Trabalho = () => {
     e.preventDefault(); setSubmitting(true);
     try {
       if (authMode === "signup") {
-        if (!companyName.trim() || !contactName.trim()) {
-          toast.error("Preencha nome da empresa e responsável."); return;
+        if (!companyName.trim() || !contactName.trim() || !contactRole.trim()) {
+          toast.error("Preencha empresa, responsável e cargo."); return;
         }
         const { data, error } = await supabase.auth.signUp({
           email, password,
@@ -68,10 +68,12 @@ const Trabalho = () => {
           const slug = `${companyName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 32)}-${Math.random().toString(36).slice(2, 7)}`;
           const { error: cErr } = await supabase.from("companies").insert({
             owner_user_id: data.user.id, name: companyName, contact_name: contactName,
+            contact_role: contactRole,
             contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, slug,
           });
           if (cErr) throw cErr;
           toast.success("Cadastro recebido! Aguarde aprovação do admin.");
+
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
