@@ -26,7 +26,9 @@ const Trabalho = () => {
   const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
   const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState(""); const [contactName, setContactName] = useState("");
+  const [contactRole, setContactRole] = useState("");
   const [phone, setPhone] = useState(""); const [cnpj, setCnpj] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
   const [responses, setResponses] = useState<any[]>([]);
