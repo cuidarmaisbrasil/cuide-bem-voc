@@ -85,6 +85,7 @@ export type Database = {
           contact_email: string
           contact_name: string
           contact_phone: string | null
+          contact_role: string | null
           created_at: string
           default_version: string
           id: string
@@ -104,6 +105,7 @@ export type Database = {
           contact_email: string
           contact_name: string
           contact_phone?: string | null
+          contact_role?: string | null
           created_at?: string
           default_version?: string
           id?: string
@@ -123,6 +125,7 @@ export type Database = {
           contact_email?: string
           contact_name?: string
           contact_phone?: string | null
+          contact_role?: string | null
           created_at?: string
           default_version?: string
           id?: string
