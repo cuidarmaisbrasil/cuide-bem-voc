@@ -328,12 +328,11 @@ const Trabalho = () => {
 
       <div className="container max-w-3xl py-10 space-y-6">
         {!user && (
-          <Card className="p-6" id="cadastro">
+          <Card className="p-6 shadow-soft border-border/60 scroll-mt-20 animate-in fade-in slide-in-from-bottom-4 duration-500" id="cadastro">
             <div className="mb-4">
               <h2 className="font-display text-2xl font-semibold mb-1">Cadastre sua empresa</h2>
               <p className="text-sm text-muted-foreground">
-                Acesso restrito a empresas aprovadas. Após o cadastro, nossa equipe valida e libera o painel
-                gratuito de monitoramento.
+                Gratuito. Aprovação em até 1 dia útil e seu painel é liberado.
               </p>
             </div>
             <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as any)}>
@@ -343,17 +342,23 @@ const Trabalho = () => {
               </TabsList>
               <TabsContent value="signup">
                 <form onSubmit={handleAuth} className="space-y-3 mt-4">
-                  <div><Label>Nome da empresa *</Label><Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} required /></div>
-                  <div><Label>Nome do responsável *</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} required /></div>
+                  <div><Label htmlFor="signup-company">Nome da empresa *</Label><Input id="signup-company" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required /></div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><Label>Nome do responsável *</Label><Input value={contactName} onChange={(e) => setContactName(e.target.value)} required /></div>
+                    <div><Label>Cargo do responsável *</Label><Input value={contactRole} onChange={(e) => setContactRole(e.target.value)} placeholder="Ex.: Gerente de RH" required /></div>
+                  </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>CNPJ (opcional)</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} /></div>
                     <div><Label>Telefone</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
                   </div>
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
-                  <Button type="submit" className="w-full" disabled={submitting}>Solicitar cadastro gratuito</Button>
+                  <Button type="submit" className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90" disabled={submitting}>
+                    {submitting ? "Enviando…" : "Solicitar cadastro gratuito"}
+                  </Button>
                 </form>
               </TabsContent>
+
               <TabsContent value="login">
                 <form onSubmit={handleAuth} className="space-y-3 mt-4">
                   <div><Label>E-mail</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
