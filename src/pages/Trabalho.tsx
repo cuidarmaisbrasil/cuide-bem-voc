@@ -150,8 +150,7 @@ const Trabalho = () => {
                     <span className="bg-gradient-hero bg-clip-text text-transparent">vire afastamento.</span>
                   </h1>
                   <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
-                    Monitoramento psicossocial gratuito da sua empresa, em 3 ondas.
-                    Relatório com áreas de risco e o que fazer — sem custo.
+                    Cuida + para você ser mais. Escuta e prevenção inteligente ao seu alcance.
                   </p>
                   <div className="flex flex-wrap gap-3 pt-1">
                     <Button
