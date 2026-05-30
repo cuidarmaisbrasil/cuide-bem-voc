@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShieldCheck, TrendingDown, HeartPulse, ArrowRight, CheckCircle2, Lock, FlaskConical } from "lucide-react";
+import { useReveal } from "@/hooks/useReveal";
+import heroPhoto from "@/assets/trabalho-hero.jpg";
+import loungePhoto from "@/assets/trabalho-lounge.jpg";
 
 
 interface Company {
