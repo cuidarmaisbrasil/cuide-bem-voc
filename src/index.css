@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600&family=Instrument+Serif:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -132,4 +132,11 @@
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .transition-smooth { transition: var(--transition-smooth); }
+  .font-serif-editorial { font-family: 'Instrument Serif', 'Lora', Georgia, serif; letter-spacing: -0.015em; }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.21,0.6,0.35,1), transform 0.9s cubic-bezier(0.21,0.6,0.35,1); }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .reveal-zoom { opacity: 0; transform: scale(0.96); transition: opacity 1s ease-out, transform 1s ease-out; }
+  .reveal-zoom.is-visible { opacity: 1; transform: scale(1); }
+  .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.9s ease-out, transform 0.9s ease-out; }
+  .reveal-left.is-visible { opacity: 1; transform: translateX(0); }
 }
