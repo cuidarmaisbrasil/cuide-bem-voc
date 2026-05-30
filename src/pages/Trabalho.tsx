@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShieldCheck, TrendingDown, HeartPulse, ArrowRight, CheckCircle2, Lock, FlaskConical } from "lucide-react";
+import { useReveal } from "@/hooks/useReveal";
+import heroPhoto from "@/assets/trabalho-hero.jpg";
+import loungePhoto from "@/assets/trabalho-lounge.jpg";
 
 
 interface Company {
@@ -130,199 +133,7 @@ const Trabalho = () => {
         </div>
       </header>
 
-      {!user && (
-        <>
-          {/* HERO */}
-          <section className="relative overflow-hidden border-b border-border/60 bg-gradient-soft">
-            {/* decorative orbs */}
-            <div aria-hidden className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl animate-pulse" />
-            <div aria-hidden className="pointer-events-none absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-accent/10 blur-3xl animate-pulse [animation-delay:1.5s]" />
-
-            <div className="container max-w-6xl py-16 md:py-24 relative">
-              <div className="grid lg:grid-cols-5 gap-10 items-center">
-                <div className="lg:col-span-3 space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 backdrop-blur px-3 py-1 text-xs font-medium text-primary shadow-card">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    Programa gratuito de prevenção
-                  </div>
-                  <h1 className="font-display text-4xl md:text-6xl font-semibold leading-[1.05] tracking-tight text-foreground">
-                    Cuide antes que{" "}
-                    <span className="bg-gradient-hero bg-clip-text text-transparent">vire afastamento.</span>
-                  </h1>
-                  <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
-                    Cuida + para você ser mais. Escuta e prevenção inteligente ao seu alcance.
-                  </p>
-                  <div className="flex flex-wrap gap-3 pt-1">
-                    <Button
-                      size="lg"
-                      onClick={() => document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                      className="bg-gradient-hero text-primary-foreground hover:opacity-90 shadow-soft group h-12 px-6"
-                    >
-                      Cadastrar empresa agora
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                    <Button size="lg" variant="ghost" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
-                      Como funciona
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground pt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> 100% gratuito</span>
-                    <span className="inline-flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-primary" /> Anonimato garantido</span>
-                    <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-3.5 w-3.5 text-primary" /> Base científica COPSOQ II</span>
-                  </p>
-                </div>
-
-                {/* Inline quick-signup card — cadastro imediato */}
-                <div className="lg:col-span-2 animate-in fade-in slide-in-from-bottom-8 duration-700 [animation-delay:150ms] fill-mode-both">
-                  <Card className="p-6 shadow-soft border-border/60 backdrop-blur bg-card/95">
-                    <div className="mb-3">
-                      <h2 className="font-display text-lg font-semibold">Comece em 30 segundos</h2>
-                      <p className="text-xs text-muted-foreground">Cadastro gratuito · aprovação em até 1 dia útil.</p>
-                    </div>
-                    <Button
-                      size="lg"
-                      className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90 group"
-                      onClick={() => { setAuthMode("signup"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("signup-company")?.focus(), 600); }}
-                    >
-                      Cadastrar minha empresa
-                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                    <button
-                      onClick={() => { setAuthMode("login"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" }); }}
-                      className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-primary transition-smooth underline-offset-4 hover:underline"
-                    >
-                      Já tenho conta · entrar
-                    </button>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* BENEFÍCIOS */}
-          <section className="border-b border-border/60">
-            <div className="container max-w-5xl py-16">
-              <div className="grid md:grid-cols-3 gap-6">
-                {[
-                  { Icon: HeartPulse, t: "Prevenção real", d: "Detecta sobrecarga e exaustão antes de virar licença médica." },
-                  { Icon: TrendingDown, t: "Custo evitado", d: "Cada afastamento custa milhares. Prevenir sai muito mais barato." },
-                  { Icon: ShieldCheck, t: "Engajamento", d: "Reduz turnover, melhora o clima e fortalece a marca empregadora." },
-                ].map((b, i) => (
-                  <div
-                    key={b.t}
-                    className="group rounded-xl border border-border bg-card p-6 shadow-card hover:shadow-soft hover:-translate-y-1 transition-smooth animate-in fade-in slide-in-from-bottom-4 fill-mode-both"
-                    style={{ animationDelay: `${i * 100}ms`, animationDuration: "600ms" }}
-                  >
-                    <div className="h-10 w-10 rounded-lg bg-gradient-hero flex items-center justify-center mb-4 text-primary-foreground group-hover:scale-110 transition-smooth">
-                      <b.Icon className="h-5 w-5" />
-                    </div>
-                    <h3 className="font-display text-lg font-semibold mb-2 text-foreground">{b.t}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{b.d}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* COMO FUNCIONA — 3 ONDAS */}
-          <section id="como-funciona" className="border-b border-border/60 bg-muted/30">
-            <div className="container max-w-5xl py-16">
-              <div className="max-w-2xl mb-10">
-                <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-3">
-                  3 ondas de rastreio
-                </h2>
-                <p className="text-muted-foreground">
-                  Três disparos sequenciais que medem evolução do clima e o efeito das ações.
-                </p>
-              </div>
-              <div className="grid md:grid-cols-3 gap-6 relative">
-                {[
-                  { n: "01", t: "Linha de base", d: "Mapeia demandas, controle, suporte, reconhecimento e violência." },
-                  { n: "02", t: "Reaplicação", d: "Mede sensibilidade às intervenções e áreas resistentes." },
-                  { n: "03", t: "Consolidação", d: "Valida resultados e orienta o próximo ciclo de cuidado." },
-                ].map((s, i) => (
-                  <div
-                    key={s.n}
-                    className="relative rounded-xl border border-border bg-card p-6 hover:border-primary/40 hover:shadow-card transition-smooth animate-in fade-in slide-in-from-bottom-4 fill-mode-both"
-                    style={{ animationDelay: `${i * 120}ms`, animationDuration: "600ms" }}
-                  >
-                    <div className="absolute -top-3 left-6 text-xs font-mono font-semibold bg-gradient-hero text-primary-foreground px-2.5 py-1 rounded-full">
-                      {s.n}
-                    </div>
-                    <h3 className="font-display text-lg font-semibold mb-2 text-foreground mt-2">{s.t}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{s.d}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* RELATÓRIO */}
-          <section className="border-b border-border/60">
-            <div className="container max-w-5xl py-16">
-              <div className="grid md:grid-cols-2 gap-10 items-start">
-                <div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-700 fill-mode-both">
-                  <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
-                    Relatório gratuito por onda
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto,
-                    para você agir antes que o custo cresça.
-                  </p>
-                  <Button
-                    onClick={() => document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" })}
-                    className="bg-gradient-hero text-primary-foreground hover:opacity-90 group"
-                  >
-                    Quero o relatório da minha empresa
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </div>
-                <ul className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-700 fill-mode-both">
-                  {[
-                    "Agregado por área, departamento e faixa etária",
-                    "Dimensões em risco: demanda, controle, suporte, justiça, violência",
-                    "Sugestões práticas por dimensão",
-                    "Comparação entre ondas",
-                    "Anonimato individual preservado",
-                  ].map((i, idx) => (
-                    <li
-                      key={i}
-                      className="flex gap-3 text-sm rounded-lg border border-border/60 bg-card p-3 hover:border-primary/40 transition-smooth animate-in fade-in fill-mode-both"
-                      style={{ animationDelay: `${idx * 80}ms`, animationDuration: "500ms" }}
-                    >
-                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
-                      <span className="text-foreground">{i}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          {/* SEGURANÇA / CIÊNCIA */}
-          <section className="border-b border-border/60 bg-muted/30">
-            <div className="container max-w-5xl py-16">
-              <div className="grid md:grid-cols-3 gap-6">
-                {[
-                  { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado no COPSOQ II, padrão internacional para riscos psicossociais." },
-                  { Icon: Lock, t: "Anonimato garantido", d: "Empresa nunca vê respostas individuais — apenas dados agregados." },
-                  { Icon: ShieldCheck, t: "Conformidade LGPD", d: "Criptografia, controles de acesso e sigilo profissional." },
-                ].map((s, i) => (
-                  <div
-                    key={s.t}
-                    className="rounded-xl border border-border bg-card p-6 hover:shadow-card transition-smooth animate-in fade-in slide-in-from-bottom-4 fill-mode-both"
-                    style={{ animationDelay: `${i * 100}ms`, animationDuration: "600ms" }}
-                  >
-                    <s.Icon className="h-5 w-5 text-primary mb-3" />
-                    <h3 className="font-display text-base font-semibold mb-2 text-foreground">{s.t}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{s.d}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </>
-      )}
+      {!user && <PublicLanding onCadastrar={() => { setAuthMode("signup"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("signup-company")?.focus(), 600); }} onEntrar={() => { setAuthMode("login"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" }); }} />}
 
 
       <div className="container max-w-3xl py-10 space-y-6">
@@ -500,5 +311,225 @@ const Trabalho = () => {
     </main>
   );
 };
+
+function Reveal({ as: As = "div", className = "", variant = "up", delay = 0, children }: { as?: any; className?: string; variant?: "up" | "zoom" | "left"; delay?: number; children: React.ReactNode }) {
+  const { ref, visible } = useReveal();
+  const base = variant === "zoom" ? "reveal-zoom" : variant === "left" ? "reveal-left" : "reveal";
+  return (
+    <As ref={ref as any} className={`${base} ${visible ? "is-visible" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
+      {children}
+    </As>
+  );
+}
+
+function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onEntrar: () => void }) {
+  return (
+    <>
+      {/* HERO */}
+      <section className="relative bg-[hsl(var(--background))] overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute -top-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary/5 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute top-1/2 -left-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+
+        <div className="container max-w-7xl py-12 md:py-24 relative">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7 space-y-7">
+              <Reveal>
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 backdrop-blur px-3 py-1 text-xs font-medium text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  Programa gratuito de prevenção
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <h1 className="font-serif-editorial text-5xl md:text-7xl font-medium leading-[0.95] tracking-tight text-foreground">
+                  Cuide antes que <br />
+                  <span className="italic text-primary">vire afastamento.</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={160}>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+                  Cuida + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas que valorizam o capital humano acima de tudo.
+                </p>
+              </Reveal>
+              <Reveal delay={240}>
+                <div className="flex flex-wrap gap-3 pt-1">
+                  <Button size="lg" onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 shadow-soft group h-12 px-6">
+                    Cadastrar empresa agora
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
+                    Como funciona
+                  </Button>
+                </div>
+              </Reveal>
+              <Reveal delay={320}>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> 100% gratuito</span>
+                  <span className="inline-flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Anonimato garantido</span>
+                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica COPSOQ II</span>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* Photo + floating card */}
+            <div className="lg:col-span-5 relative">
+              <Reveal variant="zoom" delay={150}>
+                <div className="rounded-3xl overflow-hidden shadow-soft relative aspect-[4/5] bg-muted">
+                  <img
+                    src={heroPhoto}
+                    alt="Equipe diversa em reunião colaborativa em escritório moderno e acolhedor"
+                    width={1024}
+                    height={1280}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 via-transparent to-transparent" />
+                </div>
+              </Reveal>
+              <Reveal variant="left" delay={500} className="absolute -bottom-10 -left-6 md:-left-16 max-w-xs">
+                <Card className="p-6 shadow-soft border-border/60 bg-card/95 backdrop-blur">
+                  <h2 className="font-serif-editorial text-xl font-medium mb-1">Comece em 30 segundos</h2>
+                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito · aprovação em até 1 dia útil.</p>
+                  <Button onClick={onCadastrar} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90 group">
+                    Cadastrar minha empresa
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                  <button onClick={onEntrar} className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-primary transition-smooth underline-offset-4 hover:underline">
+                    Já tenho conta · entrar
+                  </button>
+                </Card>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BENEFÍCIOS */}
+      <section className="border-t border-border/40">
+        <div className="container max-w-6xl py-24 md:py-28">
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { Icon: HeartPulse, t: "Prevenção real", d: "Detecta sobrecarga e exaustão antes de virar licença médica. Inteligência preventiva no dia a dia." },
+              { Icon: TrendingDown, t: "Custo evitado", d: "Cada afastamento custa milhares. Prevenir sai muito mais barato para a empresa e o colaborador." },
+              { Icon: ShieldCheck, t: "Engajamento", d: "Reduz turnover, melhora o clima e fortalece a marca empregadora. People first, result driven." },
+            ].map((b, i) => (
+              <Reveal key={b.t} delay={i * 120} className="space-y-4">
+                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary">
+                  <b.Icon className="h-5 w-5" />
+                </div>
+                <h3 className="font-serif-editorial text-2xl font-medium text-foreground">{b.t}</h3>
+                <p className="text-muted-foreground leading-relaxed">{b.d}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3 ONDAS — dark editorial */}
+      <section id="como-funciona" className="bg-[hsl(210_30%_12%)] text-[hsl(200_15%_90%)] overflow-hidden">
+        <div className="container max-w-7xl py-24 md:py-32">
+          <Reveal className="max-w-2xl mb-16">
+            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ondas de rastreio</h2>
+            <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
+              Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
+            </p>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-0 border-t border-white/10">
+            {[
+              { n: "01 / DIAGNÓSTICO", t: "Linha de base", d: "Mapeia demandas, controle, suporte, reconhecimento e violência. O primeiro passo para a escuta ativa." },
+              { n: "02 / EVOLUÇÃO", t: "Reaplicação", d: "Mede a sensibilidade às intervenções realizadas e identifica áreas que ainda exigem atenção." },
+              { n: "03 / MATURIDADE", t: "Consolidação", d: "Valida resultados e orienta o próximo ciclo. Transformamos dados brutos em cultura de cuidado." },
+            ].map((s, i) => (
+              <Reveal
+                key={s.n}
+                delay={i * 150}
+                className={`group py-12 transition-colors hover:bg-white/5 ${
+                  i === 0 ? "md:pr-12 md:border-r" : i === 1 ? "md:px-12 md:border-r" : "md:pl-12"
+                } border-white/10 ${i < 2 ? "border-b md:border-b-0" : ""}`}
+              >
+                <div className="text-accent font-mono text-xs mb-8 italic tracking-widest">{s.n}</div>
+                <h3 className="font-serif-editorial text-3xl mb-4">{s.t}</h3>
+                <p className="text-[hsl(200_15%_70%)] leading-relaxed">{s.d}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* RELATÓRIO */}
+      <section className="border-b border-border/40">
+        <div className="container max-w-6xl py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <Reveal variant="left">
+              <h2 className="font-serif-editorial text-4xl md:text-5xl font-medium text-foreground mb-6 leading-tight">
+                Relatório gratuito por onda
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
+              </p>
+              <Button onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 group h-12 px-6">
+                Quero o relatório da minha empresa
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Reveal>
+            <div className="space-y-3">
+              {[
+                "Agregado por área, departamento e faixa etária",
+                "Dimensões em risco: demanda, controle, suporte, justiça, violência",
+                "Sugestões práticas por dimensão",
+                "Comparação entre ondas",
+                "Anonimato individual preservado",
+              ].map((i, idx) => (
+                <Reveal key={i} delay={idx * 80} className="flex gap-3 text-sm rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 transition-smooth">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-foreground font-medium">{i}</span>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEGURANÇA / DEPOIMENTO */}
+      <section className="bg-muted/30 border-b border-border/40">
+        <div className="container max-w-6xl py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <Reveal variant="zoom" className="rounded-3xl overflow-hidden shadow-card aspect-[4/3] bg-muted">
+              <img
+                src={loungePhoto}
+                alt="Colegas de trabalho conversando em ambiente acolhedor"
+                width={1024}
+                height={640}
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+            </Reveal>
+            <div className="space-y-6">
+              {[
+                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado no COPSOQ II, padrão internacional para riscos psicossociais." },
+                { Icon: Lock, t: "Anonimato garantido", d: "A empresa nunca vê respostas individuais — apenas dados agregados." },
+                { Icon: ShieldCheck, t: "Conformidade LGPD", d: "Criptografia, controles de acesso e sigilo profissional." },
+              ].map((s, i) => (
+                <Reveal key={s.t} delay={i * 120} className="flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0">
+                    <s.Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif-editorial text-xl font-medium mb-1 text-foreground">{s.t}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{s.d}</p>
+                  </div>
+                </Reveal>
+              ))}
+              <Reveal delay={400} className="pt-4 border-t border-border/60">
+                <p className="font-serif-editorial italic text-xl text-foreground leading-snug">
+                  “A saúde mental deixou de ser um benefício para se tornar a base da produtividade moderna.”
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
 
 export default Trabalho;
