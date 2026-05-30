@@ -312,4 +312,224 @@ const Trabalho = () => {
   );
 };
 
+function Reveal({ as: As = "div", className = "", variant = "up", delay = 0, children }: { as?: any; className?: string; variant?: "up" | "zoom" | "left"; delay?: number; children: React.ReactNode }) {
+  const { ref, visible } = useReveal();
+  const base = variant === "zoom" ? "reveal-zoom" : variant === "left" ? "reveal-left" : "reveal";
+  return (
+    <As ref={ref as any} className={`${base} ${visible ? "is-visible" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
+      {children}
+    </As>
+  );
+}
+
+function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onEntrar: () => void }) {
+  return (
+    <>
+      {/* HERO */}
+      <section className="relative bg-[hsl(var(--background))] overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute -top-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary/5 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute top-1/2 -left-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
+
+        <div className="container max-w-7xl py-12 md:py-24 relative">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7 space-y-7">
+              <Reveal>
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 backdrop-blur px-3 py-1 text-xs font-medium text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  Programa gratuito de prevenção
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <h1 className="font-serif-editorial text-5xl md:text-7xl font-medium leading-[0.95] tracking-tight text-foreground">
+                  Cuide antes que <br />
+                  <span className="italic text-primary">vire afastamento.</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={160}>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+                  Cuida + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas que valorizam o capital humano acima de tudo.
+                </p>
+              </Reveal>
+              <Reveal delay={240}>
+                <div className="flex flex-wrap gap-3 pt-1">
+                  <Button size="lg" onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 shadow-soft group h-12 px-6">
+                    Cadastrar empresa agora
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
+                    Como funciona
+                  </Button>
+                </div>
+              </Reveal>
+              <Reveal delay={320}>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> 100% gratuito</span>
+                  <span className="inline-flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Anonimato garantido</span>
+                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica COPSOQ II</span>
+                </div>
+              </Reveal>
+            </div>
+
+            {/* Photo + floating card */}
+            <div className="lg:col-span-5 relative">
+              <Reveal variant="zoom" delay={150}>
+                <div className="rounded-3xl overflow-hidden shadow-soft relative aspect-[4/5] bg-muted">
+                  <img
+                    src={heroPhoto}
+                    alt="Equipe diversa em reunião colaborativa em escritório moderno e acolhedor"
+                    width={1024}
+                    height={1280}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 via-transparent to-transparent" />
+                </div>
+              </Reveal>
+              <Reveal variant="left" delay={500} className="absolute -bottom-10 -left-6 md:-left-16 max-w-xs">
+                <Card className="p-6 shadow-soft border-border/60 bg-card/95 backdrop-blur">
+                  <h2 className="font-serif-editorial text-xl font-medium mb-1">Comece em 30 segundos</h2>
+                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito · aprovação em até 1 dia útil.</p>
+                  <Button onClick={onCadastrar} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90 group">
+                    Cadastrar minha empresa
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                  <button onClick={onEntrar} className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-primary transition-smooth underline-offset-4 hover:underline">
+                    Já tenho conta · entrar
+                  </button>
+                </Card>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BENEFÍCIOS */}
+      <section className="border-t border-border/40">
+        <div className="container max-w-6xl py-24 md:py-28">
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { Icon: HeartPulse, t: "Prevenção real", d: "Detecta sobrecarga e exaustão antes de virar licença médica. Inteligência preventiva no dia a dia." },
+              { Icon: TrendingDown, t: "Custo evitado", d: "Cada afastamento custa milhares. Prevenir sai muito mais barato para a empresa e o colaborador." },
+              { Icon: ShieldCheck, t: "Engajamento", d: "Reduz turnover, melhora o clima e fortalece a marca empregadora. People first, result driven." },
+            ].map((b, i) => (
+              <Reveal key={b.t} delay={i * 120} className="space-y-4">
+                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary">
+                  <b.Icon className="h-5 w-5" />
+                </div>
+                <h3 className="font-serif-editorial text-2xl font-medium text-foreground">{b.t}</h3>
+                <p className="text-muted-foreground leading-relaxed">{b.d}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3 ONDAS — dark editorial */}
+      <section id="como-funciona" className="bg-[hsl(210_30%_12%)] text-[hsl(200_15%_90%)] overflow-hidden">
+        <div className="container max-w-7xl py-24 md:py-32">
+          <Reveal className="max-w-2xl mb-16">
+            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ondas de rastreio</h2>
+            <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
+              Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
+            </p>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-0 border-t border-white/10">
+            {[
+              { n: "01 / DIAGNÓSTICO", t: "Linha de base", d: "Mapeia demandas, controle, suporte, reconhecimento e violência. O primeiro passo para a escuta ativa." },
+              { n: "02 / EVOLUÇÃO", t: "Reaplicação", d: "Mede a sensibilidade às intervenções realizadas e identifica áreas que ainda exigem atenção." },
+              { n: "03 / MATURIDADE", t: "Consolidação", d: "Valida resultados e orienta o próximo ciclo. Transformamos dados brutos em cultura de cuidado." },
+            ].map((s, i) => (
+              <Reveal
+                key={s.n}
+                delay={i * 150}
+                className={`group py-12 transition-colors hover:bg-white/5 ${
+                  i === 0 ? "md:pr-12 md:border-r" : i === 1 ? "md:px-12 md:border-r" : "md:pl-12"
+                } border-white/10 ${i < 2 ? "border-b md:border-b-0" : ""}`}
+              >
+                <div className="text-accent font-mono text-xs mb-8 italic tracking-widest">{s.n}</div>
+                <h3 className="font-serif-editorial text-3xl mb-4">{s.t}</h3>
+                <p className="text-[hsl(200_15%_70%)] leading-relaxed">{s.d}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* RELATÓRIO */}
+      <section className="border-b border-border/40">
+        <div className="container max-w-6xl py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <Reveal variant="left">
+              <h2 className="font-serif-editorial text-4xl md:text-5xl font-medium text-foreground mb-6 leading-tight">
+                Relatório gratuito por onda
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
+              </p>
+              <Button onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 group h-12 px-6">
+                Quero o relatório da minha empresa
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Reveal>
+            <div className="space-y-3">
+              {[
+                "Agregado por área, departamento e faixa etária",
+                "Dimensões em risco: demanda, controle, suporte, justiça, violência",
+                "Sugestões práticas por dimensão",
+                "Comparação entre ondas",
+                "Anonimato individual preservado",
+              ].map((i, idx) => (
+                <Reveal key={i} delay={idx * 80} className="flex gap-3 text-sm rounded-xl border border-border/60 bg-card p-4 hover:border-primary/40 transition-smooth">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-foreground font-medium">{i}</span>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEGURANÇA / DEPOIMENTO */}
+      <section className="bg-muted/30 border-b border-border/40">
+        <div className="container max-w-6xl py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <Reveal variant="zoom" className="rounded-3xl overflow-hidden shadow-card aspect-[4/3] bg-muted">
+              <img
+                src={loungePhoto}
+                alt="Colegas de trabalho conversando em ambiente acolhedor"
+                width={1024}
+                height={640}
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+            </Reveal>
+            <div className="space-y-6">
+              {[
+                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado no COPSOQ II, padrão internacional para riscos psicossociais." },
+                { Icon: Lock, t: "Anonimato garantido", d: "A empresa nunca vê respostas individuais — apenas dados agregados." },
+                { Icon: ShieldCheck, t: "Conformidade LGPD", d: "Criptografia, controles de acesso e sigilo profissional." },
+              ].map((s, i) => (
+                <Reveal key={s.t} delay={i * 120} className="flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0">
+                    <s.Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif-editorial text-xl font-medium mb-1 text-foreground">{s.t}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{s.d}</p>
+                  </div>
+                </Reveal>
+              ))}
+              <Reveal delay={400} className="pt-4 border-t border-border/60">
+                <p className="font-serif-editorial italic text-xl text-foreground leading-snug">
+                  “A saúde mental deixou de ser um benefício para se tornar a base da produtividade moderna.”
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 export default Trabalho;
