@@ -1,6 +1,7 @@
 // Edge function: receives a tracking event, hashes the IP, resolves geolocation
 // from request headers, and inserts into test_events or link_clicks.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,22 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+const ALLOWED_SEVERITIES = new Set([
+  "minimal",
+  "mild",
+  "moderate",
+  "moderately-severe",
+  "severe",
+]);
+const ALLOWED_LINK_TYPES = new Set([
+  "professional",
+  "sus",
+  "cvv",
+  "samu",
+  "platform",
+  "donation",
+]);
 
 async function sha256(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
@@ -47,6 +64,19 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Rate-limit: max 60 events/IP/5min for tracking.
+    const rl = await checkRateLimit("track-event", req, 60, 300);
+    if (!rl.allowed) {
+      return new Response(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": String(rl.retryAfter),
+        },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -58,6 +88,8 @@ Deno.serve(async (req) => {
     const attr = attribution && typeof attribution === "object" ? attribution : {};
     const trim = (v: unknown) =>
       typeof v === "string" && v.length > 0 ? v.slice(0, 200) : null;
+    const trimShort = (v: unknown) =>
+      typeof v === "string" && v.length > 0 ? v.slice(0, 100) : null;
     const attrCols = {
       utm_source: trim(attr.utm_source),
       utm_medium: trim(attr.utm_medium),
@@ -82,6 +114,15 @@ Deno.serve(async (req) => {
 
     let result;
     if (type === "test") {
+      const scoreRaw = payload.score;
+      const score =
+        typeof scoreRaw === "number" && Number.isFinite(scoreRaw) && scoreRaw >= 0 && scoreRaw <= 27
+          ? Math.floor(scoreRaw)
+          : null;
+      const severity =
+        typeof payload.severity === "string" && ALLOWED_SEVERITIES.has(payload.severity)
+          ? payload.severity
+          : null;
       const ageRaw = payload.age;
       const age =
         typeof ageRaw === "number" && Number.isFinite(ageRaw) && ageRaw >= 1 && ageRaw <= 120
@@ -115,8 +156,8 @@ Deno.serve(async (req) => {
         referrer: attrCols.referrer,
       });
       result = await supabase.from("test_events").insert({
-        score: payload.score ?? null,
-        severity: payload.severity ?? null,
+        score,
+        severity,
         age,
         symptoms,
         phq9_answers: phq9Answers,
@@ -130,10 +171,16 @@ Deno.serve(async (req) => {
         ...attrCols,
       });
     } else if (type === "click") {
+      if (typeof payload.link_type !== "string" || !ALLOWED_LINK_TYPES.has(payload.link_type)) {
+        return new Response(JSON.stringify({ error: "Invalid link_type" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       result = await supabase.from("link_clicks").insert({
         link_type: payload.link_type,
-        target_id: payload.target_id ?? null,
-        target_label: payload.target_label ?? null,
+        target_id: trimShort(payload.target_id),
+        target_label: trimShort(payload.target_label),
         ip_hash: ipHash,
         country: geo.country,
         region: geo.region,
@@ -178,9 +225,10 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("track-event error", e);
-    return new Response(JSON.stringify({ error: String(e) }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+

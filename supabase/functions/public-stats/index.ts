@@ -23,8 +23,9 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
+    console.error("public-stats error", e);
     return new Response(
-      JSON.stringify({ total_tests: 0, error: String(e) }),
+      JSON.stringify({ total_tests: 0 }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
