@@ -133,7 +133,8 @@ Deno.serve(async (req) => {
     });
 
     if (insErr) {
-      return new Response(JSON.stringify({ error: insErr.message }), {
+      console.error("submit-copsoq insert error", insErr);
+      return new Response(JSON.stringify({ error: "internal_error" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -143,7 +144,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String((e as Error).message) }), {
+    console.error("submit-copsoq error", e);
+    return new Response(JSON.stringify({ error: "internal_error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
