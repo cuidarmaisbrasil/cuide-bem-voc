@@ -59,7 +59,8 @@ Deno.serve(async (req) => {
 
     return j({ enrolled: created.length, participants: created });
   } catch (e: any) {
-    return j({ error: e.message }, 500);
+    console.error("wellness-enroll error", e);
+    return j({ error: "internal_error" }, 500);
   }
 });
 

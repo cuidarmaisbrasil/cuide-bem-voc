@@ -141,7 +141,8 @@ Deno.serve(async (req) => {
     await admin.from("wellness_invitations").update({ status: "completed", completed_at: new Date().toISOString() }).eq("id", inv.id);
     return j({ ok: true });
   } catch (e: any) {
-    return j({ error: e.message }, 500);
+    console.error("wellness-submit error", e);
+    return j({ error: "internal_error" }, 500);
   }
 });
 

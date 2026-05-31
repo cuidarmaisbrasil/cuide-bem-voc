@@ -47,7 +47,8 @@ Deno.serve(async (req) => {
       questions: qs ?? [],
     });
   } catch (e: any) {
-    return j({ error: e.message }, 500);
+    console.error("wellness-resolve-token error", e);
+    return j({ error: "internal_error" }, 500);
   }
 });
 

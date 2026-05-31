@@ -18,7 +18,6 @@ interface Body {
   slug: string;
   version: "short" | "medium" | "long" | "short_pt" | "medium_pt" | "long_pt" | "short_br" | "medium_br" | "long_br";
   answers: Record<string, number>; // {"1": 3, "2": 5, ...}
-  questions: Array<{ n: number; scale: string; reverse?: boolean }>;
   demographics?: {
     age_range?: string;
     gender?: string;
@@ -44,7 +43,7 @@ Deno.serve(async (req) => {
 
   try {
     const body: Body = await req.json();
-    if (!body.slug || !body.version || !body.answers || !body.questions) {
+    if (!body.slug || !body.version || !body.answers) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios ausentes" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -88,12 +87,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Compute scale scores server-side
+    // Fetch canonical question metadata server-side (NEVER trust caller's mapping).
+    const { data: canonicalQuestions, error: qErr } = await supabase
+      .from("instrument_questions")
+      .select("n, scale, reverse")
+      .eq("instrument", `copsoq_${body.version}`)
+      .eq("active", true);
+    if (qErr || !canonicalQuestions || canonicalQuestions.length === 0) {
+      return new Response(JSON.stringify({ error: "Instrumento indisponível" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Compute scale scores server-side using only canonical questions
     const grouped = new Map<string, number[]>();
-    for (const q of body.questions) {
+    for (const q of canonicalQuestions) {
       const raw = body.answers[String(q.n)];
       if (!raw || raw < 1 || raw > 5) continue;
-      const score = rawToScore(raw, q.reverse);
+      const score = rawToScore(raw, !!q.reverse);
       if (!grouped.has(q.scale)) grouped.set(q.scale, []);
       grouped.get(q.scale)!.push(score);
     }
@@ -121,7 +133,8 @@ Deno.serve(async (req) => {
     });
 
     if (insErr) {
-      return new Response(JSON.stringify({ error: insErr.message }), {
+      console.error("submit-copsoq insert error", insErr);
+      return new Response(JSON.stringify({ error: "internal_error" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -131,7 +144,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String((e as Error).message) }), {
+    console.error("submit-copsoq error", e);
+    return new Response(JSON.stringify({ error: "internal_error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

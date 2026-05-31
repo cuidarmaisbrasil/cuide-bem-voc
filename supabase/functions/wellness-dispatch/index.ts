@@ -10,12 +10,13 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(url, serviceKey);
 
-    // Auth: admin user OR service-role OR project anon (cron uses anon).
-    // Function is rate-bound by scheduled_at; safe to allow scheduled triggers.
+    // Auth: service-role (cron / internal) OR authenticated admin user.
+    // The anon key is public and is NOT accepted as a privileged credential.
     const auth = req.headers.get("Authorization") || "";
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    let isAuthorized = auth.includes(serviceKey) || auth.includes(anonKey);
-    if (!isAuthorized) {
+    let isAuthorized = !!serviceKey && auth.includes(serviceKey);
+    if (!isAuthorized && auth && !auth.includes(anonKey)) {
+      // Only attempt user resolution when a non-anon bearer was supplied.
       const userClient = createClient(url, anonKey, { global: { headers: { Authorization: auth } } });
       const { data: { user } } = await userClient.auth.getUser();
       if (user) {
@@ -65,7 +66,8 @@ Deno.serve(async (req) => {
 
     return j({ processed: (due ?? []).length, sent, skipped, failed });
   } catch (e: any) {
-    return j({ error: e.message }, 500);
+    console.error("wellness-dispatch error", e);
+    return j({ error: "internal_error" }, 500);
   }
 });
 
