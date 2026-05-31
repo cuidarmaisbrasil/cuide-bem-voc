@@ -409,7 +409,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             {[
               { Icon: HeartPulse, t: "Prevenção real", d: "Detecta sobrecarga e exaustão antes de virar licença médica. Inteligência preventiva no dia a dia." },
               { Icon: TrendingDown, t: "Custo evitado", d: "Cada afastamento custa milhares. Prevenir sai muito mais barato para a empresa e o colaborador." },
-              { Icon: ShieldCheck, t: "Engajamento", d: "Reduz turnover, melhora o clima e fortalece a marca empregadora. People first, result driven." },
+              { Icon: ShieldCheck, t: "Engajamento", d: "Reduz turnover, melhora o clima e fortalece a marca empregadora. Pessoas saudáveis, resultados saudáveis." },
             ].map((b, i) => (
               <Reveal key={b.t} delay={i * 120} className="space-y-4">
                 <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary">
