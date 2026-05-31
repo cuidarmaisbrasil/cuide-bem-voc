@@ -35,6 +35,8 @@ function getGeo(req: Request) {
 const trim = (v: unknown, max = 200) =>
   typeof v === "string" && v.length > 0 ? v.slice(0, max) : null;
 
+import { checkRateLimit } from "../_shared/rate-limit.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
@@ -46,11 +48,23 @@ Deno.serve(async (req) => {
     const sessionId = trim(body?.session_id, 64);
     const event = body?.event === "start" ? "start" : "heartbeat";
     const attr = body?.attribution && typeof body.attribution === "object" ? body.attribution : {};
-    if (!sessionId) {
-      return new Response(JSON.stringify({ error: "Missing session_id" }), {
+    if (!sessionId || !/^[0-9a-f-]{20,64}$/i.test(sessionId)) {
+      return new Response(JSON.stringify({ error: "Missing or invalid session_id" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Rate limit: only throttle session "start" events (heartbeats are bounded by session lifetime).
+    if (event === "start") {
+      const rl = await checkRateLimit("track-session-start", req, 30, 3600);
+      if (!rl.allowed) {
+        return new Response(JSON.stringify({ error: "rate_limited" }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": String(rl.retryAfter) },
+        });
+      }
+    }
+
     const ip = getClientIp(req);
     const ipHash = await sha256(ip + ":" + (Deno.env.get("SUPABASE_PROJECT_ID") || "salt"));
     const geo = getGeo(req);
@@ -84,7 +98,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("track-session error", e);
-    return new Response(JSON.stringify({ error: String(e) }), {
+    return new Response(JSON.stringify({ error: "internal_error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
