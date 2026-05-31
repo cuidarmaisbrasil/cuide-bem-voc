@@ -1,6 +1,7 @@
 // Edge function: receives a tracking event, hashes the IP, resolves geolocation
 // from request headers, and inserts into test_events or link_clicks.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,22 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
+const ALLOWED_SEVERITIES = new Set([
+  "minimal",
+  "mild",
+  "moderate",
+  "moderately-severe",
+  "severe",
+]);
+const ALLOWED_LINK_TYPES = new Set([
+  "professional",
+  "sus",
+  "cvv",
+  "samu",
+  "platform",
+  "donation",
+]);
 
 async function sha256(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
