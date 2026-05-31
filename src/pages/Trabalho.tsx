@@ -158,8 +158,8 @@ const Trabalho = () => {
                     <div><Label>Cargo do responsável *</Label><Input value={contactRole} onChange={(e) => setContactRole(e.target.value)} placeholder="Ex.: Gerente de RH" required /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><Label>CNPJ (opcional)</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} /></div>
-                    <div><Label>Telefone</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
+                    <div><Label>CNPJ *</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} required /></div>
+                    <div><Label>Telefone *</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} required /></div>
                   </div>
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
