@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
 
     return j({ processed: (due ?? []).length, sent, skipped, failed });
   } catch (e: any) {
-    return j({ error: e.message }, 500);
+    console.error("wellness-dispatch error", e);
+    return j({ error: "internal_error" }, 500);
   }
 });
 
