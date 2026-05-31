@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
 
   try {
     const body: Body = await req.json();
-    if (!body.slug || !body.version || !body.answers || !body.questions) {
+    if (!body.slug || !body.version || !body.answers) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios ausentes" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
