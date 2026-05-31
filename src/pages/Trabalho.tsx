@@ -59,8 +59,8 @@ const Trabalho = () => {
     e.preventDefault(); setSubmitting(true);
     try {
       if (authMode === "signup") {
-        if (!companyName.trim() || !contactName.trim() || !contactRole.trim()) {
-          toast.error("Preencha empresa, responsável e cargo."); return;
+        if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim()) {
+          toast.error("Preencha empresa, responsável, cargo, CNPJ e telefone."); return;
         }
         const { data, error } = await supabase.auth.signUp({
           email, password,
