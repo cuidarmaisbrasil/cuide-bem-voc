@@ -347,7 +347,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               </Reveal>
               <Reveal delay={160}>
                 <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                  Cuida + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas que valorizam o capital humano acima de tudo.
+                  Cuidar + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas que valorizam o capital humano acima de tudo.
                 </p>
               </Reveal>
               <Reveal delay={240}>
