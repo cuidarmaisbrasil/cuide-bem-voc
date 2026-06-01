@@ -126,7 +126,7 @@ const Trabalho = () => {
       <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-40">
         <div className="container flex items-center justify-between h-14">
           <button onClick={() => navigate("/")} className="flex items-center gap-2 font-display font-semibold">
-            <span className="h-7 w-7 rounded-lg bg-gradient-hero flex items-center justify-center text-primary-foreground text-sm">💼</span>
+            <span className="h-7 w-7 rounded-lg bg-secondary flex items-center justify-center"><Briefcase className="h-4 w-4 text-destructive" /></span>
             Cuidar+ Trabalho
           </button>
           {user && <Button variant="ghost" size="sm" onClick={signOut}>Sair</Button>}
