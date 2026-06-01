@@ -341,13 +341,13 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               </Reveal>
               <Reveal delay={80}>
                 <h1 className="font-serif-editorial text-5xl md:text-7xl font-medium leading-[0.95] tracking-tight text-foreground">
-                  Presença com cuidado. <br />
+                  Presença com cuidado, <br />
                   <span className="italic text-primary">Ação com resultado .</span>
                 </h1>
               </Reveal>
               <Reveal delay={160}>
                 <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
-                  Cuidar + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas que valorizam o capital humano acima de tudo.
+                  Cuidar + para você ser mais. Escuta e prevenção inteligente ao seu alcance — para empresas sabem o valor do capital humano.
                 </p>
               </Reveal>
               <Reveal delay={240}>
