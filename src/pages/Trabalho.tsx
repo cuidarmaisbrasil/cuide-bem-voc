@@ -341,8 +341,8 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               </Reveal>
               <Reveal delay={80}>
                 <h1 className="font-serif-editorial text-5xl md:text-7xl font-medium leading-[0.95] tracking-tight text-foreground">
-                  Presença com cuidado, <br />
-                  <span className="italic text-primary">Ação com resultado .</span>
+                  <span className="italic text-primary">Presença</span> com cuidado, <br />
+                  <span className="text-foreground">Ação</span> <span className="italic text-primary">com resultado .</span>
                 </h1>
               </Reveal>
               <Reveal delay={160}>
