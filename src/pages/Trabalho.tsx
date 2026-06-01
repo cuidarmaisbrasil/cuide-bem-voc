@@ -365,7 +365,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">
                   <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> 100% gratuito</span>
                   <span className="inline-flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Anonimato garantido</span>
-                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica COPSOQ II</span>
+                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica COPSOQ II/ ECIG/ PHQ-9</span>
                 </div>
               </Reveal>
             </div>
