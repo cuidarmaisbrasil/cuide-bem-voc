@@ -35,6 +35,26 @@ Deno.serve(async (req) => {
       .filter((e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))));
     if (!cleaned.length) return j({ error: "no_valid_emails" }, 400);
 
+    // Determine current open round. If none exists, create round 1.
+    const { data: latestRound } = await admin
+      .from("wellness_company_rounds")
+      .select("round_no, closed_at, devolutiva_communicated_at")
+      .eq("company_id", company_id)
+      .order("round_no", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let roundNo = latestRound?.round_no ?? null;
+    if (!roundNo) {
+      const { data: created, error: rErr } = await admin
+        .from("wellness_company_rounds")
+        .insert({ company_id, round_no: 1 })
+        .select("round_no")
+        .single();
+      if (rErr || !created) return j({ error: "round_create_failed", detail: rErr?.message }, 500);
+      roundNo = created.round_no;
+    }
+
     const iv = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, ...(intervals_days || {}) };
     const now = new Date();
 
@@ -50,14 +70,15 @@ Deno.serve(async (req) => {
       const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => ({
         participant_id: p.id,
         wave,
+        round_no: roundNo,
         scheduled_at: new Date(now.getTime() + (iv as any)[wave] * 86400000).toISOString(),
         status: "pending",
       }));
-      await admin.from("wellness_invitations").upsert(invites, { onConflict: "participant_id,wave", ignoreDuplicates: true });
+      await admin.from("wellness_invitations").upsert(invites, { onConflict: "participant_id,wave,round_no", ignoreDuplicates: true });
       created.push({ email, token: p.token });
     }
 
-    return j({ enrolled: created.length, participants: created });
+    return j({ enrolled: created.length, round_no: roundNo, participants: created });
   } catch (e: any) {
     console.error("wellness-enroll error", e);
     return j({ error: "internal_error" }, 500);

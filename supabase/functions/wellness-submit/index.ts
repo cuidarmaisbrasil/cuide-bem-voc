@@ -27,14 +27,18 @@ Deno.serve(async (req) => {
 
     const { data: inv } = await admin
       .from("wellness_invitations")
-      .select("id,status")
+      .select("id,status,round_no")
       .eq("participant_id", p.id)
       .eq("wave", wave)
+      .order("round_no", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (!inv) return j({ error: "no_invitation" }, 404);
     if (inv.status === "completed") return j({ error: "already_completed" }, 409);
 
+    const round_no = inv.round_no ?? 1;
     const demo = demographics || {};
+
 
     if (wave === "phq9") {
       const phqAnswers = Array.from({ length: 9 }, (_, i) => Number(answers[String(i + 1)] ?? 0));
@@ -43,6 +47,7 @@ Deno.serve(async (req) => {
       const functional_impact = Number(answers["10"] ?? 0);
       await admin.from("phq9_company_responses").insert({
         company_id: p.company_id,
+        round_no,
         participant_token_hash: p.token_hash,
         answers,
         latencies_ms,
@@ -56,6 +61,7 @@ Deno.serve(async (req) => {
         department: demo.department,
         tenure_range: demo.tenure_range,
       });
+
     } else if (wave === "ecig") {
       // Score by subscale (tarefa, relacionamento, processo)
       const { data: qs } = await admin
@@ -76,6 +82,7 @@ Deno.serve(async (req) => {
       for (const k of Object.keys(sums)) scores[k] = +(sums[k].sum / sums[k].n).toFixed(2);
       await admin.from("ecig_responses").insert({
         company_id: p.company_id,
+        round_no,
         participant_token_hash: p.token_hash,
         answers,
         latencies_ms,
@@ -85,10 +92,12 @@ Deno.serve(async (req) => {
         department: demo.department,
         tenure_range: demo.tenure_range,
       });
+
     } else if (wave === "copsoq") {
       // copsoq — reuse existing table, add token_hash + latencies
       await admin.from("copsoq_responses").insert({
         company_id: p.company_id,
+        round_no,
         participant_token_hash: p.token_hash,
         version: extras?.version || "short_br",
         answers,
@@ -99,6 +108,7 @@ Deno.serve(async (req) => {
         department: demo.department,
         tenure_range: demo.tenure_range,
       });
+
     } else {
       // psicossocial — LIPT-60 (escala 0..4). Score por subescala (média dos itens respondidos).
       const { data: qs } = await admin
@@ -126,6 +136,7 @@ Deno.serve(async (req) => {
       }
       await admin.from("psicossocial_responses").insert({
         company_id: p.company_id,
+        round_no,
         participant_token_hash: p.token_hash,
         instrument: "lipt60",
         answers,
@@ -136,6 +147,7 @@ Deno.serve(async (req) => {
         department: demo.department,
         tenure_range: demo.tenure_range,
       });
+
     }
 
     await admin.from("wellness_invitations").update({ status: "completed", completed_at: new Date().toISOString() }).eq("id", inv.id);

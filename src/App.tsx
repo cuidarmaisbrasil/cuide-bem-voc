@@ -17,6 +17,8 @@ import CopsoqResponder from "./pages/CopsoqResponder.tsx";
 import WellnessResponder from "./pages/WellnessResponder.tsx";
 import Imprensa from "./pages/Imprensa.tsx";
 import BlogRH from "./pages/BlogRH.tsx";
+import AepReport from "./pages/AepReport.tsx";
+
 
 const queryClient = new QueryClient();
 
@@ -40,7 +42,9 @@ const App = () => (
             <Route path="/w/:token/:wave" element={<WellnessResponder />} />
             <Route path="/imprensa" element={<Imprensa />} />
             <Route path="/blog/rh-saude-mental-trabalho" element={<BlogRH />} />
+            <Route path="/admin/aep/:companyId/:roundNo" element={<AepReport />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

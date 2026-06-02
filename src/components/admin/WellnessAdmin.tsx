@@ -10,8 +10,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
+
+interface RoundData {
+  round_no: number;
+  opened_at: string;
+  closed_at: string | null;
+  devolutiva_communicated_at: string | null;
+  devolutiva_notes: string | null;
+  status: "open" | "closed" | "devolutiva_communicated";
+  waves: Record<string, { scheduled: number; sent: number; completed: number }>;
+  copsoq: { n: number; hidden: boolean; scales: Record<string, { mean: number; n: number }> };
+  phq9: { n: number; hidden: boolean; severity_dist: Record<string, number> };
+}
+
+function bandFor(type: CopsoqScaleType, mean: number) {
+  if (type === "positive") return mean >= 75 ? "Saudável" : mean >= 50 ? "Atenção" : "Risco";
+  return mean <= 25 ? "Saudável" : mean <= 50 ? "Atenção" : "Risco";
+}
+function deltaIsImprovement(type: CopsoqScaleType, delta: number) {
+  return type === "positive" ? delta > 0 : delta < 0;
+}
 
 interface Company { id: string; name: string; status: string }
+interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
+
+
 interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
 
 export const WellnessAdmin = () => {
@@ -22,6 +47,9 @@ export const WellnessAdmin = () => {
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const [devolutivaOpen, setDevolutivaOpen] = useState<RoundData | null>(null);
+  const [devolutivaNotes, setDevolutivaNotes] = useState("");
+
 
   // Items editor
   const [instrument, setInstrument] = useState("phq9");
@@ -75,6 +103,38 @@ export const WellnessAdmin = () => {
     } catch (e: any) { toast.error(e.message); }
     finally { setBusy(false); }
   }
+
+  async function openNewRound() {
+    if (!companyId) return;
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-open-round", { body: { company_id: companyId } });
+      if (error) throw error;
+      const d = data as any;
+      if (d?.error) throw new Error(d.message || d.error);
+      toast.success(`Rodada #${d.round.round_no} aberta`);
+      loadStats();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+  async function submitDevolutiva() {
+    if (!devolutivaOpen || !companyId) return;
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-mark-devolutiva", {
+        body: { company_id: companyId, round_no: devolutivaOpen.round_no, notes: devolutivaNotes || null },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(`Devolutiva da Rodada #${devolutivaOpen.round_no} registrada`);
+      setDevolutivaOpen(null);
+      setDevolutivaNotes("");
+      loadStats();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+
 
   async function updateItem(id: string, patch: Partial<Item>) {
     const { error } = await supabase.from("instrument_questions").update(patch).eq("id", id);
@@ -155,7 +215,94 @@ export const WellnessAdmin = () => {
               </div>
             </Card>
           )}
+
+          {stats?.rounds && (
+            <Card className="p-4 space-y-3">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <h3 className="font-semibold">Rodadas de rastreio</h3>
+                <Button size="sm" onClick={openNewRound} disabled={busy || !stats.can_open_new_round}
+                  title={stats.can_open_new_round ? "" : "Marque a devolutiva da rodada atual antes"}>
+                  Abrir nova rodada
+                </Button>
+              </div>
+              {!stats.can_open_new_round && (
+                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
+                  A rodada atual ainda não teve a devolutiva comunicada aos trabalhadores (exigência NR-1 — Q&amp;A MTE 2026, perg. 17).
+                  Marque a devolutiva antes de abrir uma nova rodada.
+                </p>
+              )}
+              {(stats.rounds as RoundData[]).slice().reverse().map((r, idx, arr) => {
+                const prev = arr[idx + 1];
+                const scaleIds = Object.keys(r.copsoq.scales);
+                const totalScheduled = Object.values(r.waves).reduce((s, w: any) => s + w.scheduled, 0);
+                const totalCompleted = Object.values(r.waves).reduce((s, w: any) => s + w.completed, 0);
+                return (
+                  <div key={r.round_no} className="rounded border p-3 space-y-2">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">Rodada #{r.round_no}</span>
+                        <Badge variant={r.status === "open" ? "outline" : "secondary"}>
+                          {r.status === "open" ? "Em coleta" : r.status === "closed" ? "Fechada" : "Devolutiva comunicada"}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(r.opened_at).toLocaleDateString("pt-BR")}
+                          {r.devolutiva_communicated_at ? ` → devolutiva ${new Date(r.devolutiva_communicated_at).toLocaleDateString("pt-BR")}` : ""}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        {!r.devolutiva_communicated_at && (
+                          <Button size="sm" variant="outline"
+                            onClick={() => { setDevolutivaOpen(r); setDevolutivaNotes(r.devolutiva_notes || ""); }}>
+                            Marcar devolutiva
+                          </Button>
+                        )}
+                        <Button asChild size="sm" variant="outline">
+                          <a href={`/admin/aep/${companyId}/${r.round_no}`} target="_blank" rel="noopener noreferrer">
+                            Exportar AEP
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Adesão: {totalCompleted}/{totalScheduled} convites concluídos
+                      {r.copsoq.hidden
+                        ? ` · COPSOQ oculto (n=${r.copsoq.n} < ${stats.min_recorte})`
+                        : ` · COPSOQ n=${r.copsoq.n}`}
+                    </div>
+                    {!r.copsoq.hidden && scaleIds.length > 0 && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-xs">
+                        {scaleIds.map((sid) => {
+                          const meta = copsoqScales[sid];
+                          if (!meta) return null;
+                          const mean = r.copsoq.scales[sid].mean;
+                          const band = bandFor(meta.type, mean);
+                          const prevMean = prev?.copsoq.scales[sid]?.mean;
+                          const delta = typeof prevMean === "number" ? +(mean - prevMean).toFixed(1) : null;
+                          const bandClass = band === "Risco" ? "text-red-700" : band === "Atenção" ? "text-amber-700" : "text-emerald-700";
+                          return (
+                            <div key={sid} className="flex items-center justify-between border-b py-1">
+                              <span className="truncate pr-2">{meta.name}</span>
+                              <span className="flex items-center gap-2 shrink-0">
+                                <span>{mean.toFixed(1)}</span>
+                                <span className={`text-[10px] font-semibold ${bandClass}`}>{band}</span>
+                                {delta !== null && (
+                                  <span className={`text-[10px] ${delta === 0 ? "text-muted-foreground" : deltaIsImprovement(meta.type, delta) ? "text-emerald-700" : "text-red-700"}`}>
+                                    {delta > 0 ? "▲+" : delta < 0 ? "▼" : "="}{delta !== 0 ? Math.abs(delta) : ""}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </Card>
+          )}
         </TabsContent>
+
 
         <TabsContent value="items" className="space-y-4 pt-4">
           <div className="flex flex-wrap gap-2 items-end">
@@ -203,9 +350,31 @@ export const WellnessAdmin = () => {
           <LatencyPanel companyId={companyId} companies={companies} onSelectCompany={setCompanyId} />
         </TabsContent>
       </Tabs>
+
+      <Dialog open={!!devolutivaOpen} onOpenChange={(o) => !o && setDevolutivaOpen(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Marcar devolutiva — Rodada #{devolutivaOpen?.round_no}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Confirme que os resultados agregados desta rodada foram <strong>comunicados aos trabalhadores</strong>
+              (NR-1 — participação dos trabalhadores). A rodada será fechada e a próxima poderá ser aberta.
+            </p>
+            <Label>Anotações (opcional — como foi comunicado)</Label>
+            <Textarea rows={4} value={devolutivaNotes} onChange={(e) => setDevolutivaNotes(e.target.value)}
+              placeholder="Ex.: Apresentação na reunião geral em 15/06, painel impresso na sala de café, e-mail interno." />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDevolutivaOpen(null)}>Cancelar</Button>
+            <Button onClick={submitDevolutiva} disabled={busy}>Confirmar devolutiva</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 function median(arr: number[]) {
   if (!arr.length) return 0;

@@ -232,6 +232,7 @@ export type Database = {
           latencies_ms: Json | null
           participant_token_hash: string | null
           region: string | null
+          round_no: number | null
           scores: Json | null
           tenure_range: string | null
           user_agent: string | null
@@ -251,6 +252,7 @@ export type Database = {
           latencies_ms?: Json | null
           participant_token_hash?: string | null
           region?: string | null
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
           user_agent?: string | null
@@ -270,6 +272,7 @@ export type Database = {
           latencies_ms?: Json | null
           participant_token_hash?: string | null
           region?: string | null
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
           user_agent?: string | null
@@ -296,6 +299,7 @@ export type Database = {
           id: string
           latencies_ms: Json
           participant_token_hash: string
+          round_no: number | null
           scores: Json | null
           tenure_range: string | null
         }
@@ -309,6 +313,7 @@ export type Database = {
           id?: string
           latencies_ms: Json
           participant_token_hash: string
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
         }
@@ -322,6 +327,7 @@ export type Database = {
           id?: string
           latencies_ms?: Json
           participant_token_hash?: string
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
         }
@@ -594,6 +600,7 @@ export type Database = {
           id: string
           latencies_ms: Json
           participant_token_hash: string
+          round_no: number | null
           score: number | null
           severity: string | null
           symptoms: string[] | null
@@ -611,6 +618,7 @@ export type Database = {
           id?: string
           latencies_ms: Json
           participant_token_hash: string
+          round_no?: number | null
           score?: number | null
           severity?: string | null
           symptoms?: string[] | null
@@ -628,6 +636,7 @@ export type Database = {
           id?: string
           latencies_ms?: Json
           participant_token_hash?: string
+          round_no?: number | null
           score?: number | null
           severity?: string | null
           symptoms?: string[] | null
@@ -710,6 +719,7 @@ export type Database = {
           latencies_ms: Json
           participant_token_hash: string
           region: string | null
+          round_no: number | null
           scores: Json | null
           tenure_range: string | null
           user_agent: string | null
@@ -729,6 +739,7 @@ export type Database = {
           latencies_ms: Json
           participant_token_hash: string
           region?: string | null
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
           user_agent?: string | null
@@ -748,6 +759,7 @@ export type Database = {
           latencies_ms?: Json
           participant_token_hash?: string
           region?: string | null
+          round_no?: number | null
           scores?: Json | null
           tenure_range?: string | null
           user_agent?: string | null
@@ -1027,6 +1039,50 @@ export type Database = {
         }
         Relationships: []
       }
+      wellness_company_rounds: {
+        Row: {
+          closed_at: string | null
+          company_id: string
+          created_at: string
+          devolutiva_communicated_at: string | null
+          devolutiva_notes: string | null
+          id: string
+          opened_at: string
+          round_no: number
+          updated_at: string
+        }
+        Insert: {
+          closed_at?: string | null
+          company_id: string
+          created_at?: string
+          devolutiva_communicated_at?: string | null
+          devolutiva_notes?: string | null
+          id?: string
+          opened_at?: string
+          round_no: number
+          updated_at?: string
+        }
+        Update: {
+          closed_at?: string | null
+          company_id?: string
+          created_at?: string
+          devolutiva_communicated_at?: string | null
+          devolutiva_notes?: string | null
+          id?: string
+          opened_at?: string
+          round_no?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_company_rounds_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wellness_invitations: {
         Row: {
           attempts: number
@@ -1036,6 +1092,7 @@ export type Database = {
           last_error: string | null
           opened_at: string | null
           participant_id: string
+          round_no: number
           scheduled_at: string
           sent_at: string | null
           status: string
@@ -1049,6 +1106,7 @@ export type Database = {
           last_error?: string | null
           opened_at?: string | null
           participant_id: string
+          round_no?: number
           scheduled_at: string
           sent_at?: string | null
           status?: string
@@ -1062,6 +1120,7 @@ export type Database = {
           last_error?: string | null
           opened_at?: string | null
           participant_id?: string
+          round_no?: number
           scheduled_at?: string
           sent_at?: string | null
           status?: string
