@@ -110,11 +110,19 @@ const Imprensa = () => {
             o COPSOQ II. O painel agregado mostra escalas em faixa <strong>Saudável / Atenção / Risco</strong>,
             com filtros por departamento e faixa etária. Empresas passam por aprovação manual.
           </p>
-          <div className="flex gap-2">
+          <p className="text-sm">
+            Alinhado à <strong>Portaria MTE nº 1.419/2024</strong> (vigência 26/05/2025), ao
+            <strong> Guia MTE de Fatores Psicossociais (2025)</strong> e à
+            <strong> 1ª rodada de Perguntas e Respostas GRO/PGR — CGNOR/DSST/SIT (maio/2026)</strong>.
+            Os relatórios são exportáveis como anexo da <strong>AEP</strong> e do <strong>inventário de riscos</strong>.
+          </p>
+          <div className="flex gap-2 flex-wrap">
             <Button asChild><Link to="/trabalho">Cadastrar empresa</Link></Button>
+            <Button variant="outline" asChild><a href="/downloads/guia-nr1-cuidar-mais.pdf" download>Baixar guia NR-1 (PDF)</a></Button>
             <Button variant="outline" asChild><Link to="/blog/rh-saude-mental-trabalho">Ler guia para RH</Link></Button>
           </div>
         </Card>
+
 
         <Card className="p-6 space-y-2">
           <h2 className="font-display text-xl font-semibold">Contato</h2>
