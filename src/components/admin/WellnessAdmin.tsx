@@ -350,9 +350,31 @@ export const WellnessAdmin = () => {
           <LatencyPanel companyId={companyId} companies={companies} onSelectCompany={setCompanyId} />
         </TabsContent>
       </Tabs>
+
+      <Dialog open={!!devolutivaOpen} onOpenChange={(o) => !o && setDevolutivaOpen(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Marcar devolutiva — Rodada #{devolutivaOpen?.round_no}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Confirme que os resultados agregados desta rodada foram <strong>comunicados aos trabalhadores</strong>
+              (NR-1 — participação dos trabalhadores). A rodada será fechada e a próxima poderá ser aberta.
+            </p>
+            <Label>Anotações (opcional — como foi comunicado)</Label>
+            <Textarea rows={4} value={devolutivaNotes} onChange={(e) => setDevolutivaNotes(e.target.value)}
+              placeholder="Ex.: Apresentação na reunião geral em 15/06, painel impresso na sala de café, e-mail interno." />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDevolutivaOpen(null)}>Cancelar</Button>
+            <Button onClick={submitDevolutiva} disabled={busy}>Confirmar devolutiva</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 function median(arr: number[]) {
   if (!arr.length) return 0;
