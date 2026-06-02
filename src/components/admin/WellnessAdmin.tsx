@@ -33,6 +33,10 @@ function deltaIsImprovement(type: CopsoqScaleType, delta: number) {
   return type === "positive" ? delta > 0 : delta < 0;
 }
 
+interface Company { id: string; name: string; status: string }
+interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
+
+
 interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
 
 export const WellnessAdmin = () => {
