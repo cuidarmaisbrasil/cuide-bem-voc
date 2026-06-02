@@ -47,6 +47,9 @@ export const WellnessAdmin = () => {
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
+  const [devolutivaOpen, setDevolutivaOpen] = useState<RoundData | null>(null);
+  const [devolutivaNotes, setDevolutivaNotes] = useState("");
+
 
   // Items editor
   const [instrument, setInstrument] = useState("phq9");
@@ -96,6 +99,41 @@ export const WellnessAdmin = () => {
       const { data, error } = await supabase.functions.invoke("wellness-dispatch", { body: {} });
       if (error) throw error;
       toast.success(`Processados: ${(data as any).processed} · enviados: ${(data as any).sent} · falhas: ${(data as any).failed}`);
+      loadStats();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+  async function openNewRound() {
+    if (!companyId) return;
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-open-round", { body: { company_id: companyId } });
+      if (error) throw error;
+      const d = data as any;
+      if (d?.error) throw new Error(d.message || d.error);
+      toast.success(`Rodada #${d.round.round_no} aberta`);
+      loadStats();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+  async function submitDevolutiva() {
+    if (!devolutivaOpen || !companyId) return;
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-mark-devolutiva", {
+        body: { company_id: companyId, round_no: devolutivaOpen.round_no, notes: devolutivaNotes || null },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(`Devolutiva da Rodada #${devolutivaOpen.round_no} registrada`);
+      setDevolutivaOpen(null);
+      setDevolutivaNotes("");
+      loadStats();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
       loadStats();
     } catch (e: any) { toast.error(e.message); }
     finally { setBusy(false); }
