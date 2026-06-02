@@ -49,11 +49,19 @@ const BlogRH = () => {
 
       <article className="container max-w-3xl py-10 space-y-6">
         <header className="space-y-3">
-          <Badge variant="secondary">Para RH · Guia prático</Badge>
+          <Badge variant="secondary">Para RH · Guia prático · Atualizado 2026</Badge>
           <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">{TITLE}</h1>
           <p className="text-sm text-muted-foreground">
-            Publicado em {new Date(PUBLISHED).toLocaleDateString("pt-BR")} · 6 min de leitura
+            Publicado em {new Date(PUBLISHED).toLocaleDateString("pt-BR")} · 7 min de leitura
           </p>
+          <Card className="p-4 bg-muted/40 flex items-center justify-between gap-3 flex-wrap not-prose">
+            <div className="text-sm">
+              <strong>Material gratuito:</strong> Guia prático NR-1 (2025/2026) em PDF — pronto para circular no RH/SESMT.
+            </div>
+            <Button asChild size="sm">
+              <a href="/downloads/guia-nr1-cuidar-mais.pdf" download>Baixar guia (PDF)</a>
+            </Button>
+          </Card>
         </header>
 
         <div className="prose prose-sm max-w-none text-foreground space-y-5
@@ -63,12 +71,15 @@ const BlogRH = () => {
                         [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1
                         [&_strong]:text-foreground">
           <p>
-            A atualização da <strong>NR-1</strong> (Norma Regulamentadora nº 1) trouxe ao centro do PGR
-            (Programa de Gerenciamento de Riscos) a obrigação de identificar, avaliar e controlar
-            <strong> riscos psicossociais</strong> — algo que historicamente o RH brasileiro tratava
-            como "clima", sem método. Burnout, assédio, sobrecarga e baixo apoio social não são mais
-            só "problemas de cultura": são riscos ocupacionais auditáveis.
+            A atualização da <strong>NR-1</strong> pela <strong>Portaria MTE nº 1.419/2024</strong>,
+            com vigência a partir de <strong>26/05/2025</strong>, incluiu expressamente os
+            <strong> fatores de risco psicossociais relacionados ao trabalho</strong> no Gerenciamento
+            de Riscos Ocupacionais (GRO). Em maio de 2026 o MTE publicou a <strong>1ª rodada de
+            Perguntas e Respostas (CGNOR/DSST/SIT)</strong> consolidando o entendimento de fiscalização.
+            Burnout, assédio, sobrecarga e baixo apoio social deixaram de ser "problema de clima":
+            são riscos ocupacionais auditáveis.
           </p>
+
 
           <h2>1. O que conta como risco psicossocial?</h2>
           <p>
@@ -101,16 +112,28 @@ const BlogRH = () => {
             cobre todos os domínios da NR-1 sem fadiga de respondente.
           </p>
 
-          <h2>3. Como rodar uma medição que o jurídico vai aprovar</h2>
+          <h2>3. O que a fiscalização vai cobrar (Q&amp;A MTE, maio/2026)</h2>
+          <ul>
+            <li><strong>Todas as empresas</strong> devem realizar Avaliação Ergonômica Preliminar (AEP) da NR-17 contemplando os fatores psicossociais — inclusive ME/EPP de grau 1 e 2 dispensadas de PGR (para essas a AEP vira documento obrigatório).</li>
+            <li>Documentos obrigatórios: <strong>inventário de riscos</strong>, <strong>plano de ação</strong> e <strong>documento de critérios</strong> do GRO.</li>
+            <li><strong>Questionário isolado não comprova gestão</strong> — os resultados devem ser analisados e <em>incorporados</em> à AEP/inventário.</li>
+            <li>Trabalho <strong>remoto, híbrido e teletrabalho</strong> também devem ser avaliados (item 3 do Q&amp;A).</li>
+            <li>Inventário sem nenhum risco psicossocial tende a ser questionado pelo Auditor Fiscal.</li>
+            <li>O período inicial é <strong>orientativo</strong>, não dispensa adequação.</li>
+          </ul>
+
+          <h2>4. Como rodar uma medição que o jurídico vai aprovar</h2>
           <ol className="list-decimal pl-5 space-y-2">
             <li><strong>Anonimato real.</strong> Nada de e-mail nominal, login, IP visível. Use links anônimos por empresa.</li>
             <li><strong>n mínimo por recorte.</strong> Não publique resultados de departamentos com menos de 5–7 respondentes — risco de identificação.</li>
             <li><strong>Comunicação prévia.</strong> Explique para que serve, o que será feito com os dados e o que <em>não</em> será feito (avaliação individual, demissão, etc.).</li>
             <li><strong>Retorno em até 30 dias.</strong> Sem devolução, a próxima rodada terá adesão zero.</li>
             <li><strong>Plano de ação por escala em "Risco"</strong>, não por pessoa.</li>
+            <li><strong>Combine observação + diálogo + instrumento estruturado</strong> — o MTE é explícito que questionário sozinho não basta.</li>
           </ol>
 
-          <h2>4. Erros comuns do RH brasileiro</h2>
+          <h2>5. Erros comuns do RH brasileiro</h2>
+
           <ul>
             <li>Misturar <strong>pesquisa de clima</strong> (engajamento) com <strong>avaliação de risco psicossocial</strong> — são instrumentos diferentes com finalidades diferentes.</li>
             <li>Comprar dashboards proprietários sem validação científica publicada.</li>
@@ -118,12 +141,13 @@ const BlogRH = () => {
             <li>Medir e não agir. Pior do que não medir.</li>
           </ul>
 
-          <h2>5. Como o Cuidar+ Trabalho ajuda</h2>
+          <h2>6. Como o Cuidar+ Trabalho ajuda</h2>
           <p>
             O <Link to="/trabalho" className="underline">Cuidar+ Trabalho</Link> roda o COPSOQ II nas três
             versões, gera um link anônimo único por empresa e devolve o painel agregado já classificado
-            em <strong>Saudável / Atenção / Risco</strong>, com filtros por departamento e faixa etária.
-            Sem custo, sem cadastro de funcionário, sem acesso individual a respostas.
+            em <strong>Saudável / Atenção / Risco</strong>, com filtros por departamento e faixa etária
+            (bloqueio automático em recortes com n &lt; 5). Sem custo, sem cadastro de funcionário,
+            sem acesso individual a respostas — exportável como anexo da AEP e do inventário de riscos.
           </p>
 
           <Card className="p-5 my-6 bg-muted/40 not-prose">
@@ -132,17 +156,21 @@ const BlogRH = () => {
             </p>
             <div className="flex gap-2 flex-wrap">
               <Button asChild><Link to="/trabalho">Cadastrar empresa</Link></Button>
+              <Button variant="outline" asChild><a href="/downloads/guia-nr1-cuidar-mais.pdf" download>Baixar guia NR-1 (PDF)</a></Button>
               <Button variant="outline" asChild><Link to="/imprensa">Press kit</Link></Button>
             </div>
           </Card>
 
           <h2>Referências</h2>
           <ul className="text-xs text-muted-foreground">
+            <li>Ministério do Trabalho e Emprego. <em>Portaria MTE nº 1.419/2024 — NR-1 atualizada</em>. Vigência 26/05/2025.</li>
+            <li>MTE/CGNOR/DSST/SIT. <em>NR-1 — Perguntas e Respostas (1ª rodada, 30/04/2026)</em>.</li>
+            <li>MTE. <em>Guia de informações sobre os Fatores de Riscos Psicossociais Relacionados ao Trabalho</em>. Brasília, 2025.</li>
             <li>Silva, C. et al. (2011). <em>COPSOQ II — Adaptação portuguesa</em>. Universidade de Aveiro.</li>
             <li>Pejtersen, J. H. et al. (2010). The second version of the Copenhagen Psychosocial Questionnaire. <em>Scand J Public Health</em>, 38(3 Suppl).</li>
-            <li>Ministério do Trabalho e Emprego. <em>NR-1 — Disposições gerais e gerenciamento de riscos ocupacionais</em>.</li>
             <li>OMS / OIT. <em>Mental health at work: policy brief</em>, 2022.</li>
           </ul>
+
         </div>
       </article>
     </main>
