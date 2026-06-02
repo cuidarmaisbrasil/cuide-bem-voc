@@ -10,8 +10,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 
-interface Company { id: string; name: string; status: string }
+interface RoundData {
+  round_no: number;
+  opened_at: string;
+  closed_at: string | null;
+  devolutiva_communicated_at: string | null;
+  devolutiva_notes: string | null;
+  status: "open" | "closed" | "devolutiva_communicated";
+  waves: Record<string, { scheduled: number; sent: number; completed: number }>;
+  copsoq: { n: number; hidden: boolean; scales: Record<string, { mean: number; n: number }> };
+  phq9: { n: number; hidden: boolean; severity_dist: Record<string, number> };
+}
+
+function bandFor(type: CopsoqScaleType, mean: number) {
+  if (type === "positive") return mean >= 75 ? "Saudável" : mean >= 50 ? "Atenção" : "Risco";
+  return mean <= 25 ? "Saudável" : mean <= 50 ? "Atenção" : "Risco";
+}
+function deltaIsImprovement(type: CopsoqScaleType, delta: number) {
+  return type === "positive" ? delta > 0 : delta < 0;
+}
+
 interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
 
 export const WellnessAdmin = () => {
