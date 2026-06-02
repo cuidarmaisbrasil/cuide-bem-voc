@@ -27,14 +27,18 @@ Deno.serve(async (req) => {
 
     const { data: inv } = await admin
       .from("wellness_invitations")
-      .select("id,status")
+      .select("id,status,round_no")
       .eq("participant_id", p.id)
       .eq("wave", wave)
+      .order("round_no", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (!inv) return j({ error: "no_invitation" }, 404);
     if (inv.status === "completed") return j({ error: "already_completed" }, 409);
 
+    const round_no = inv.round_no ?? 1;
     const demo = demographics || {};
+
 
     if (wave === "phq9") {
       const phqAnswers = Array.from({ length: 9 }, (_, i) => Number(answers[String(i + 1)] ?? 0));
