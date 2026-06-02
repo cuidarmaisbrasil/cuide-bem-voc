@@ -134,10 +134,7 @@ export const WellnessAdmin = () => {
     finally { setBusy(false); }
   }
 
-      loadStats();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setBusy(false); }
-  }
+
 
   async function updateItem(id: string, patch: Partial<Item>) {
     const { error } = await supabase.from("instrument_questions").update(patch).eq("id", id);
