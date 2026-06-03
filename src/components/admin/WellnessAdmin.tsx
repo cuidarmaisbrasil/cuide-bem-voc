@@ -301,7 +301,10 @@ export const WellnessAdmin = () => {
               })}
             </Card>
           )}
+
+          {companyId && <SettingsPanel companyId={companyId} />}
         </TabsContent>
+
 
 
         <TabsContent value="items" className="space-y-4 pt-4">
@@ -374,6 +377,149 @@ export const WellnessAdmin = () => {
     </div>
   );
 };
+
+interface CompanySettings {
+  company_id: string;
+  min_recorte_company: number;
+  min_recorte_department: number;
+  cadence_months: number;
+  cadence_auto_open: boolean;
+  reminder_days: number[];
+  signal_min_adherence_pct: number;
+  signal_max_days_since_devolutiva: number;
+  signals_enabled: boolean;
+}
+
+const DEFAULT_SETTINGS: Omit<CompanySettings, "company_id"> = {
+  min_recorte_company: 5,
+  min_recorte_department: 5,
+  cadence_months: 4,
+  cadence_auto_open: false,
+  reminder_days: [3, 7, 14],
+  signal_min_adherence_pct: 40,
+  signal_max_days_since_devolutiva: 180,
+  signals_enabled: true,
+};
+
+function SettingsPanel({ companyId }: { companyId: string }) {
+  const [s, setS] = useState<CompanySettings | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [reminderDaysText, setReminderDaysText] = useState("3,7,14");
+
+  useEffect(() => {
+    supabase.from("wellness_company_settings").select("*").eq("company_id", companyId).maybeSingle()
+      .then(({ data }: any) => {
+        const merged = { ...DEFAULT_SETTINGS, company_id: companyId, ...(data || {}) } as CompanySettings;
+        setS(merged);
+        setReminderDaysText((merged.reminder_days || [3, 7, 14]).join(","));
+      });
+  }, [companyId]);
+
+  async function save() {
+    if (!s) return;
+    setSaving(true);
+    try {
+      const reminder_days = reminderDaysText.split(",").map((x) => parseInt(x.trim(), 10)).filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => a - b);
+      const payload = { ...s, reminder_days };
+      const { error } = await supabase.from("wellness_company_settings").upsert(payload, { onConflict: "company_id" });
+      if (error) throw error;
+      toast.success("Configurações salvas");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setSaving(false); }
+  }
+
+  async function runCadenceTick() {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-cadence-tick", { body: {} });
+      if (error) throw error;
+      const d = data as any;
+      toast.success(`Verificação: ${d.companies} empresas · ${d.opened} rodadas abertas · ${d.alertsRaised} alertas`);
+    } catch (e: any) { toast.error(e.message); }
+    finally { setSaving(false); }
+  }
+
+  if (!s) return null;
+  return (
+    <Card className="p-4 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h3 className="font-semibold">Configurações de rastreio</h3>
+        <Button size="sm" variant="outline" onClick={runCadenceTick} disabled={saving}>
+          Rodar verificação agora
+        </Button>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold text-muted-foreground">Privacidade — n mínimo de recorte</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>n mínimo (empresa)</Label>
+            <Input type="number" min={1} value={s.min_recorte_company}
+              onChange={(e) => setS({ ...s, min_recorte_company: +e.target.value })} />
+          </div>
+          <div>
+            <Label>n mínimo (por departamento)</Label>
+            <Input type="number" min={1} value={s.min_recorte_department}
+              onChange={(e) => setS({ ...s, min_recorte_department: +e.target.value })} />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Resultados só ficam visíveis quando o número de respondentes atinge esse limite. Padrão = 5.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold text-muted-foreground">Cadência anual</h4>
+        <div className="grid grid-cols-2 gap-3 items-end">
+          <div>
+            <Label>Meses entre rodadas</Label>
+            <Input type="number" min={1} max={12} value={s.cadence_months}
+              onChange={(e) => setS({ ...s, cadence_months: +e.target.value })} />
+            <p className="text-[11px] text-muted-foreground mt-1">3 = Baseline / Pulse / Verificação por ano.</p>
+          </div>
+          <label className="flex items-center gap-2 pb-2">
+            <Switch checked={s.cadence_auto_open} onCheckedChange={(v) => setS({ ...s, cadence_auto_open: v })} />
+            <span className="text-sm">Abrir nova rodada automaticamente após devolutiva</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold text-muted-foreground">Lembretes escalonados</h4>
+        <Label>Dias após o envio (separados por vírgula)</Label>
+        <Input value={reminderDaysText} onChange={(e) => setReminderDaysText(e.target.value)} placeholder="3,7,14" />
+        <p className="text-xs text-muted-foreground">
+          Para cada convite enviado e não concluído, reenviamos nesses intervalos.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold text-muted-foreground">Disparo inteligente por sinal</h4>
+        <label className="flex items-center gap-2">
+          <Switch checked={s.signals_enabled} onCheckedChange={(v) => setS({ ...s, signals_enabled: v })} />
+          <span className="text-sm">Gerar alertas automáticos</span>
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Adesão mínima (%)</Label>
+            <Input type="number" min={0} max={100} value={s.signal_min_adherence_pct}
+              onChange={(e) => setS({ ...s, signal_min_adherence_pct: +e.target.value })} />
+            <p className="text-[11px] text-muted-foreground mt-1">Alerta se rodada aberta &gt;14 dias e adesão abaixo disso.</p>
+          </div>
+          <div>
+            <Label>Máx. dias desde devolutiva</Label>
+            <Input type="number" min={30} value={s.signal_max_days_since_devolutiva}
+              onChange={(e) => setS({ ...s, signal_max_days_since_devolutiva: +e.target.value })} />
+            <p className="text-[11px] text-muted-foreground mt-1">Alerta se passar muito tempo sem nova rodada.</p>
+          </div>
+        </div>
+      </div>
+
+      <Button onClick={save} disabled={saving}>Salvar configurações</Button>
+    </Card>
+  );
+}
+
 
 
 function median(arr: number[]) {

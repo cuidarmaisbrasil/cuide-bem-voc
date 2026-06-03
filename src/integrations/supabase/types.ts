@@ -1083,6 +1083,48 @@ export type Database = {
           },
         ]
       }
+      wellness_company_settings: {
+        Row: {
+          cadence_auto_open: boolean
+          cadence_months: number
+          company_id: string
+          created_at: string
+          min_recorte_company: number
+          min_recorte_department: number
+          reminder_days: number[]
+          signal_max_days_since_devolutiva: number
+          signal_min_adherence_pct: number
+          signals_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          cadence_auto_open?: boolean
+          cadence_months?: number
+          company_id: string
+          created_at?: string
+          min_recorte_company?: number
+          min_recorte_department?: number
+          reminder_days?: number[]
+          signal_max_days_since_devolutiva?: number
+          signal_min_adherence_pct?: number
+          signals_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          cadence_auto_open?: boolean
+          cadence_months?: number
+          company_id?: string
+          created_at?: string
+          min_recorte_company?: number
+          min_recorte_department?: number
+          reminder_days?: number[]
+          signal_max_days_since_devolutiva?: number
+          signal_min_adherence_pct?: number
+          signals_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wellness_invitations: {
         Row: {
           attempts: number
@@ -1090,8 +1132,10 @@ export type Database = {
           created_at: string
           id: string
           last_error: string | null
+          last_reminder_at: string | null
           opened_at: string | null
           participant_id: string
+          reminder_count: number
           round_no: number
           scheduled_at: string
           sent_at: string | null
@@ -1104,8 +1148,10 @@ export type Database = {
           created_at?: string
           id?: string
           last_error?: string | null
+          last_reminder_at?: string | null
           opened_at?: string | null
           participant_id: string
+          reminder_count?: number
           round_no?: number
           scheduled_at: string
           sent_at?: string | null
@@ -1118,8 +1164,10 @@ export type Database = {
           created_at?: string
           id?: string
           last_error?: string | null
+          last_reminder_at?: string | null
           opened_at?: string | null
           participant_id?: string
+          reminder_count?: number
           round_no?: number
           scheduled_at?: string
           sent_at?: string | null

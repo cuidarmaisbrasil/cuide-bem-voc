@@ -3,7 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 type WaveKey = "phq9" | "ecig" | "copsoq" | "psicossocial";
 const WAVES: WaveKey[] = ["phq9", "ecig", "copsoq", "psicossocial"];
-const MIN_RECORTE = 5;
+const DEFAULT_MIN_RECORTE = 5;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -28,6 +28,16 @@ Deno.serve(async (req) => {
       const { data: co } = await admin.from("companies").select("owner_user_id").eq("id", company_id).maybeSingle();
       if (!co || co.owner_user_id !== user.id) return j({ error: "forbidden" }, 403);
     }
+
+    // Per-company min_recorte (privacy threshold), with global fallback
+    const { data: cfgRow } = await admin
+      .from("wellness_company_settings")
+      .select("min_recorte_company")
+      .eq("company_id", company_id)
+      .maybeSingle();
+    const MIN_RECORTE = cfgRow?.min_recorte_company ?? DEFAULT_MIN_RECORTE;
+
+
 
     // ---------- Legacy aggregate summary (kept for backwards compatibility) ----------
     let q = admin
