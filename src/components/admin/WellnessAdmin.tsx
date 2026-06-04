@@ -350,6 +350,10 @@ export const WellnessAdmin = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="test" className="space-y-4 pt-4">
+          <TestModePanel companies={companies} />
+        </TabsContent>
+
         <TabsContent value="latency" className="space-y-4 pt-4">
           <LatencyPanel companyId={companyId} companies={companies} onSelectCompany={setCompanyId} />
         </TabsContent>
