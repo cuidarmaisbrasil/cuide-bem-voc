@@ -20,8 +20,10 @@ Deno.serve(async (req) => {
     const isAdmin = roles?.some((r: any) => r.role === "admin");
 
     const body = await req.json();
-    const { company_id, emails, intervals_days } = body as {
-      company_id: string; emails: string[]; intervals_days?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
+    const { company_id, emails, intervals_days, intervals_minutes } = body as {
+      company_id: string; emails: string[];
+      intervals_days?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
+      intervals_minutes?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
     };
 
     // Authorization: admin OR company owner
@@ -55,7 +57,8 @@ Deno.serve(async (req) => {
       roundNo = created.round_no;
     }
 
-    const iv = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, ...(intervals_days || {}) };
+    const ivDays = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, ...(intervals_days || {}) };
+    const ivMin = intervals_minutes ? { phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, ...intervals_minutes } : null;
     const now = new Date();
 
     const created: any[] = [];
@@ -67,13 +70,18 @@ Deno.serve(async (req) => {
         .single();
       if (error || !p) continue;
 
-      const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => ({
-        participant_id: p.id,
-        wave,
-        round_no: roundNo,
-        scheduled_at: new Date(now.getTime() + (iv as any)[wave] * 86400000).toISOString(),
-        status: "pending",
-      }));
+      const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => {
+        const offsetMs = ivMin
+          ? (ivMin as any)[wave] * 60_000
+          : (ivDays as any)[wave] * 86_400_000;
+        return {
+          participant_id: p.id,
+          wave,
+          round_no: roundNo,
+          scheduled_at: new Date(now.getTime() + offsetMs).toISOString(),
+          status: "pending",
+        };
+      });
       await admin.from("wellness_invitations").upsert(invites, { onConflict: "participant_id,wave,round_no", ignoreDuplicates: true });
       created.push({ email, token: p.token });
     }
