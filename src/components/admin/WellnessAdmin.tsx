@@ -156,6 +156,7 @@ export const WellnessAdmin = () => {
       <Tabs defaultValue="program">
         <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
+          <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
