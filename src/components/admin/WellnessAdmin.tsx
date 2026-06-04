@@ -623,3 +623,222 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
     </Card>
   );
 }
+
+const WAVES = ["phq9", "ecig", "copsoq", "psicossocial"] as const;
+type Wave = typeof WAVES[number];
+const WAVE_LABEL: Record<Wave, string> = {
+  phq9: "PHQ-9 (depressão)",
+  ecig: "ECIG (conflito intragrupo)",
+  copsoq: "COPSOQ (psicossociais)",
+  psicossocial: "Psicossocial (LIPT-60)",
+};
+
+interface TestInvitation {
+  id: string;
+  wave: Wave;
+  round_no: number;
+  status: string;
+  scheduled_at: string;
+  sent_at: string | null;
+  completed_at: string | null;
+  attempts: number;
+  reminder_count: number | null;
+  last_reminder_at: string | null;
+  last_error: string | null;
+}
+
+function fmt(d: string | null) {
+  if (!d) return "—";
+  return new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "medium" });
+}
+
+function TestModePanel({ companies }: { companies: Company[] }) {
+  const [companyId, setCompanyId] = useState("");
+  const [email, setEmail] = useState("");
+  const [mins, setMins] = useState<Record<Wave, number>>({ phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3 });
+  const [busy, setBusy] = useState(false);
+  const [participant, setParticipant] = useState<{ id: string; token: string; email: string } | null>(null);
+  const [invs, setInvs] = useState<TestInvitation[]>([]);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastTickResult, setLastTickResult] = useState<string>("");
+
+  const currentRound = invs.length ? invs[0].round_no : null;
+  const allCompleted = invs.length === 4 && invs.every((i) => i.completed_at);
+
+  async function refreshStatus() {
+    if (!companyId || !email) return;
+    const { data, error } = await supabase.functions.invoke("wellness-test-status", {
+      body: { company_id: companyId, email: email.trim().toLowerCase() },
+    });
+    if (error) return;
+    const d = data as any;
+    setParticipant(d.participant);
+    // keep only the latest round to show "as 5 respostas" (4 ondas) do teste atual
+    const allInvs: TestInvitation[] = d.invitations || [];
+    const latest = allInvs.length ? allInvs[0].round_no : null;
+    setInvs(latest ? allInvs.filter((i) => i.round_no === latest) : []);
+  }
+
+  useEffect(() => {
+    if (!autoRefresh || !participant) return;
+    const id = setInterval(() => { refreshStatus(); }, 5000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, participant?.id, companyId, email]);
+
+  async function startTest() {
+    if (!companyId) return toast.error("Selecione a empresa");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) return toast.error("E-mail inválido");
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-enroll", {
+        body: {
+          company_id: companyId,
+          emails: [email.trim()],
+          intervals_minutes: mins,
+        },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast.success(`Teste agendado na Rodada #${(data as any).round_no}`);
+      await refreshStatus();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+  async function dispatchNow() {
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("wellness-dispatch", { body: {} });
+      if (error) throw error;
+      const d = data as any;
+      setLastTickResult(`Processados: ${d.processed} · enviados: ${d.sent} · lembretes: ${d.reminded ?? 0} · falhas: ${d.failed}`);
+      await refreshStatus();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBusy(false); }
+  }
+
+  const responderBase = window.location.origin;
+
+  return (
+    <Card className="p-4 space-y-4">
+      <div>
+        <h3 className="font-semibold">Teste do mecanismo de ondas</h3>
+        <p className="text-sm text-muted-foreground">
+          Use 1 e-mail real (seu) para receber as 4 ondas (PHQ-9 → ECIG → COPSOQ → LIPT-60) com intervalos em minutos.
+          Responda cada link e veja o relatório final no fim.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <Label>Empresa (use uma empresa de teste)</Label>
+          <Select value={companyId} onValueChange={setCompanyId}>
+            <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+            <SelectContent>
+              {companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>E-mail de teste (apenas 1)</Label>
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@dominio.com" />
+        </div>
+      </div>
+
+      <div>
+        <Label className="mb-2 block">Atraso de cada onda (minutos a partir de agora)</Label>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {WAVES.map((w) => (
+            <div key={w}>
+              <Label className="text-xs">{WAVE_LABEL[w]}</Label>
+              <Input type="number" min={0} value={mins[w]}
+                onChange={(e) => setMins({ ...mins, [w]: Math.max(0, +e.target.value) })} />
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-1">
+          Ex.: 0 / 1 / 2 / 3 → recebe as 4 ondas em ~3 minutos. O disparador checa pendentes ao rodar “Disparar agora”.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={startTest} disabled={busy}>Agendar teste</Button>
+        <Button variant="outline" onClick={dispatchNow} disabled={busy}>Disparar pendentes agora</Button>
+        <Button variant="ghost" onClick={refreshStatus} disabled={busy || !participant}>Atualizar status</Button>
+        <label className="flex items-center gap-2 text-xs ml-auto">
+          <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} /> Auto-refresh 5s
+        </label>
+      </div>
+
+      {lastTickResult && <p className="text-xs text-muted-foreground">Última execução do dispatcher — {lastTickResult}</p>}
+
+      {participant && (
+        <div className="space-y-2">
+          <div className="text-sm">
+            Participante: <b>{participant.email}</b>
+            {currentRound && <> · Rodada <b>#{currentRound}</b></>}
+          </div>
+          <div className="overflow-auto rounded border">
+            <table className="w-full text-xs">
+              <thead className="bg-muted/50 text-muted-foreground">
+                <tr>
+                  <th className="text-left p-2">Onda</th>
+                  <th className="text-left p-2">Status</th>
+                  <th className="text-left p-2">Agendado</th>
+                  <th className="text-left p-2">Enviado</th>
+                  <th className="text-left p-2">Concluído</th>
+                  <th className="text-left p-2">Tent.</th>
+                  <th className="text-left p-2">Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                {WAVES.map((w) => {
+                  const i = invs.find((x) => x.wave === w);
+                  const url = i ? `${responderBase}/w/${participant.token}/${w}` : null;
+                  const statusBadge = !i ? "—"
+                    : i.completed_at ? "✅ concluída"
+                    : i.sent_at ? "📨 enviada"
+                    : i.status === "cancelled" ? "❌ cancelada"
+                    : "⏳ pendente";
+                  return (
+                    <tr key={w} className="border-t">
+                      <td className="p-2 font-medium">{WAVE_LABEL[w]}</td>
+                      <td className="p-2">{statusBadge}</td>
+                      <td className="p-2">{fmt(i?.scheduled_at ?? null)}</td>
+                      <td className="p-2">{fmt(i?.sent_at ?? null)}</td>
+                      <td className="p-2">{fmt(i?.completed_at ?? null)}</td>
+                      <td className="p-2">{i?.attempts ?? 0}{i?.reminder_count ? ` (+${i.reminder_count}r)` : ""}</td>
+                      <td className="p-2">
+                        {url
+                          ? <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline">abrir</a>
+                          : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {invs.some((i) => i.last_error) && (
+            <div className="text-xs text-red-700">
+              {invs.filter((i) => i.last_error).map((i) => <div key={i.id}>{i.wave}: {i.last_error}</div>)}
+            </div>
+          )}
+          {allCompleted && currentRound && (
+            <div className="rounded border border-emerald-300 bg-emerald-50 p-3 text-sm">
+              ✅ Todas as ondas concluídas. Veja o relatório final:
+              <div className="mt-2">
+                <Button asChild size="sm">
+                  <a href={`/admin/aep/${companyId}/${currentRound}`} target="_blank" rel="noopener noreferrer">
+                    Abrir relatório AEP (Rodada #{currentRound})
+                  </a>
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
