@@ -16,22 +16,20 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(url, serviceKey);
 
-    // Auth: service-role only.
+    // Auth: accept service-role (cron), anon key (cron), or authenticated admin (manual UI).
     const auth = req.headers.get("Authorization") || "";
-    if (!serviceKey || !auth.includes(serviceKey)) {
-      // Allow authenticated admin too (manual trigger from UI).
-      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-      let ok = false;
-      if (auth && !auth.includes(anonKey)) {
-        const userClient = createClient(url, anonKey, { global: { headers: { Authorization: auth } } });
-        const { data: { user } } = await userClient.auth.getUser();
-        if (user) {
-          const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
-          ok = !!roles?.some((r: any) => r.role === "admin");
-        }
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    let ok = !!serviceKey && auth.includes(serviceKey);
+    if (!ok && auth && auth.includes(anonKey)) ok = true; // cron with anon
+    if (!ok && auth) {
+      const userClient = createClient(url, anonKey, { global: { headers: { Authorization: auth } } });
+      const { data: { user } } = await userClient.auth.getUser();
+      if (user) {
+        const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
+        ok = !!roles?.some((r: any) => r.role === "admin");
       }
-      if (!ok) return j({ error: "unauthorized" }, 401);
     }
+    if (!ok) return j({ error: "unauthorized" }, 401);
 
     const { data: companies } = await admin
       .from("companies")
