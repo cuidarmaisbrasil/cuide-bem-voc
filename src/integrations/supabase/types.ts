@@ -946,6 +946,117 @@ export type Database = {
         }
         Relationships: []
       }
+      tat_images: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          label: string
+          notes: string | null
+          sort_order: number
+          storage_path: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label: string
+          notes?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label?: string
+          notes?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      tat_responses: {
+        Row: {
+          age_range: string | null
+          analyst_notes: string | null
+          company_id: string
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          image_id: string | null
+          narrative: string
+          participant_token_hash: string
+          round_no: number
+          scores: Json | null
+          started_at: string | null
+          submitted_at: string
+          tenure_range: string | null
+          time_ms: number
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          analyst_notes?: string | null
+          company_id: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          image_id?: string | null
+          narrative: string
+          participant_token_hash: string
+          round_no?: number
+          scores?: Json | null
+          started_at?: string | null
+          submitted_at?: string
+          tenure_range?: string | null
+          time_ms?: number
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          analyst_notes?: string | null
+          company_id?: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          image_id?: string | null
+          narrative?: string
+          participant_token_hash?: string
+          round_no?: number
+          scores?: Json | null
+          started_at?: string | null
+          submitted_at?: string
+          tenure_range?: string | null
+          time_ms?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tat_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tat_responses_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "tat_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_events: {
         Row: {
           age: number | null
