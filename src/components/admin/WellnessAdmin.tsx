@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
+import { TatAdmin } from "@/components/admin/TatAdmin";
 
 interface RoundData {
   round_no: number;
@@ -158,8 +159,13 @@ export const WellnessAdmin = () => {
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+          <TabsTrigger value="tat">TAT (imagens)</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="tat" className="space-y-4 pt-4">
+          <TatAdmin />
+        </TabsContent>
 
         <TabsContent value="program" className="space-y-4 pt-4">
           <Card className="p-4 space-y-3">
