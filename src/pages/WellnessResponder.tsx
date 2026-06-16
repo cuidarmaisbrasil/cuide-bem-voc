@@ -6,11 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
+interface TatImage { id: string; label: string; url: string; sort_order: number }
 
 const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
   phq9_freq: [
@@ -55,25 +57,33 @@ const WAVE_TITLES: Record<Wave, string> = {
   psicossocial: "Clima psicossocial / situações no trabalho (LIPT-60)",
 };
 
+const TAT_LIMIT_MS = 10 * 60 * 1000;
+
 const WellnessResponder = () => {
   const { token, wave } = useParams<{ token: string; wave: Wave }>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<{ name: string } | null>(null);
   const [questions, setQuestions] = useState<Q[]>([]);
-  const [step, setStep] = useState<"intro" | "form" | "done">("intro");
+  const [step, setStep] = useState<"intro" | "tat" | "form" | "done">("intro");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [latencies, setLatencies] = useState<Record<number, number>>({});
   const shownAtRef = useRef<Record<number, number>>({});
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
   const [submitting, setSubmitting] = useState(false);
 
+  // TAT state
+  const [tatImage, setTatImage] = useState<TatImage | null>(null);
+  const [tatNarrative, setTatNarrative] = useState("");
+  const [tatStartedAt, setTatStartedAt] = useState<number | null>(null);
+  const [tatRemaining, setTatRemaining] = useState<number>(TAT_LIMIT_MS);
+  const [tatSubmitting, setTatSubmitting] = useState(false);
+  const tatAutoSubmittedRef = useRef(false);
+
+  const isTatWave = wave === "phq9";
+
   useEffect(() => {
     if (!token || !wave) return;
-    supabase.functions.invoke("wellness-resolve-token", { method: "GET" as any, body: undefined as any })
-      .then(async () => {})
-      .catch(() => {});
-    // Use fetch directly to pass query params
     const base = import.meta.env.VITE_SUPABASE_URL;
     fetch(`${base}/functions/v1/wellness-resolve-token?token=${encodeURIComponent(token)}&wave=${wave}`, {
       headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
@@ -88,6 +98,36 @@ const WellnessResponder = () => {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [token, wave]);
+
+  // Load a TAT image (random among active) when running PHQ-9 wave
+  useEffect(() => {
+    if (!isTatWave) return;
+    supabase
+      .from("tat_images")
+      .select("id,label,url,sort_order")
+      .eq("active", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        if (!data || data.length === 0) return;
+        const pick = data[Math.floor(Math.random() * data.length)];
+        setTatImage(pick as TatImage);
+      });
+  }, [isTatWave]);
+
+  // TAT countdown
+  useEffect(() => {
+    if (step !== "tat" || !tatStartedAt) return;
+    const id = window.setInterval(() => {
+      const left = Math.max(0, TAT_LIMIT_MS - (Date.now() - tatStartedAt));
+      setTatRemaining(left);
+      if (left === 0 && !tatAutoSubmittedRef.current) {
+        tatAutoSubmittedRef.current = true;
+        submitTat(true);
+      }
+    }, 250);
+    return () => window.clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, tatStartedAt]);
 
   // Mark shownAt for each question lazily as it renders into view
   useEffect(() => {
@@ -104,9 +144,49 @@ const WellnessResponder = () => {
     const lat = Math.max(0, Math.min(600000, Date.now() - shown));
     setAnswers((a) => ({ ...a, [q.n]: value }));
     setLatencies((l) => ({ ...l, [q.n]: lat }));
-    // Reset shownAt so editing the answer also captures a new latency
     shownAtRef.current[q.n] = Date.now();
   };
+
+  const startFlow = () => {
+    if (isTatWave && tatImage) {
+      setTatStartedAt(Date.now());
+      setTatRemaining(TAT_LIMIT_MS);
+      setStep("tat");
+    } else {
+      setStep("form");
+      shownAtRef.current = {};
+    }
+  };
+
+  async function submitTat(auto = false) {
+    if (tatSubmitting) return;
+    const text = tatNarrative.trim();
+    if (!auto && text.length < 10) {
+      toast.error("Escreva pelo menos uma breve história (mín. 10 caracteres).");
+      return;
+    }
+    setTatSubmitting(true);
+    try {
+      const time_ms = tatStartedAt ? Date.now() - tatStartedAt : 0;
+      const { data, error } = await supabase.functions.invoke("tat-submit", {
+        body: {
+          token,
+          image_id: tatImage?.id ?? null,
+          narrative: text || "(em branco — tempo esgotado)",
+          time_ms,
+          started_at: tatStartedAt ? new Date(tatStartedAt).toISOString() : null,
+          demographics: demo,
+        },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      setStep("form");
+      shownAtRef.current = {};
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao enviar TAT");
+    } finally {
+      setTatSubmitting(false);
+    }
+  }
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
@@ -130,6 +210,10 @@ const WellnessResponder = () => {
     </div>
   );
 
+  const mm = Math.floor(tatRemaining / 60000);
+  const ss = Math.floor((tatRemaining % 60000) / 1000).toString().padStart(2, "0");
+  const lowTime = tatRemaining <= 2 * 60 * 1000;
+
   return (
     <main className="min-h-screen bg-background py-8">
       <div className="container max-w-2xl space-y-4">
@@ -147,9 +231,67 @@ const WellnessResponder = () => {
               <div><Label>Departamento</Label><Input value={demo.department} onChange={(e) => setDemo({ ...demo, department: e.target.value })} /></div>
               <div><Label>Tempo de empresa</Label><Input placeholder="ex: 1-3 anos" value={demo.tenure_range} onChange={(e) => setDemo({ ...demo, tenure_range: e.target.value })} /></div>
             </div>
-            <Button className="w-full" onClick={() => { setStep("form"); shownAtRef.current = {}; }}>
-              Começar ({questions.length} perguntas)
+            {isTatWave && tatImage && (
+              <div className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
+                Esta etapa inclui uma breve atividade narrativa (TAT) antes do questionário. Você terá até <strong>10 minutos</strong> para escrever.
+              </div>
+            )}
+            <Button className="w-full" onClick={startFlow}>
+              Começar{isTatWave && tatImage ? " (atividade + questionário)" : ` (${questions.length} perguntas)`}
             </Button>
+          </Card>
+        )}
+
+        {step === "tat" && tatImage && (
+          <Card className="p-6 space-y-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <h2 className="font-display text-lg font-semibold">Atividade narrativa</h2>
+                <p className="text-xs text-muted-foreground">Tempo total: 10 minutos · imagem única</p>
+              </div>
+              <div className={`font-mono text-lg px-3 py-1 rounded-md border ${lowTime ? "bg-red-50 border-red-300 text-red-700" : "bg-muted"}`}>
+                {mm}:{ss}
+              </div>
+            </div>
+
+            <div className="rounded-md overflow-hidden border bg-black/5 flex items-center justify-center">
+              <img
+                src={tatImage.url}
+                alt={tatImage.label}
+                className="max-h-80 w-auto object-contain"
+                loading="eager"
+              />
+            </div>
+
+            <div className="text-sm space-y-1">
+              <p className="font-medium">Olhe a imagem e escreva uma história sobre ela:</p>
+              <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
+                <li>O que está acontecendo na cena?</li>
+                <li>O que levou a essa situação?</li>
+                <li>O que as pessoas estão pensando e sentindo?</li>
+                <li>Como a história termina?</li>
+              </ul>
+              <p className="text-[11px] text-muted-foreground pt-1">Não há resposta certa ou errada. Escreva à vontade — você tem até 10 minutos.</p>
+            </div>
+
+            <Textarea
+              rows={6}
+              placeholder="Comece a sua história aqui…"
+              value={tatNarrative}
+              onChange={(e) => setTatNarrative(e.target.value)}
+              className="resize-y"
+            />
+
+            <Button className="w-full" onClick={() => submitTat(false)} disabled={tatSubmitting}>
+              {tatSubmitting ? "Enviando…" : "Concluir atividade e seguir para o questionário"}
+            </Button>
+          </Card>
+        )}
+
+        {step === "tat" && !tatImage && (
+          <Card className="p-6 text-center space-y-3">
+            <p className="text-sm text-muted-foreground">Atividade indisponível no momento. Seguindo para o questionário…</p>
+            <Button onClick={() => { setStep("form"); shownAtRef.current = {}; }}>Continuar</Button>
           </Card>
         )}
 
