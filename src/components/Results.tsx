@@ -18,6 +18,7 @@ import { FeedbackForm } from "./FeedbackForm";
 import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { RetestReminderCard } from "./RetestReminderCard";
+import { TatOptInCard } from "./TatOptInCard";
 
 const RETEST_REMINDER_LEVELS = ["Moderada", "Moderadamente grave", "Grave"];
 
