@@ -293,6 +293,14 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
           </a>
         </div>
 
+        {/* Opt-in para teste TAT (avaliação complementar gratuita) */}
+        <TatOptInCard
+          phq9Score={score}
+          symptomCount={symptomCount}
+          severityLevel={interpretation.level}
+          age={age ?? null}
+        />
+
         {/* Lembrete por e-mail em 15 dias (apenas para severidades médias/altas) */}
         {RETEST_REMINDER_LEVELS.includes(interpretation.level) && (
           <RetestReminderCard severity={interpretation.level} />
