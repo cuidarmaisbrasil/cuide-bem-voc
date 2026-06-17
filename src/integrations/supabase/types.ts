@@ -990,6 +990,7 @@ export type Database = {
           id: string
           notes: string | null
           phq9_score: number | null
+          response_token: string | null
           sent_at: string | null
           severity_level: string | null
           status: string
@@ -1003,6 +1004,7 @@ export type Database = {
           id?: string
           notes?: string | null
           phq9_score?: number | null
+          response_token?: string | null
           sent_at?: string | null
           severity_level?: string | null
           status?: string
@@ -1016,6 +1018,7 @@ export type Database = {
           id?: string
           notes?: string | null
           phq9_score?: number | null
+          response_token?: string | null
           sent_at?: string | null
           severity_level?: string | null
           status?: string
@@ -1023,6 +1026,75 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tat_public_responses: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          image_id: string | null
+          narrative: string
+          parameters: Json
+          request_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scores: Json
+          status: string
+          time_ms: number | null
+          updated_at: string
+          user_agent: string | null
+          word_count: number | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          image_id?: string | null
+          narrative: string
+          parameters?: Json
+          request_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scores?: Json
+          status?: string
+          time_ms?: number | null
+          updated_at?: string
+          user_agent?: string | null
+          word_count?: number | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          image_id?: string | null
+          narrative?: string
+          parameters?: Json
+          request_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scores?: Json
+          status?: string
+          time_ms?: number | null
+          updated_at?: string
+          user_agent?: string | null
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tat_public_responses_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "tat_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tat_public_responses_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "tat_public_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tat_responses: {
         Row: {
