@@ -18,6 +18,7 @@ import { FeedbackForm } from "./FeedbackForm";
 import { ShareButtons } from "./ShareButtons";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { RetestReminderCard } from "./RetestReminderCard";
+import { TatOptInCard } from "./TatOptInCard";
 
 const RETEST_REMINDER_LEVELS = ["Moderada", "Moderadamente grave", "Grave"];
 
@@ -291,6 +292,14 @@ export const Results = ({ answers, age, onRestart }: ResultsProps) => {
             Apoiar o Cuidar+
           </a>
         </div>
+
+        {/* Opt-in para teste TAT (avaliação complementar gratuita) */}
+        <TatOptInCard
+          phq9Score={score}
+          symptomCount={symptomCount}
+          severityLevel={interpretation.level}
+          age={age ?? null}
+        />
 
         {/* Lembrete por e-mail em 15 dias (apenas para severidades médias/altas) */}
         {RETEST_REMINDER_LEVELS.includes(interpretation.level) && (

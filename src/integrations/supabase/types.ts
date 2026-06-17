@@ -982,6 +982,48 @@ export type Database = {
         }
         Relationships: []
       }
+      tat_public_requests: {
+        Row: {
+          age: number | null
+          created_at: string
+          email: string
+          id: string
+          notes: string | null
+          phq9_score: number | null
+          sent_at: string | null
+          severity_level: string | null
+          status: string
+          symptom_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          email: string
+          id?: string
+          notes?: string | null
+          phq9_score?: number | null
+          sent_at?: string | null
+          severity_level?: string | null
+          status?: string
+          symptom_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          email?: string
+          id?: string
+          notes?: string | null
+          phq9_score?: number | null
+          sent_at?: string | null
+          severity_level?: string | null
+          status?: string
+          symptom_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tat_responses: {
         Row: {
           age_range: string | null
