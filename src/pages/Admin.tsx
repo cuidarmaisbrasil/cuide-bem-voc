@@ -1528,6 +1528,14 @@ const Admin = () => {
             </TabsContent>
           )}
 
+          {!readOnly && (
+            <TabsContent value="tat-requests" className="space-y-4 pt-4">
+              <TatRequestsAdmin />
+            </TabsContent>
+          )}
+
+
+
 
         </Tabs>
       </div>
