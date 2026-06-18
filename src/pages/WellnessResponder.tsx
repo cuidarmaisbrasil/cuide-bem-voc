@@ -106,17 +106,15 @@ const WellnessResponder = () => {
   // Load a projective plate (random among active) for PHQ-9 (TAT) or ECIG (Rorschach)
   useEffect(() => {
     if (!hasProjective) return;
-    supabase
-      .from(projectiveTable as "tat_images" | "rorschach_images")
-      .select("id,label,url,sort_order")
-      .eq("active", true)
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        if (!data || data.length === 0) return;
-        const pick = data[Math.floor(Math.random() * data.length)];
-        setTatImage(pick as TatImage);
-      });
-  }, [hasProjective, projectiveTable]);
+    const query = isRorschachWave
+      ? supabase.from("rorschach_images").select("id,label,url,sort_order").eq("active", true).order("sort_order", { ascending: true })
+      : supabase.from("tat_images").select("id,label,url,sort_order").eq("active", true).order("sort_order", { ascending: true });
+    query.then(({ data }) => {
+      if (!data || data.length === 0) return;
+      const pick = data[Math.floor(Math.random() * data.length)];
+      setTatImage(pick as TatImage);
+    });
+  }, [hasProjective, isRorschachWave]);
 
   // TAT countdown
   useEffect(() => {
