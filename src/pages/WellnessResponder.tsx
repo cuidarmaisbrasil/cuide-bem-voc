@@ -72,7 +72,7 @@ const WellnessResponder = () => {
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  // TAT state
+  // Projective test (TAT for phq9 wave, Rorschach for ecig wave)
   const [tatImage, setTatImage] = useState<TatImage | null>(null);
   const [tatNarrative, setTatNarrative] = useState("");
   const [tatStartedAt, setTatStartedAt] = useState<number | null>(null);
@@ -81,6 +81,10 @@ const WellnessResponder = () => {
   const tatAutoSubmittedRef = useRef(false);
 
   const isTatWave = wave === "phq9";
+  const isRorschachWave = wave === "ecig";
+  const hasProjective = isTatWave || isRorschachWave;
+  const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
+  const projectiveFn = isRorschachWave ? "rorschach-submit" : "tat-submit";
 
   useEffect(() => {
     if (!token || !wave) return;
@@ -99,11 +103,11 @@ const WellnessResponder = () => {
       .finally(() => setLoading(false));
   }, [token, wave]);
 
-  // Load a TAT image (random among active) when running PHQ-9 wave
+  // Load a projective plate (random among active) for PHQ-9 (TAT) or ECIG (Rorschach)
   useEffect(() => {
-    if (!isTatWave) return;
+    if (!hasProjective) return;
     supabase
-      .from("tat_images")
+      .from(projectiveTable as "tat_images" | "rorschach_images")
       .select("id,label,url,sort_order")
       .eq("active", true)
       .order("sort_order", { ascending: true })
@@ -112,7 +116,7 @@ const WellnessResponder = () => {
         const pick = data[Math.floor(Math.random() * data.length)];
         setTatImage(pick as TatImage);
       });
-  }, [isTatWave]);
+  }, [hasProjective, projectiveTable]);
 
   // TAT countdown
   useEffect(() => {
@@ -148,7 +152,7 @@ const WellnessResponder = () => {
   };
 
   const startFlow = () => {
-    if (isTatWave && tatImage) {
+    if (hasProjective && tatImage) {
       setTatStartedAt(Date.now());
       setTatRemaining(TAT_LIMIT_MS);
       setStep("tat");
@@ -168,7 +172,7 @@ const WellnessResponder = () => {
     setTatSubmitting(true);
     try {
       const time_ms = tatStartedAt ? Date.now() - tatStartedAt : 0;
-      const { data, error } = await supabase.functions.invoke("tat-submit", {
+      const { data, error } = await supabase.functions.invoke(projectiveFn, {
         body: {
           token,
           image_id: tatImage?.id ?? null,
