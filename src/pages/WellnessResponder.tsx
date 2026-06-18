@@ -235,13 +235,13 @@ const WellnessResponder = () => {
               <div><Label>Departamento</Label><Input value={demo.department} onChange={(e) => setDemo({ ...demo, department: e.target.value })} /></div>
               <div><Label>Tempo de empresa</Label><Input placeholder="ex: 1-3 anos" value={demo.tenure_range} onChange={(e) => setDemo({ ...demo, tenure_range: e.target.value })} /></div>
             </div>
-            {isTatWave && tatImage && (
+            {hasProjective && tatImage && (
               <div className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
-                Esta etapa inclui uma breve atividade narrativa (TAT) antes do questionário. Você terá até <strong>10 minutos</strong> para escrever.
+                Esta etapa inclui uma breve atividade {isRorschachWave ? "projetiva (Rorschach — mancha de tinta)" : "narrativa (TAT)"} antes do questionário. Você terá até <strong>10 minutos</strong> para escrever.
               </div>
             )}
             <Button className="w-full" onClick={startFlow}>
-              Começar{isTatWave && tatImage ? " (atividade + questionário)" : ` (${questions.length} perguntas)`}
+              Começar{hasProjective && tatImage ? " (atividade + questionário)" : ` (${questions.length} perguntas)`}
             </Button>
           </Card>
         )}
@@ -250,7 +250,9 @@ const WellnessResponder = () => {
           <Card className="p-6 space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h2 className="font-display text-lg font-semibold">Atividade narrativa</h2>
+                <h2 className="font-display text-lg font-semibold">
+                  {isRorschachWave ? "Atividade projetiva (Rorschach)" : "Atividade narrativa (TAT)"}
+                </h2>
                 <p className="text-xs text-muted-foreground">Tempo total: 10 minutos · imagem única</p>
               </div>
               <div className={`font-mono text-lg px-3 py-1 rounded-md border ${lowTime ? "bg-red-50 border-red-300 text-red-700" : "bg-muted"}`}>
@@ -268,13 +270,26 @@ const WellnessResponder = () => {
             </div>
 
             <div className="text-sm space-y-1">
-              <p className="font-medium">Olhe a imagem e escreva uma história sobre ela:</p>
-              <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
-                <li>O que está acontecendo na cena?</li>
-                <li>O que levou a essa situação?</li>
-                <li>O que as pessoas estão pensando e sentindo?</li>
-                <li>Como a história termina?</li>
-              </ul>
+              <p className="font-medium">
+                {isRorschachWave
+                  ? "Olhe a mancha e descreva: o que isto poderia ser?"
+                  : "Olhe a imagem e escreva uma história sobre ela:"}
+              </p>
+              {isRorschachWave ? (
+                <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
+                  <li>O que você enxerga na mancha?</li>
+                  <li>Quais detalhes chamam mais sua atenção?</li>
+                  <li>O que mais poderia ser?</li>
+                  <li>Como você se sente ao olhar para ela?</li>
+                </ul>
+              ) : (
+                <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
+                  <li>O que está acontecendo na cena?</li>
+                  <li>O que levou a essa situação?</li>
+                  <li>O que as pessoas estão pensando e sentindo?</li>
+                  <li>Como a história termina?</li>
+                </ul>
+              )}
               <p className="text-[11px] text-muted-foreground pt-1">Não há resposta certa ou errada. Escreva à vontade — você tem até 10 minutos.</p>
             </div>
 
