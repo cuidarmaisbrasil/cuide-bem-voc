@@ -72,7 +72,7 @@ const WellnessResponder = () => {
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  // TAT state
+  // Projective test (TAT for phq9 wave, Rorschach for ecig wave)
   const [tatImage, setTatImage] = useState<TatImage | null>(null);
   const [tatNarrative, setTatNarrative] = useState("");
   const [tatStartedAt, setTatStartedAt] = useState<number | null>(null);
@@ -81,6 +81,10 @@ const WellnessResponder = () => {
   const tatAutoSubmittedRef = useRef(false);
 
   const isTatWave = wave === "phq9";
+  const isRorschachWave = wave === "ecig";
+  const hasProjective = isTatWave || isRorschachWave;
+  const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
+  const projectiveFn = isRorschachWave ? "rorschach-submit" : "tat-submit";
 
   useEffect(() => {
     if (!token || !wave) return;
@@ -99,20 +103,18 @@ const WellnessResponder = () => {
       .finally(() => setLoading(false));
   }, [token, wave]);
 
-  // Load a TAT image (random among active) when running PHQ-9 wave
+  // Load a projective plate (random among active) for PHQ-9 (TAT) or ECIG (Rorschach)
   useEffect(() => {
-    if (!isTatWave) return;
-    supabase
-      .from("tat_images")
-      .select("id,label,url,sort_order")
-      .eq("active", true)
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        if (!data || data.length === 0) return;
-        const pick = data[Math.floor(Math.random() * data.length)];
-        setTatImage(pick as TatImage);
-      });
-  }, [isTatWave]);
+    if (!hasProjective) return;
+    const query = isRorschachWave
+      ? supabase.from("rorschach_images").select("id,label,url,sort_order").eq("active", true).order("sort_order", { ascending: true })
+      : supabase.from("tat_images").select("id,label,url,sort_order").eq("active", true).order("sort_order", { ascending: true });
+    query.then(({ data }) => {
+      if (!data || data.length === 0) return;
+      const pick = data[Math.floor(Math.random() * data.length)];
+      setTatImage(pick as TatImage);
+    });
+  }, [hasProjective, isRorschachWave]);
 
   // TAT countdown
   useEffect(() => {
@@ -148,7 +150,7 @@ const WellnessResponder = () => {
   };
 
   const startFlow = () => {
-    if (isTatWave && tatImage) {
+    if (hasProjective && tatImage) {
       setTatStartedAt(Date.now());
       setTatRemaining(TAT_LIMIT_MS);
       setStep("tat");
@@ -168,7 +170,7 @@ const WellnessResponder = () => {
     setTatSubmitting(true);
     try {
       const time_ms = tatStartedAt ? Date.now() - tatStartedAt : 0;
-      const { data, error } = await supabase.functions.invoke("tat-submit", {
+      const { data, error } = await supabase.functions.invoke(projectiveFn, {
         body: {
           token,
           image_id: tatImage?.id ?? null,
@@ -231,13 +233,13 @@ const WellnessResponder = () => {
               <div><Label>Departamento</Label><Input value={demo.department} onChange={(e) => setDemo({ ...demo, department: e.target.value })} /></div>
               <div><Label>Tempo de empresa</Label><Input placeholder="ex: 1-3 anos" value={demo.tenure_range} onChange={(e) => setDemo({ ...demo, tenure_range: e.target.value })} /></div>
             </div>
-            {isTatWave && tatImage && (
+            {hasProjective && tatImage && (
               <div className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
-                Esta etapa inclui uma breve atividade narrativa (TAT) antes do questionário. Você terá até <strong>10 minutos</strong> para escrever.
+                Esta etapa inclui uma breve atividade {isRorschachWave ? "projetiva (Rorschach — mancha de tinta)" : "narrativa (TAT)"} antes do questionário. Você terá até <strong>10 minutos</strong> para escrever.
               </div>
             )}
             <Button className="w-full" onClick={startFlow}>
-              Começar{isTatWave && tatImage ? " (atividade + questionário)" : ` (${questions.length} perguntas)`}
+              Começar{hasProjective && tatImage ? " (atividade + questionário)" : ` (${questions.length} perguntas)`}
             </Button>
           </Card>
         )}
@@ -246,7 +248,9 @@ const WellnessResponder = () => {
           <Card className="p-6 space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h2 className="font-display text-lg font-semibold">Atividade narrativa</h2>
+                <h2 className="font-display text-lg font-semibold">
+                  {isRorschachWave ? "Atividade projetiva (Rorschach)" : "Atividade narrativa (TAT)"}
+                </h2>
                 <p className="text-xs text-muted-foreground">Tempo total: 10 minutos · imagem única</p>
               </div>
               <div className={`font-mono text-lg px-3 py-1 rounded-md border ${lowTime ? "bg-red-50 border-red-300 text-red-700" : "bg-muted"}`}>
@@ -264,13 +268,26 @@ const WellnessResponder = () => {
             </div>
 
             <div className="text-sm space-y-1">
-              <p className="font-medium">Olhe a imagem e escreva uma história sobre ela:</p>
-              <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
-                <li>O que está acontecendo na cena?</li>
-                <li>O que levou a essa situação?</li>
-                <li>O que as pessoas estão pensando e sentindo?</li>
-                <li>Como a história termina?</li>
-              </ul>
+              <p className="font-medium">
+                {isRorschachWave
+                  ? "Olhe a mancha e descreva: o que isto poderia ser?"
+                  : "Olhe a imagem e escreva uma história sobre ela:"}
+              </p>
+              {isRorschachWave ? (
+                <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
+                  <li>O que você enxerga na mancha?</li>
+                  <li>Quais detalhes chamam mais sua atenção?</li>
+                  <li>O que mais poderia ser?</li>
+                  <li>Como você se sente ao olhar para ela?</li>
+                </ul>
+              ) : (
+                <ul className="list-disc pl-5 text-muted-foreground text-xs space-y-0.5">
+                  <li>O que está acontecendo na cena?</li>
+                  <li>O que levou a essa situação?</li>
+                  <li>O que as pessoas estão pensando e sentindo?</li>
+                  <li>Como a história termina?</li>
+                </ul>
+              )}
               <p className="text-[11px] text-muted-foreground pt-1">Não há resposta certa ou errada. Escreva à vontade — você tem até 10 minutos.</p>
             </div>
 
