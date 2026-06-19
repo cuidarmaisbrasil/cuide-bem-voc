@@ -22,7 +22,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Onde encontro ajuda gratuita para depressão no Brasil?",
-    a: "Pelo SUS você pode procurar a UBS mais próxima ou um CAPS (Centro de Atenção Psicossocial). Em emergência ligue CVV 188 (24h, gratuito) ou SAMU 192.",
+    a: "Pelo SUS você pode procurar a UBS mais próxima ou um CAPS (Centro de Atenção Psicossocial). Também é possível agendar consulta psicológica ou psiquiátrica digitalmente pelo Meu SUS Digital: https://meususdigital.saude.gov.br/. Em emergência ligue CVV 188 (24h, gratuito) ou SAMU 192.",
   },
   {
     q: "Estou em crise. O que fazer agora?",
