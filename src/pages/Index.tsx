@@ -11,7 +11,7 @@ import { track } from "@/lib/tracking";
 
 type Stage = "intro" | "test" | "result";
 
-const FAQ_ITEMS = [
+const FAQ_ITEMS: { q: string; a: ReactNode }[] = [
   {
     q: "O teste de depressão do Cuidar+ é confiável?",
     a: "Sim. Usamos o PHQ-9, instrumento validado pela OMS com α de Cronbach 0,89, combinado com os critérios diagnósticos do DSM-5 e CID-11. É um rastreio educativo, não substitui diagnóstico clínico.",
@@ -22,7 +22,20 @@ const FAQ_ITEMS = [
   },
   {
     q: "Onde encontro ajuda gratuita para depressão no Brasil?",
-    a: "Pelo SUS você pode procurar a UBS mais próxima ou um CAPS (Centro de Atenção Psicossocial). Também é possível agendar consulta psicológica ou psiquiátrica digitalmente pelo Meu SUS Digital: https://meususdigital.saude.gov.br/. Em emergência ligue CVV 188 (24h, gratuito) ou SAMU 192.",
+    a: (
+      <>
+        Pelo SUS você pode procurar a UBS mais próxima ou um CAPS (Centro de Atenção Psicossocial). Também é possível agendar consulta psicológica ou psiquiátrica digitalmente pelo{" "}
+        <a
+          href="https://meususdigital.saude.gov.br/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Meu SUS Digital
+        </a>
+        . Em emergência ligue CVV 188 (24h, gratuito) ou SAMU 192.
+      </>
+    ),
   },
   {
     q: "Estou em crise. O que fazer agora?",
