@@ -49,6 +49,10 @@ export const Hero = ({ onStart }: HeroProps) => {
               <span className="inline-flex items-center gap-1">
                 <Heart className="h-3.5 w-3.5" /> Grátis
               </span>
+              <span>·</span>
+              <span className="inline-flex items-center gap-1">
+                α de Cronbach 0,89
+              </span>
             </p>
           </div>
 
