@@ -607,6 +607,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
               <SelectItem value="ecig">ECIG</SelectItem>
               <SelectItem value="copsoq">COPSOQ</SelectItem>
               <SelectItem value="psicossocial">Psicossocial (LIPT-60)</SelectItem>
+              <SelectItem value="assedio_sexual">Assédio sexual (MDiSH + SHRAS)</SelectItem>
             </SelectContent>
           </Select>
         </div>
