@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
       ecig: { scheduled: 0, sent: 0, completed: 0 },
       copsoq: { scheduled: 0, sent: 0, completed: 0 },
       psicossocial: { scheduled: 0, sent: 0, completed: 0 },
+      assedio_sexual: { scheduled: 0, sent: 0, completed: 0 },
     };
     (invs ?? []).forEach((i: any) => {
       const s = summary[i.wave];
@@ -86,6 +87,7 @@ Deno.serve(async (req) => {
         ecig: { scheduled: 0, sent: 0, completed: 0 },
         copsoq: { scheduled: 0, sent: 0, completed: 0 },
         psicossocial: { scheduled: 0, sent: 0, completed: 0 },
+      assedio_sexual: { scheduled: 0, sent: 0, completed: 0 },
       };
       const w = perRoundCounts[r][i.wave as WaveKey];
       if (!w) return;
@@ -155,6 +157,7 @@ Deno.serve(async (req) => {
           ecig: { scheduled: 0, sent: 0, completed: 0 },
           copsoq: { scheduled: 0, sent: 0, completed: 0 },
           psicossocial: { scheduled: 0, sent: 0, completed: 0 },
+      assedio_sexual: { scheduled: 0, sent: 0, completed: 0 },
         },
         copsoq: {
           n: cps?.n_total ?? 0,
