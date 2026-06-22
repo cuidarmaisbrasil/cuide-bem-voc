@@ -37,6 +37,12 @@ const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string;
     minutes: '6 a 10 minutos',
     subject: 'Avaliação de bem-estar — etapa 4 (clima psicossocial)',
   },
+  assedio_sexual: {
+    title: 'Etapa 5: percepções sobre assédio sexual no trabalho',
+    intro: 'Esta etapa avalia atitudes e percepções sobre assédio sexual e sobre o clima da empresa para denúncias (MDiSH + SHRAS). É anônima e estritamente confidencial.',
+    minutes: '6 a 10 minutos',
+    subject: 'Avaliação de bem-estar — etapa 5 (assédio sexual)',
+  },
 }
 
 const Email = ({ companyName, link, wave = 'phq9' }: Props) => {
