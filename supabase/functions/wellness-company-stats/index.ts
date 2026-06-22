@@ -1,8 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-type WaveKey = "phq9" | "ecig" | "copsoq" | "psicossocial";
-const WAVES: WaveKey[] = ["phq9", "ecig", "copsoq", "psicossocial"];
+type WaveKey = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+const WAVES: WaveKey[] = ["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"];
 const DEFAULT_MIN_RECORTE = 5;
 
 Deno.serve(async (req) => {
