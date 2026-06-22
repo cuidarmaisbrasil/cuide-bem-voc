@@ -774,7 +774,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
           ))}
         </div>
         <p className="text-[11px] text-muted-foreground mt-1">
-          Ex.: 0 / 1 / 2 / 3 → recebe as 4 ondas em ~3 minutos. O disparador checa pendentes ao rodar “Disparar agora”.
+          Ex.: 0 / 1 / 2 / 3 / 4 → recebe as 5 ondas em ~4 minutos. O disparador checa pendentes ao rodar "Disparar agora".
         </p>
       </div>
 
