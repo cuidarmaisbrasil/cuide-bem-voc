@@ -29,7 +29,11 @@ Deno.serve(async (req) => {
     if (inv.status === "completed") return j({ status: "completed", company: { name: (p as any).companies.name } });
 
     // Pull active questions; for COPSOQ use default_version, else 'phq9' or 'ecig'
-    const instrument = wave === "copsoq" ? `copsoq_${(p as any).companies.default_version || "short_br"}` : wave === "psicossocial" ? "lipt60" : wave;
+    const instrument = wave === "copsoq"
+      ? `copsoq_${(p as any).companies.default_version || "short_br"}`
+      : wave === "psicossocial" ? "lipt60"
+      : wave === "assedio_sexual" ? "assedio_sexual"
+      : wave;
     const { data: qs } = await admin
       .from("instrument_questions")
       .select("n,text,scale,reverse,response_set")
