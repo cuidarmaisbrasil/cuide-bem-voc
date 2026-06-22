@@ -9,7 +9,7 @@ const SITE_NAME = 'Cuidar+'
 interface Props {
   companyName?: string
   link?: string
-  wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial'
+  wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial' | 'assedio_sexual'
 }
 
 const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string; subject: string }> = {
