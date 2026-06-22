@@ -640,13 +640,14 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   );
 }
 
-const WAVES = ["phq9", "ecig", "copsoq", "psicossocial"] as const;
+const WAVES = ["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const;
 type Wave = typeof WAVES[number];
 const WAVE_LABEL: Record<Wave, string> = {
   phq9: "PHQ-9 (depressão)",
   ecig: "ECIG (conflito intragrupo)",
   copsoq: "COPSOQ (psicossociais)",
   psicossocial: "Psicossocial (LIPT-60)",
+  assedio_sexual: "Assédio sexual (MDiSH+SHRAS)",
 };
 
 interface TestInvitation {
