@@ -218,8 +218,8 @@ export const WellnessAdmin = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {(["phq9", "ecig", "copsoq", "psicossocial"] as const).map((w) => (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
                     <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
