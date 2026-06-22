@@ -680,7 +680,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
   const [lastTickResult, setLastTickResult] = useState<string>("");
 
   const currentRound = invs.length ? invs[0].round_no : null;
-  const allCompleted = invs.length === 4 && invs.every((i) => i.completed_at);
+  const allCompleted = invs.length === 5 && invs.every((i) => i.completed_at);
 
   async function refreshStatus() {
     if (!companyId || !email) return;
