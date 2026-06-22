@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
         tenure_range: demo.tenure_range,
       });
 
-    } else {
+    } else if (wave === "psicossocial") {
       // psicossocial — LIPT-60 (escala 0..4). Score por subescala (média dos itens respondidos).
       const { data: qs } = await admin
         .from("instrument_questions")
@@ -139,6 +139,45 @@ Deno.serve(async (req) => {
         round_no,
         participant_token_hash: p.token_hash,
         instrument: "lipt60",
+        answers,
+        latencies_ms,
+        scores,
+        age_range: demo.age_range,
+        gender: demo.gender,
+        department: demo.department,
+        tenure_range: demo.tenure_range,
+      });
+
+    } else {
+      // assedio_sexual — MDiSH (desengajamento moral) + SHRAS (atitudes p/ denúncia).
+      // Likert 1..5. Score = média por subescala (mdish_* e shras), aplicando reverse onde marcado.
+      const { data: qs } = await admin
+        .from("instrument_questions")
+        .select("n,scale,reverse")
+        .eq("instrument", "assedio_sexual")
+        .eq("active", true);
+      const sums: Record<string, { sum: number; n: number }> = {};
+      const mdishVals: number[] = [];
+      const shrasVals: number[] = [];
+      (qs ?? []).forEach((q: any) => {
+        const raw = answers[String(q.n)];
+        if (raw === undefined || raw === null) return;
+        const v = q.reverse ? 6 - Number(raw) : Number(raw);
+        const scale = q.scale || "geral";
+        sums[scale] = sums[scale] || { sum: 0, n: 0 };
+        sums[scale].sum += v;
+        sums[scale].n += 1;
+        if (scale.startsWith("mdish")) mdishVals.push(v);
+        else if (scale === "shras") shrasVals.push(v);
+      });
+      const scores: Record<string, number> = {};
+      for (const k of Object.keys(sums)) scores[k] = +(sums[k].sum / sums[k].n).toFixed(2);
+      if (mdishVals.length) scores.MDiSH_total = +(mdishVals.reduce((a, b) => a + b, 0) / mdishVals.length).toFixed(2);
+      if (shrasVals.length) scores.SHRAS_total = +(shrasVals.reduce((a, b) => a + b, 0) / shrasVals.length).toFixed(2);
+      await admin.from("assedio_sexual_responses").insert({
+        company_id: p.company_id,
+        round_no,
+        participant_token_hash: p.token_hash,
         answers,
         latencies_ms,
         scores,
