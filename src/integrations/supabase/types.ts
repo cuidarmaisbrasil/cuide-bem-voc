@@ -38,6 +38,62 @@ export type Database = {
         }
         Relationships: []
       }
+      assedio_sexual_responses: {
+        Row: {
+          age_range: string | null
+          answers: Json
+          company_id: string
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          latencies_ms: Json
+          participant_token_hash: string
+          round_no: number
+          scores: Json | null
+          tenure_range: string | null
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          answers: Json
+          company_id: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms: Json
+          participant_token_hash: string
+          round_no?: number
+          scores?: Json | null
+          tenure_range?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          answers?: Json
+          company_id?: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms?: Json
+          participant_token_hash?: string
+          round_no?: number
+          scores?: Json | null
+          tenure_range?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assedio_sexual_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       care_platforms: {
         Row: {
           active: boolean

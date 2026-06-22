@@ -45,7 +45,7 @@ export const WellnessAdmin = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [emails, setEmails] = useState("");
-  const [intervals, setIntervals] = useState({ phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45 });
+  const [intervals, setIntervals] = useState({ phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, assedio_sexual: 60 });
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
@@ -184,11 +184,12 @@ export const WellnessAdmin = () => {
               </SelectContent>
             </Select>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
               <div><Label>Dias até ECIG</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
               <div><Label>Dias até COPSOQ</Label><Input type="number" value={intervals.copsoq} onChange={(e) => setIntervals({ ...intervals, copsoq: +e.target.value })} /></div>
               <div><Label>Dias até Psicossocial (LIPT-60)</Label><Input type="number" value={intervals.psicossocial} onChange={(e) => setIntervals({ ...intervals, psicossocial: +e.target.value })} /></div>
+              <div><Label>Dias até Assédio sexual (MDiSH+SHRAS)</Label><Input type="number" value={intervals.assedio_sexual} onChange={(e) => setIntervals({ ...intervals, assedio_sexual: +e.target.value })} /></div>
             </div>
 
             <Label>E-mails dos trabalhadores (um por linha ou separados por vírgula)</Label>
@@ -217,8 +218,8 @@ export const WellnessAdmin = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {(["phq9", "ecig", "copsoq", "psicossocial"] as const).map((w) => (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
                     <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
@@ -331,6 +332,7 @@ export const WellnessAdmin = () => {
                   <SelectItem value="phq9">PHQ-9 (depressão)</SelectItem>
                   <SelectItem value="ecig">ECIG (conflito intragrupo)</SelectItem>
                   <SelectItem value="lipt60">LIPT-60 (assédio moral / mobbing)</SelectItem>
+                  <SelectItem value="assedio_sexual">Assédio sexual (MDiSH + SHRAS)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -548,7 +550,7 @@ function median(arr: number[]) {
 }
 
 function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: string; companies: Company[]; onSelectCompany: (id: string) => void }) {
-  const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq" | "psicossocial">("phq9");
+  const [wave, setWave] = useState<"phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual">("phq9");
   const [period, setPeriod] = useState<"30d" | "all">("all");
   const [rows, setRows] = useState<{ n: string; mean: number; median: number; n_resp: number; outliers: number }[]>([]);
   const [totalN, setTotalN] = useState(0);
@@ -557,7 +559,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   useEffect(() => {
     if (!companyId) return;
     setLoading(true);
-    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : wave === "copsoq" ? "copsoq_responses" : "psicossocial_responses";
+    const table = wave === "phq9" ? "phq9_company_responses" : wave === "ecig" ? "ecig_responses" : wave === "copsoq" ? "copsoq_responses" : wave === "psicossocial" ? "psicossocial_responses" : "assedio_sexual_responses";
     let q = (supabase as any).from(table).select("latencies_ms,created_at").eq("company_id", companyId);
     if (period === "30d") {
       const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -605,6 +607,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
               <SelectItem value="ecig">ECIG</SelectItem>
               <SelectItem value="copsoq">COPSOQ</SelectItem>
               <SelectItem value="psicossocial">Psicossocial (LIPT-60)</SelectItem>
+              <SelectItem value="assedio_sexual">Assédio sexual (MDiSH + SHRAS)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -637,13 +640,14 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   );
 }
 
-const WAVES = ["phq9", "ecig", "copsoq", "psicossocial"] as const;
+const WAVES = ["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const;
 type Wave = typeof WAVES[number];
 const WAVE_LABEL: Record<Wave, string> = {
   phq9: "PHQ-9 (depressão)",
   ecig: "ECIG (conflito intragrupo)",
   copsoq: "COPSOQ (psicossociais)",
   psicossocial: "Psicossocial (LIPT-60)",
+  assedio_sexual: "Assédio sexual (MDiSH+SHRAS)",
 };
 
 interface TestInvitation {
@@ -668,7 +672,7 @@ function fmt(d: string | null) {
 function TestModePanel({ companies }: { companies: Company[] }) {
   const [companyId, setCompanyId] = useState("");
   const [email, setEmail] = useState("");
-  const [mins, setMins] = useState<Record<Wave, number>>({ phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3 });
+  const [mins, setMins] = useState<Record<Wave, number>>({ phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, assedio_sexual: 4 });
   const [busy, setBusy] = useState(false);
   const [participant, setParticipant] = useState<{ id: string; token: string; email: string } | null>(null);
   const [invs, setInvs] = useState<TestInvitation[]>([]);
@@ -676,7 +680,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
   const [lastTickResult, setLastTickResult] = useState<string>("");
 
   const currentRound = invs.length ? invs[0].round_no : null;
-  const allCompleted = invs.length === 4 && invs.every((i) => i.completed_at);
+  const allCompleted = invs.length === 5 && invs.every((i) => i.completed_at);
 
   async function refreshStatus() {
     if (!companyId || !email) return;
@@ -737,7 +741,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
       <div>
         <h3 className="font-semibold">Teste do mecanismo de ondas</h3>
         <p className="text-sm text-muted-foreground">
-          Use 1 e-mail real (seu) para receber as 4 ondas (PHQ-9 → ECIG → COPSOQ → LIPT-60) com intervalos em minutos.
+          Use 1 e-mail real (seu) para receber as 5 ondas (PHQ-9 → ECIG → COPSOQ → LIPT-60 → Assédio sexual) com intervalos em minutos.
           Responda cada link e veja o relatório final no fim.
         </p>
       </div>
@@ -770,7 +774,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
           ))}
         </div>
         <p className="text-[11px] text-muted-foreground mt-1">
-          Ex.: 0 / 1 / 2 / 3 → recebe as 4 ondas em ~3 minutos. O disparador checa pendentes ao rodar “Disparar agora”.
+          Ex.: 0 / 1 / 2 / 3 / 4 → recebe as 5 ondas em ~4 minutos. O disparador checa pendentes ao rodar "Disparar agora".
         </p>
       </div>
 

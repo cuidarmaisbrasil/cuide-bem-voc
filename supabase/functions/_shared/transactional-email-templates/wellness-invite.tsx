@@ -9,7 +9,7 @@ const SITE_NAME = 'Cuidar+'
 interface Props {
   companyName?: string
   link?: string
-  wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial'
+  wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial' | 'assedio_sexual'
 }
 
 const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string; subject: string }> = {
@@ -36,6 +36,12 @@ const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string;
     intro: 'Esta etapa avalia a frequência de situações de assédio moral, hostilidade e exclusão (Inventário de Leymann — LIPT-60). É anônima e estritamente confidencial.',
     minutes: '6 a 10 minutos',
     subject: 'Avaliação de bem-estar — etapa 4 (clima psicossocial)',
+  },
+  assedio_sexual: {
+    title: 'Etapa 5: percepções sobre assédio sexual no trabalho',
+    intro: 'Esta etapa avalia atitudes e percepções sobre assédio sexual e sobre o clima da empresa para denúncias (MDiSH + SHRAS). É anônima e estritamente confidencial.',
+    minutes: '6 a 10 minutos',
+    subject: 'Avaliação de bem-estar — etapa 5 (assédio sexual)',
   },
 }
 

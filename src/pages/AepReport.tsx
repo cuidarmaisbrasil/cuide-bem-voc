@@ -136,7 +136,7 @@ const AepReport = () => {
           <table className="aep-table">
             <thead><tr><th>Onda</th><th>Agendados</th><th>Enviados</th><th>Concluídos</th><th>Taxa de conclusão</th></tr></thead>
             <tbody>
-              {(["copsoq", "phq9", "ecig", "psicossocial"] as const).map((w) => {
+              {(["copsoq", "phq9", "ecig", "psicossocial", "assedio_sexual"] as const).map((w) => {
                 const x = target.waves[w] || { scheduled: 0, sent: 0, completed: 0 };
                 const rate = x.sent > 0 ? Math.round((x.completed / x.sent) * 100) : 0;
                 return (

@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial";
+type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
 interface TatImage { id: string; label: string; url: string; sort_order: number }
@@ -48,6 +48,13 @@ const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
     { value: 3, label: "Várias vezes/semana" },
     { value: 4, label: "Diariamente" },
   ],
+  asx_5: [
+    { value: 1, label: "Discordo totalmente" },
+    { value: 2, label: "Discordo" },
+    { value: 3, label: "Neutro" },
+    { value: 4, label: "Concordo" },
+    { value: 5, label: "Concordo totalmente" },
+  ],
 };
 
 const WAVE_TITLES: Record<Wave, string> = {
@@ -55,6 +62,7 @@ const WAVE_TITLES: Record<Wave, string> = {
   ecig: "Clima no seu grupo de trabalho (ECIG)",
   copsoq: "Bem-estar no trabalho (COPSOQ)",
   psicossocial: "Clima psicossocial / situações no trabalho (LIPT-60)",
+  assedio_sexual: "Percepções sobre assédio sexual no trabalho (MDiSH + SHRAS)",
 };
 
 const TAT_LIMIT_MS = 10 * 60 * 1000;

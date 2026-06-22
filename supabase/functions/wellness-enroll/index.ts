@@ -22,8 +22,8 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { company_id, emails, intervals_days, intervals_minutes } = body as {
       company_id: string; emails: string[];
-      intervals_days?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
-      intervals_minutes?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number };
+      intervals_days?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number; assedio_sexual?: number };
+      intervals_minutes?: { phq9: number; ecig: number; copsoq: number; psicossocial?: number; assedio_sexual?: number };
     };
 
     // Authorization: admin OR company owner
@@ -57,8 +57,8 @@ Deno.serve(async (req) => {
       roundNo = created.round_no;
     }
 
-    const ivDays = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, ...(intervals_days || {}) };
-    const ivMin = intervals_minutes ? { phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, ...intervals_minutes } : null;
+    const ivDays = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, assedio_sexual: 60, ...(intervals_days || {}) };
+    const ivMin = intervals_minutes ? { phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, assedio_sexual: 4, ...intervals_minutes } : null;
     const now = new Date();
 
     const created: any[] = [];
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
         .single();
       if (error || !p) continue;
 
-      const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => {
+      const invites = (["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((wave) => {
         const offsetMs = ivMin
           ? (ivMin as any)[wave] * 60_000
           : (ivDays as any)[wave] * 86_400_000;
