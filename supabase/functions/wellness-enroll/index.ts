@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
         .single();
       if (error || !p) continue;
 
-      const invites = (["phq9", "ecig", "copsoq", "psicossocial"] as const).map((wave) => {
+      const invites = (["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((wave) => {
         const offsetMs = ivMin
           ? (ivMin as any)[wave] * 60_000
           : (ivDays as any)[wave] * 86_400_000;
