@@ -672,7 +672,7 @@ function fmt(d: string | null) {
 function TestModePanel({ companies }: { companies: Company[] }) {
   const [companyId, setCompanyId] = useState("");
   const [email, setEmail] = useState("");
-  const [mins, setMins] = useState<Record<Wave, number>>({ phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3 });
+  const [mins, setMins] = useState<Record<Wave, number>>({ phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, assedio_sexual: 4 });
   const [busy, setBusy] = useState(false);
   const [participant, setParticipant] = useState<{ id: string; token: string; email: string } | null>(null);
   const [invs, setInvs] = useState<TestInvitation[]>([]);
