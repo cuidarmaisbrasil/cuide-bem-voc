@@ -741,7 +741,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
       <div>
         <h3 className="font-semibold">Teste do mecanismo de ondas</h3>
         <p className="text-sm text-muted-foreground">
-          Use 1 e-mail real (seu) para receber as 4 ondas (PHQ-9 → ECIG → COPSOQ → LIPT-60) com intervalos em minutos.
+          Use 1 e-mail real (seu) para receber as 5 ondas (PHQ-9 → ECIG → COPSOQ → LIPT-60 → Assédio sexual) com intervalos em minutos.
           Responda cada link e veja o relatório final no fim.
         </p>
       </div>
