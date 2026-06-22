@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial";
+type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
 interface TatImage { id: string; label: string; url: string; sort_order: number }
