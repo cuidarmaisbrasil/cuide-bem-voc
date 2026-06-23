@@ -507,7 +507,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             </Reveal>
             <div className="space-y-6">
               {[
-                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado no COPSOQ II, padrão internacional para riscos psicossociais." },
+                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado em psicometrias com padrões internacionais para avaliação de riscos psicossociais (NR1 contemplada)." },
                 { Icon: Lock, t: "Anonimato garantido", d: "A empresa nunca vê respostas individuais — apenas dados agregados." },
                 { Icon: ShieldCheck, t: "Conformidade LGPD", d: "Criptografia, controles de acesso e sigilo profissional." },
               ].map((s, i) => (
