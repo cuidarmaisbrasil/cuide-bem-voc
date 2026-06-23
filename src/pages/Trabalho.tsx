@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldCheck, TrendingDown, HeartPulse, ArrowRight, CheckCircle2, Lock, FlaskConical, Briefcase } from "lucide-react";
+import { ShieldCheck, TrendingDown, HeartPulse, ArrowRight, CheckCircle2, Lock, FlaskConical, Briefcase, FileText } from "lucide-react";
 import { useReveal } from "@/hooks/useReveal";
 import heroPhoto from "@/assets/trabalho-hero.jpg";
 import loungePhoto from "@/assets/trabalho-lounge.jpg";
@@ -142,7 +142,7 @@ const Trabalho = () => {
             <div className="mb-4">
               <h2 className="font-display text-2xl font-semibold mb-1">Cadastre sua empresa</h2>
               <p className="text-sm text-muted-foreground">
-                Gratuito. Aprovação em até 1 dia útil e seu painel é liberado.
+                Gratuito* até 20 colaboradores. Aprovação em até 1 dia útil e seu painel é liberado.
               </p>
             </div>
             <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as any)}>
@@ -164,7 +164,7 @@ const Trabalho = () => {
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
                   <Button type="submit" className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90" disabled={submitting}>
-                    {submitting ? "Enviando…" : "Solicitar cadastro gratuito"}
+                    {submitting ? "Enviando…" : "Solicitar cadastro gratuito*"}
                   </Button>
                 </form>
               </TabsContent>
@@ -336,7 +336,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <Reveal>
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 backdrop-blur px-3 py-1 text-xs font-medium text-primary">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                  Programa gratuito de prevenção
+                  Programa gratuito* de prevenção
                 </div>
               </Reveal>
               <Reveal delay={80}>
@@ -363,10 +363,12 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               </Reveal>
               <Reveal delay={320}>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">
-                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratuito</span>
+                  <span className="inline-flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratuito*</span>
                   <span className="inline-flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Anonimato garantido</span>
-                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica COPSOQ II/ ECIG/ PHQ-9</span>
+                  <span className="inline-flex items-center gap-1.5"><FlaskConical className="h-4 w-4 text-primary" /> Base científica: psicometria testada e aprovada</span>
+                  <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 text-primary" /> Relatório gratuito* NR1</span>
                 </div>
+                <p className="text-xs text-muted-foreground/80 pt-1">* Gratuito até 20 colaboradores.</p>
               </Reveal>
             </div>
 
@@ -387,7 +389,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <Reveal variant="left" delay={500} className="absolute -bottom-10 -left-6 md:-left-16 max-w-xs">
                 <Card className="p-6 shadow-soft border-border/60 bg-card/95 backdrop-blur">
                   <h2 className="font-serif-editorial text-xl font-medium mb-1">Comece em 30 segundos</h2>
-                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito · aprovação em até 1 dia útil.</p>
+                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito* · aprovação em até 1 dia útil.</p>
                   <Button onClick={onCadastrar} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90 group">
                     Cadastrar minha empresa
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -427,7 +429,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
       <section id="como-funciona" className="bg-[hsl(210_30%_12%)] text-[hsl(200_15%_90%)] overflow-hidden">
         <div className="container max-w-7xl py-24 md:py-32">
           <Reveal className="max-w-2xl mb-16">
-            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ondas de rastreio</h2>
+            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ciclos de rastreio</h2>
             <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
               Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
             </p>
@@ -461,10 +463,10 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <Reveal variant="left">
               <h2 className="font-serif-editorial text-4xl md:text-5xl font-medium text-foreground mb-6 leading-tight">
-                Relatório gratuito por onda
+                Relatório gratuito* por ciclo
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
+                Dimensões em risco, comparação entre ciclos e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
               </p>
               <Button onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 group h-12 px-6">
                 Quero o relatório da minha empresa
@@ -505,7 +507,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             </Reveal>
             <div className="space-y-6">
               {[
-                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado no COPSOQ II, padrão internacional para riscos psicossociais." },
+                { Icon: FlaskConical, t: "Cientificamente validado", d: "Baseado em psicometrias com padrões internacionais para avaliação de riscos psicossociais (NR1 contemplada)." },
                 { Icon: Lock, t: "Anonimato garantido", d: "A empresa nunca vê respostas individuais — apenas dados agregados." },
                 { Icon: ShieldCheck, t: "Conformidade LGPD", d: "Criptografia, controles de acesso e sigilo profissional." },
               ].map((s, i) => (
