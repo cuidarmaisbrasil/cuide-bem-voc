@@ -15,6 +15,7 @@ import { ShieldCheck, TrendingDown, HeartPulse, ArrowRight, CheckCircle2, Lock, 
 import { useReveal } from "@/hooks/useReveal";
 import heroPhoto from "@/assets/trabalho-hero.jpg";
 import loungePhoto from "@/assets/trabalho-lounge.jpg";
+import { useEditableText } from "@/hooks/useEditableText";
 
 
 interface Company {
@@ -23,6 +24,23 @@ interface Company {
   contact_email: string; contact_name: string;
   created_at: string; approved_at: string | null;
 }
+
+const RecomendacaoHorario = () => {
+  const text = useEditableText(
+    "trabalho_page_recommendation",
+    "O Cuidar+ Trabalho envia 5 ondas de testes em D+1, D+7, D+15, D+22 e D+30, e repete o ciclo a cada 3 meses. Oriente que os colaboradores respondam durante o horário usual de trabalho."
+  );
+  return (
+    <div className="mt-12 rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 max-w-3xl">
+      <div className="text-accent font-mono text-xs mb-3 italic tracking-widest">
+        RECOMENDAÇÃO À EMPRESA
+      </div>
+      <p className="text-[hsl(200_15%_85%)] leading-relaxed whitespace-pre-line">
+        {text}
+      </p>
+    </div>
+  );
+};
 
 const Trabalho = () => {
   const { user, loading, signOut } = useAuth();
@@ -454,6 +472,8 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               </Reveal>
             ))}
           </div>
+
+          <RecomendacaoHorario />
         </div>
       </section>
 

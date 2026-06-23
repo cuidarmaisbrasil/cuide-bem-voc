@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       roundNo = created.round_no;
     }
 
-    const ivDays = { phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, assedio_sexual: 60, ...(intervals_days || {}) };
+    const ivDays = { phq9: 1, ecig: 7, copsoq: 15, psicossocial: 22, assedio_sexual: 30, ...(intervals_days || {}) };
     const ivMin = intervals_minutes ? { phq9: 0, ecig: 1, copsoq: 2, psicossocial: 3, assedio_sexual: 4, ...intervals_minutes } : null;
     const now = new Date();
 

@@ -1567,6 +1567,33 @@ export type Database = {
         }
         Relationships: []
       }
+      wellness_editable_texts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          key: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          key: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wellness_invitations: {
         Row: {
           attempts: number

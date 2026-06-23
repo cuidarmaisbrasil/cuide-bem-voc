@@ -28,6 +28,15 @@ Deno.serve(async (req) => {
     const publicBase = Deno.env.get("PUBLIC_APP_URL") || "https://cuidarmaisbrasil.life";
     const nowIso = new Date().toISOString();
     const now = Date.now();
+
+    // Editable footer note (fetched once per run)
+    const { data: noteRow } = await admin
+      .from("wellness_editable_texts")
+      .select("content")
+      .eq("key", "email_invite_work_hours_note")
+      .maybeSingle();
+    const workHoursNote = noteRow?.content || "";
+
     let sent = 0; let skipped = 0; let failed = 0; let reminded = 0;
 
     // ---- 1. Initial sends ----
@@ -52,7 +61,7 @@ Deno.serve(async (req) => {
             templateName: TEMPLATE_NAME,
             recipientEmail: p.email,
             idempotencyKey: `wellness-${inv.id}`,
-            templateData: { companyName: p.companies.name, link, wave: inv.wave },
+            templateData: { companyName: p.companies.name, link, wave: inv.wave, workHoursNote },
           },
         });
         if (error) throw error;
@@ -115,6 +124,7 @@ Deno.serve(async (req) => {
               link,
               wave: inv.wave,
               reminder: rc + 1,
+              workHoursNote,
             },
           },
         });

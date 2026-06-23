@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 import { TatAdmin } from "@/components/admin/TatAdmin";
 import { RorschachAdmin } from "@/components/admin/RorschachAdmin";
+import { EditableTextsAdmin } from "@/components/admin/EditableTextsAdmin";
+import { useEditableText } from "@/hooks/useEditableText";
 
 interface RoundData {
   round_no: number;
@@ -45,7 +47,7 @@ export const WellnessAdmin = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [emails, setEmails] = useState("");
-  const [intervals, setIntervals] = useState({ phq9: 0, ecig: 15, copsoq: 30, psicossocial: 45, assedio_sexual: 60 });
+  const [intervals, setIntervals] = useState({ phq9: 1, ecig: 7, copsoq: 15, psicossocial: 22, assedio_sexual: 30 });
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
@@ -160,10 +162,15 @@ export const WellnessAdmin = () => {
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+          <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
           <TabsTrigger value="tat">TAT (imagens)</TabsTrigger>
           <TabsTrigger value="rorschach">Rorschach (pranchas)</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="texts" className="space-y-4 pt-4">
+          <EditableTextsAdmin />
+        </TabsContent>
 
         <TabsContent value="tat" className="space-y-4 pt-4">
           <TatAdmin />
@@ -183,6 +190,8 @@ export const WellnessAdmin = () => {
                 {companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
+
+            <EnrollRecommendation />
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
@@ -859,3 +868,15 @@ function TestModePanel({ companies }: { companies: Company[] }) {
   );
 }
 
+
+function EnrollRecommendation() {
+  const text = useEditableText(
+    "admin_enroll_recommendation",
+    "Recomende aos colaboradores que respondam durante o horário usual de trabalho. As 5 ondas são enviadas em D+1, D+7, D+15, D+22 e D+30. O ciclo se repete a cada 3 meses."
+  );
+  return (
+    <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 whitespace-pre-line">
+      {text}
+    </div>
+  );
+}
