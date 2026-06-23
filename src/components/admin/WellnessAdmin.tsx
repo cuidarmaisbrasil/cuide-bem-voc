@@ -191,6 +191,8 @@ export const WellnessAdmin = () => {
               </SelectContent>
             </Select>
 
+            <EnrollRecommendation />
+
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
               <div><Label>Dias até ECIG</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
