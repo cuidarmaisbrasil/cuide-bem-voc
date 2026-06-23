@@ -463,7 +463,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <Reveal variant="left">
               <h2 className="font-serif-editorial text-4xl md:text-5xl font-medium text-foreground mb-6 leading-tight">
-                Relatório gratuito por onda
+                Relatório gratuito* por ciclo
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
