@@ -361,10 +361,39 @@ const WellnessResponder = () => {
         )}
 
         {step === "done" && (
-          <Card className="p-8 text-center space-y-3">
+          <Card className="p-8 text-center space-y-4">
             <div className="text-4xl">✓</div>
             <h2 className="font-display text-xl font-semibold">Obrigado pela colaboração</h2>
             <p className="text-sm text-muted-foreground">Sua resposta anônima foi registrada. Você receberá a próxima etapa por e-mail.</p>
+
+            {accessCode && (
+              <div className="text-left bg-muted/40 border rounded-md p-4 space-y-3">
+                <p className="text-sm font-semibold">
+                  {codeFirstIssue ? "Seu código pessoal de acesso ao relatório individual" : "Seu código pessoal (já emitido em onda anterior)"}
+                </p>
+                <div className="font-mono text-lg tracking-wider text-center bg-background border rounded px-3 py-3 select-all">
+                  {accessCode}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => { navigator.clipboard?.writeText(accessCode); toast.success("Código copiado"); }}
+                >
+                  Copiar código
+                </Button>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p><strong>Guarde agora.</strong> Por anonimato, não armazenamos o código em claro — se perdê-lo, não há como recuperar.</p>
+                  <p>Use o mesmo código em todas as ondas. Acesse seu relatório em <a className="underline" href="/meu-resultado" target="_blank" rel="noreferrer">/meu-resultado</a>.</p>
+                  <p>Sua empresa <strong>não tem acesso</strong> ao seu relatório pessoal.</p>
+                </div>
+              </div>
+            )}
+
+            {!accessCode && (
+              <p className="text-xs text-muted-foreground">Use o código que você recebeu na primeira onda em <a className="underline" href="/meu-resultado">/meu-resultado</a>.</p>
+            )}
           </Card>
         )}
       </div>
