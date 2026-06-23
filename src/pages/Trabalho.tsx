@@ -389,7 +389,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <Reveal variant="left" delay={500} className="absolute -bottom-10 -left-6 md:-left-16 max-w-xs">
                 <Card className="p-6 shadow-soft border-border/60 bg-card/95 backdrop-blur">
                   <h2 className="font-serif-editorial text-xl font-medium mb-1">Comece em 30 segundos</h2>
-                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito · aprovação em até 1 dia útil.</p>
+                  <p className="text-xs text-muted-foreground mb-5 leading-snug">Cadastro gratuito* · aprovação em até 1 dia útil.</p>
                   <Button onClick={onCadastrar} className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90 group">
                     Cadastrar minha empresa
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
