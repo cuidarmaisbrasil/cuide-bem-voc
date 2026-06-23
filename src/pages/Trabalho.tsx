@@ -336,7 +336,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <Reveal>
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 backdrop-blur px-3 py-1 text-xs font-medium text-primary">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                  Programa gratuito de prevenção
+                  Programa gratuito* de prevenção
                 </div>
               </Reveal>
               <Reveal delay={80}>
