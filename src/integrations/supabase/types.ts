@@ -40,6 +40,7 @@ export type Database = {
       }
       assedio_sexual_responses: {
         Row: {
+          access_code_hash: string | null
           age_range: string | null
           answers: Json
           company_id: string
@@ -55,6 +56,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers: Json
           company_id: string
@@ -70,6 +72,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers?: Json
           company_id?: string
@@ -275,6 +278,7 @@ export type Database = {
       }
       copsoq_responses: {
         Row: {
+          access_code_hash: string | null
           age_range: string | null
           answers: Json
           city: string | null
@@ -295,6 +299,7 @@ export type Database = {
           version: string
         }
         Insert: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers: Json
           city?: string | null
@@ -315,6 +320,7 @@ export type Database = {
           version: string
         }
         Update: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers?: Json
           city?: string | null
@@ -346,6 +352,7 @@ export type Database = {
       }
       ecig_responses: {
         Row: {
+          access_code_hash: string | null
           age_range: string | null
           answers: Json
           company_id: string
@@ -360,6 +367,7 @@ export type Database = {
           tenure_range: string | null
         }
         Insert: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers: Json
           company_id: string
@@ -374,6 +382,7 @@ export type Database = {
           tenure_range?: string | null
         }
         Update: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers?: Json
           company_id?: string
@@ -544,6 +553,48 @@ export type Database = {
         }
         Relationships: []
       }
+      individual_report_templates: {
+        Row: {
+          body: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          metadata: Json
+          position: number
+          section_key: string
+          severity: string
+          title: string | null
+          updated_at: string
+          wave: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          metadata?: Json
+          position?: number
+          section_key: string
+          severity?: string
+          title?: string | null
+          updated_at?: string
+          wave: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          metadata?: Json
+          position?: number
+          section_key?: string
+          severity?: string
+          title?: string | null
+          updated_at?: string
+          wave?: string
+        }
+        Relationships: []
+      }
       instrument_questions: {
         Row: {
           active: boolean
@@ -645,6 +696,7 @@ export type Database = {
       }
       phq9_company_responses: {
         Row: {
+          access_code_hash: string | null
           age: number | null
           age_range: string | null
           answers: Json
@@ -663,6 +715,7 @@ export type Database = {
           tenure_range: string | null
         }
         Insert: {
+          access_code_hash?: string | null
           age?: number | null
           age_range?: string | null
           answers: Json
@@ -681,6 +734,7 @@ export type Database = {
           tenure_range?: string | null
         }
         Update: {
+          access_code_hash?: string | null
           age?: number | null
           age_range?: string | null
           answers?: Json
@@ -761,6 +815,7 @@ export type Database = {
       }
       psicossocial_responses: {
         Row: {
+          access_code_hash: string | null
           age_range: string | null
           answers: Json
           city: string | null
@@ -781,6 +836,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers: Json
           city?: string | null
@@ -801,6 +857,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
+          access_code_hash?: string | null
           age_range?: string | null
           answers?: Json
           city?: string | null
@@ -1571,6 +1628,9 @@ export type Database = {
       }
       wellness_participants: {
         Row: {
+          access_code_first_used_at: string | null
+          access_code_hash: string | null
+          access_code_issued_at: string | null
           company_id: string
           created_at: string
           email: string
@@ -1581,6 +1641,9 @@ export type Database = {
           unsubscribed_at: string | null
         }
         Insert: {
+          access_code_first_used_at?: string | null
+          access_code_hash?: string | null
+          access_code_issued_at?: string | null
           company_id: string
           created_at?: string
           email: string
@@ -1591,6 +1654,9 @@ export type Database = {
           unsubscribed_at?: string | null
         }
         Update: {
+          access_code_first_used_at?: string | null
+          access_code_hash?: string | null
+          access_code_issued_at?: string | null
           company_id?: string
           created_at?: string
           email?: string

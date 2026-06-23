@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { getCopsoq, type CopsoqVersion } from "@/data/copsoq";
 import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring";
 import { Plus, Trash2, RotateCcw } from "lucide-react";
+import IndividualReportAdmin from "@/components/admin/IndividualReportAdmin";
 
 interface Override { n: number; text_override: string; active: boolean; }
 
@@ -189,6 +190,7 @@ export const TrabalhoAdmin = () => {
         <TabsTrigger value="template">Template do relatório</TabsTrigger>
         <TabsTrigger value="sample">Sample do relatório</TabsTrigger>
         <TabsTrigger value="notes">Observações por empresa</TabsTrigger>
+        <TabsTrigger value="individual">Relatório individual</TabsTrigger>
       </TabsList>
 
       {/* ===== Questions editor ===== */}
@@ -388,6 +390,10 @@ export const TrabalhoAdmin = () => {
             </>
           )}
         </Card>
+      </TabsContent>
+
+      <TabsContent value="individual" className="space-y-3">
+        <IndividualReportAdmin />
       </TabsContent>
     </Tabs>
   );

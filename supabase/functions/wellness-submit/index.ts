@@ -1,6 +1,21 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
+// Master access-code helpers (kept inline — edge functions live in one file)
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
+function generateAccessCode(): string {
+  const bytes = new Uint8Array(12);
+  crypto.getRandomValues(bytes);
+  const chars = Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]);
+  return `CM-${chars.slice(0, 4).join("")}-${chars.slice(4, 8).join("")}-${chars.slice(8, 12).join("")}`;
+}
+async function hashCode(code: string): Promise<string> {
+  const norm = code.trim().toUpperCase();
+  const data = new TextEncoder().encode(norm);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -19,7 +34,7 @@ Deno.serve(async (req) => {
 
     const { data: p } = await admin
       .from("wellness_participants")
-      .select("id, company_id, token_hash, unsubscribed_at")
+      .select("id, company_id, token_hash, unsubscribed_at, access_code_hash")
       .eq("token", token)
       .maybeSingle();
     if (!p) return j({ error: "invalid_token" }, 404);
@@ -39,6 +54,20 @@ Deno.serve(async (req) => {
     const round_no = inv.round_no ?? 1;
     const demo = demographics || {};
 
+    // Issue master access code on FIRST wave; reuse afterwards.
+    let accessCodePlain: string | null = null;
+    let accessCodeHash = p.access_code_hash as string | null;
+    let isFirstIssue = false;
+    if (!accessCodeHash) {
+      accessCodePlain = generateAccessCode();
+      accessCodeHash = await hashCode(accessCodePlain);
+      isFirstIssue = true;
+      await admin
+        .from("wellness_participants")
+        .update({ access_code_hash: accessCodeHash, access_code_issued_at: new Date().toISOString() })
+        .eq("id", p.id);
+    }
+
 
     if (wave === "phq9") {
       const phqAnswers = Array.from({ length: 9 }, (_, i) => Number(answers[String(i + 1)] ?? 0));
@@ -49,6 +78,7 @@ Deno.serve(async (req) => {
         company_id: p.company_id,
         round_no,
         participant_token_hash: p.token_hash,
+        access_code_hash: accessCodeHash,
         answers,
         latencies_ms,
         score,
@@ -63,7 +93,6 @@ Deno.serve(async (req) => {
       });
 
     } else if (wave === "ecig") {
-      // Score by subscale (tarefa, relacionamento, processo)
       const { data: qs } = await admin
         .from("instrument_questions")
         .select("n,scale,reverse")
@@ -84,6 +113,7 @@ Deno.serve(async (req) => {
         company_id: p.company_id,
         round_no,
         participant_token_hash: p.token_hash,
+        access_code_hash: accessCodeHash,
         answers,
         latencies_ms,
         scores,
@@ -94,11 +124,11 @@ Deno.serve(async (req) => {
       });
 
     } else if (wave === "copsoq") {
-      // copsoq — reuse existing table, add token_hash + latencies
       await admin.from("copsoq_responses").insert({
         company_id: p.company_id,
         round_no,
         participant_token_hash: p.token_hash,
+        access_code_hash: accessCodeHash,
         version: extras?.version || "short_br",
         answers,
         latencies_ms,
@@ -110,7 +140,6 @@ Deno.serve(async (req) => {
       });
 
     } else if (wave === "psicossocial") {
-      // psicossocial — LIPT-60 (escala 0..4). Score por subescala (média dos itens respondidos).
       const { data: qs } = await admin
         .from("instrument_questions")
         .select("n,scale,reverse")
@@ -131,13 +160,14 @@ Deno.serve(async (req) => {
       const scores: Record<string, number> = {};
       for (const k of Object.keys(sums)) scores[k] = +(sums[k].sum / sums[k].n).toFixed(2);
       if (all.length) {
-        scores.IGAP = +(all.reduce((a, b) => a + b, 0) / all.length).toFixed(2); // índice global Leymann
-        scores.NEAP = all.filter((v) => v > 0).length; // número de estratégias de assédio percebidas
+        scores.IGAP = +(all.reduce((a, b) => a + b, 0) / all.length).toFixed(2);
+        scores.NEAP = all.filter((v) => v > 0).length;
       }
       await admin.from("psicossocial_responses").insert({
         company_id: p.company_id,
         round_no,
         participant_token_hash: p.token_hash,
+        access_code_hash: accessCodeHash,
         instrument: "lipt60",
         answers,
         latencies_ms,
@@ -149,8 +179,6 @@ Deno.serve(async (req) => {
       });
 
     } else {
-      // assedio_sexual — MDiSH (desengajamento moral) + SHRAS (atitudes p/ denúncia).
-      // Likert 1..5. Score = média por subescala (mdish_* e shras), aplicando reverse onde marcado.
       const { data: qs } = await admin
         .from("instrument_questions")
         .select("n,scale,reverse")
@@ -178,6 +206,7 @@ Deno.serve(async (req) => {
         company_id: p.company_id,
         round_no,
         participant_token_hash: p.token_hash,
+        access_code_hash: accessCodeHash,
         answers,
         latencies_ms,
         scores,
@@ -190,7 +219,7 @@ Deno.serve(async (req) => {
     }
 
     await admin.from("wellness_invitations").update({ status: "completed", completed_at: new Date().toISOString() }).eq("id", inv.id);
-    return j({ ok: true });
+    return j({ ok: true, access_code: accessCodePlain, access_code_first_issue: isFirstIssue });
   } catch (e: any) {
     console.error("wellness-submit error", e);
     return j({ error: "internal_error" }, 500);
