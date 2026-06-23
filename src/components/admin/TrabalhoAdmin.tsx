@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { getCopsoq, type CopsoqVersion } from "@/data/copsoq";
 import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring";
 import { Plus, Trash2, RotateCcw } from "lucide-react";
+import IndividualReportAdmin from "@/components/admin/IndividualReportAdmin";
 
 interface Override { n: number; text_override: string; active: boolean; }
 
