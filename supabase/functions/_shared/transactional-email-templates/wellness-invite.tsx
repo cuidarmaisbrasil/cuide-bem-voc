@@ -10,6 +10,7 @@ interface Props {
   companyName?: string
   link?: string
   wave?: 'phq9' | 'ecig' | 'copsoq' | 'psicossocial' | 'assedio_sexual'
+  workHoursNote?: string
 }
 
 const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string; subject: string }> = {
@@ -45,7 +46,7 @@ const WAVE_COPY: Record<string, { title: string; intro: string; minutes: string;
   },
 }
 
-const Email = ({ companyName, link, wave = 'phq9' }: Props) => {
+const Email = ({ companyName, link, wave = 'phq9', workHoursNote }: Props) => {
   const copy = WAVE_COPY[wave] ?? WAVE_COPY.phq9
   return (
     <Html lang="pt-BR" dir="ltr">
@@ -65,6 +66,7 @@ const Email = ({ companyName, link, wave = 'phq9' }: Props) => {
           <Text style={small}>
             Suas respostas são confidenciais. A empresa recebe apenas estatísticas agregadas, sem identificação individual.
           </Text>
+          {workHoursNote ? <Text style={small}>{workHoursNote}</Text> : null}
           <Text style={emergency}>
             <strong>Em emergência:</strong> ligue 188 (CVV) ou 192 (SAMU).
           </Text>
