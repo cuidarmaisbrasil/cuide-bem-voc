@@ -868,3 +868,15 @@ function TestModePanel({ companies }: { companies: Company[] }) {
   );
 }
 
+
+function EnrollRecommendation() {
+  const text = useEditableText(
+    "admin_enroll_recommendation",
+    "Recomende aos colaboradores que respondam durante o horário usual de trabalho. As 5 ondas são enviadas em D+1, D+7, D+15, D+22 e D+30. O ciclo se repete a cada 3 meses."
+  );
+  return (
+    <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 whitespace-pre-line">
+      {text}
+    </div>
+  );
+}
