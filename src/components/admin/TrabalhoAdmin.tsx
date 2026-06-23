@@ -190,6 +190,7 @@ export const TrabalhoAdmin = () => {
         <TabsTrigger value="template">Template do relatório</TabsTrigger>
         <TabsTrigger value="sample">Sample do relatório</TabsTrigger>
         <TabsTrigger value="notes">Observações por empresa</TabsTrigger>
+        <TabsTrigger value="individual">Relatório individual</TabsTrigger>
       </TabsList>
 
       {/* ===== Questions editor ===== */}
