@@ -466,7 +466,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                 Relatório gratuito* por ciclo
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                Dimensões em risco, comparação entre ondas e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
+                Dimensões em risco, comparação entre ciclos e sugestões práticas — direto ao ponto, para você agir antes que o custo cresça.
               </p>
               <Button onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 group h-12 px-6">
                 Quero o relatório da minha empresa
