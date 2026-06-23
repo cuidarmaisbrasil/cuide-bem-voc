@@ -208,6 +208,10 @@ const WellnessResponder = () => {
         body: { token, wave, answers, latencies_ms: latencies, demographics: demo },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      if ((data as any)?.access_code) {
+        setAccessCode((data as any).access_code);
+        setCodeFirstIssue(Boolean((data as any).access_code_first_issue));
+      }
       setStep("done");
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar");
