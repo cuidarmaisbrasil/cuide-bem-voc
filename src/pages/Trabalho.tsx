@@ -164,7 +164,7 @@ const Trabalho = () => {
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
                   <Button type="submit" className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90" disabled={submitting}>
-                    {submitting ? "Enviando…" : "Solicitar cadastro gratuito"}
+                    {submitting ? "Enviando…" : "Solicitar cadastro gratuito*"}
                   </Button>
                 </form>
               </TabsContent>
