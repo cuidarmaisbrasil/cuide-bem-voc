@@ -19,6 +19,9 @@ import Imprensa from "./pages/Imprensa.tsx";
 import BlogRH from "./pages/BlogRH.tsx";
 import AepReport from "./pages/AepReport.tsx";
 import MeuResultado from "./pages/MeuResultado.tsx";
+import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
+import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
+import TrabalhoContato from "./pages/TrabalhoContato.tsx";
 
 
 const queryClient = new QueryClient();
@@ -45,6 +48,9 @@ const App = () => (
             <Route path="/blog/rh-saude-mental-trabalho" element={<BlogRH />} />
             <Route path="/admin/aep/:companyId/:roundNo" element={<AepReport />} />
             <Route path="/meu-resultado" element={<MeuResultado />} />
+            <Route path="/trabalho/termos" element={<TrabalhoTermos />} />
+            <Route path="/trabalho/faq" element={<TrabalhoFAQ />} />
+            <Route path="/trabalho/contato" element={<TrabalhoContato />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 
             <Route path="*" element={<NotFound />} />
