@@ -429,7 +429,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
       <section id="como-funciona" className="bg-[hsl(210_30%_12%)] text-[hsl(200_15%_90%)] overflow-hidden">
         <div className="container max-w-7xl py-24 md:py-32">
           <Reveal className="max-w-2xl mb-16">
-            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ondas de rastreio</h2>
+            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ciclos de rastreio</h2>
             <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
               Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
             </p>
