@@ -142,7 +142,7 @@ const Trabalho = () => {
             <div className="mb-4">
               <h2 className="font-display text-2xl font-semibold mb-1">Cadastre sua empresa</h2>
               <p className="text-sm text-muted-foreground">
-                Gratuito. Aprovação em até 1 dia útil e seu painel é liberado.
+                Gratuito* até 20 colaboradores. Aprovação em até 1 dia útil e seu painel é liberado.
               </p>
             </div>
             <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as any)}>
