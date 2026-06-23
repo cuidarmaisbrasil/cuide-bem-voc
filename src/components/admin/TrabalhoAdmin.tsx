@@ -391,6 +391,10 @@ export const TrabalhoAdmin = () => {
           )}
         </Card>
       </TabsContent>
+
+      <TabsContent value="individual" className="space-y-3">
+        <IndividualReportAdmin />
+      </TabsContent>
     </Tabs>
   );
 };
