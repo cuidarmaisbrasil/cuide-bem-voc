@@ -79,6 +79,8 @@ const WellnessResponder = () => {
   const shownAtRef = useRef<Record<number, number>>({});
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [accessCode, setAccessCode] = useState<string | null>(null);
+  const [codeFirstIssue, setCodeFirstIssue] = useState(false);
 
   // Projective test (TAT for phq9 wave, Rorschach for ecig wave)
   const [tatImage, setTatImage] = useState<TatImage | null>(null);
