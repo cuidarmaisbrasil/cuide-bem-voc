@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 import { TatAdmin } from "@/components/admin/TatAdmin";
 import { RorschachAdmin } from "@/components/admin/RorschachAdmin";
+import { EditableTextsAdmin } from "@/components/admin/EditableTextsAdmin";
+import { useEditableText } from "@/hooks/useEditableText";
 
 interface RoundData {
   round_no: number;
@@ -160,10 +162,15 @@ export const WellnessAdmin = () => {
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+          <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
           <TabsTrigger value="tat">TAT (imagens)</TabsTrigger>
           <TabsTrigger value="rorschach">Rorschach (pranchas)</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="texts" className="space-y-4 pt-4">
+          <EditableTextsAdmin />
+        </TabsContent>
 
         <TabsContent value="tat" className="space-y-4 pt-4">
           <TatAdmin />
