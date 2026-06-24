@@ -205,10 +205,23 @@ const WellnessResponder = () => {
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
+    if (wave === "phq9" && step === "form") {
+      // For PHQ-9, after answering items go to symptoms checklist before final submit
+      setStep("symptoms");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("wellness-submit", {
-        body: { token, wave, answers, latencies_ms: latencies, demographics: demo },
+        body: {
+          token,
+          wave,
+          answers,
+          latencies_ms: latencies,
+          demographics: demo,
+          extras: wave === "phq9" ? { symptoms } : undefined,
+        },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
       if ((data as any)?.access_code) {
