@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { tenSymptoms } from "@/data/symptoms";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
 
@@ -73,11 +75,12 @@ const WellnessResponder = () => {
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<{ name: string } | null>(null);
   const [questions, setQuestions] = useState<Q[]>([]);
-  const [step, setStep] = useState<"intro" | "tat" | "form" | "done">("intro");
+  const [step, setStep] = useState<"intro" | "tat" | "form" | "symptoms" | "done">("intro");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [latencies, setLatencies] = useState<Record<number, number>>({});
   const shownAtRef = useRef<Record<number, number>>({});
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
+  const [symptoms, setSymptoms] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [accessCode, setAccessCode] = useState<string | null>(null);
   const [codeFirstIssue, setCodeFirstIssue] = useState(false);
@@ -202,10 +205,23 @@ const WellnessResponder = () => {
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
+    if (wave === "phq9" && step === "form") {
+      // For PHQ-9, after answering items go to symptoms checklist before final submit
+      setStep("symptoms");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("wellness-submit", {
-        body: { token, wave, answers, latencies_ms: latencies, demographics: demo },
+        body: {
+          token,
+          wave,
+          answers,
+          latencies_ms: latencies,
+          demographics: demo,
+          extras: wave === "phq9" ? { symptoms } : undefined,
+        },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
       if ((data as any)?.access_code) {
@@ -332,6 +348,16 @@ const WellnessResponder = () => {
               <Progress value={progress} />
               <p className="text-xs text-muted-foreground text-center mt-1">{answered} / {questions.length}</p>
             </div>
+            {wave === "phq9" && (
+              <Card className="p-4 bg-muted/40">
+                <p className="text-sm font-medium">
+                  Nas últimas 2 semanas, com que frequência você foi incomodado(a) por:
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  A última pergunta (impacto funcional) começa com: <em>"Se você marcou algum problema nas questões anteriores, o quanto eles dificultaram seu trabalho, suas tarefas em casa ou seu relacionamento com as pessoas?"</em>
+                </p>
+              </Card>
+            )}
             <div className="space-y-3">
               {questions.map((q) => {
                 const opts = RESPONSE_SETS[q.response_set || "copsoq_5_freq"] || RESPONSE_SETS.copsoq_5_freq;
@@ -355,9 +381,49 @@ const WellnessResponder = () => {
               })}
             </div>
             <Button className="w-full" size="lg" onClick={submit} disabled={submitting || answered < questions.length}>
-              {submitting ? "Enviando…" : `Enviar (${answered}/${questions.length})`}
+              {submitting ? "Enviando…" : wave === "phq9" ? `Continuar (${answered}/${questions.length})` : `Enviar (${answered}/${questions.length})`}
             </Button>
           </>
+        )}
+
+        {step === "symptoms" && (
+          <Card className="p-6 space-y-4">
+            <div>
+              <h2 className="font-display text-lg font-semibold">Checklist de sintomas</h2>
+              <p className="text-sm font-medium mt-2">
+                Quais destes sintomas você tem sentido nas últimas 2 semanas?
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Marque todos que se aplicam. Pode deixar em branco se nenhum estiver presente.
+              </p>
+            </div>
+            <div className="space-y-2">
+              {tenSymptoms.map((s) => {
+                const checked = symptoms.includes(s.id);
+                return (
+                  <label
+                    key={s.id}
+                    className={`flex gap-3 items-start p-3 rounded-md border cursor-pointer transition-colors ${checked ? "bg-primary/5 border-primary" : "bg-background hover:bg-accent"}`}
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(v) => {
+                        setSymptoms((cur) => v ? [...cur, s.id] : cur.filter((x) => x !== s.id));
+                      }}
+                      className="mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium leading-tight">{s.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{s.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+            <Button className="w-full" size="lg" onClick={submit} disabled={submitting}>
+              {submitting ? "Enviando…" : `Enviar respostas${symptoms.length ? ` (${symptoms.length} sintoma${symptoms.length > 1 ? "s" : ""})` : ""}`}
+            </Button>
+          </Card>
         )}
 
         {step === "done" && (
