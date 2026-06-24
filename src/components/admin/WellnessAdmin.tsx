@@ -15,6 +15,7 @@ import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 import { TatAdmin } from "@/components/admin/TatAdmin";
 import { RorschachAdmin } from "@/components/admin/RorschachAdmin";
 import { EditableTextsAdmin } from "@/components/admin/EditableTextsAdmin";
+import { WellnessPreviewAdmin } from "@/components/admin/WellnessPreviewAdmin";
 import { useEditableText } from "@/hooks/useEditableText";
 
 interface RoundData {
@@ -160,6 +161,7 @@ export const WellnessAdmin = () => {
       <Tabs defaultValue="program">
         <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
+          <TabsTrigger value="preview">Prévia colaborador</TabsTrigger>
           <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
           <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
@@ -167,6 +169,10 @@ export const WellnessAdmin = () => {
           <TabsTrigger value="rorschach">Rorschach (pranchas)</TabsTrigger>
           <TabsTrigger value="latency">Latências</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="preview" className="space-y-4 pt-4">
+          <WellnessPreviewAdmin />
+        </TabsContent>
 
         <TabsContent value="texts" className="space-y-4 pt-4">
           <EditableTextsAdmin />
