@@ -75,11 +75,12 @@ const WellnessResponder = () => {
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<{ name: string } | null>(null);
   const [questions, setQuestions] = useState<Q[]>([]);
-  const [step, setStep] = useState<"intro" | "tat" | "form" | "done">("intro");
+  const [step, setStep] = useState<"intro" | "tat" | "form" | "symptoms" | "done">("intro");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [latencies, setLatencies] = useState<Record<number, number>>({});
   const shownAtRef = useRef<Record<number, number>>({});
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
+  const [symptoms, setSymptoms] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [accessCode, setAccessCode] = useState<string | null>(null);
   const [codeFirstIssue, setCodeFirstIssue] = useState(false);
