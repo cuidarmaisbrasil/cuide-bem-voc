@@ -346,6 +346,16 @@ export const TrabalhoAdmin = () => {
             ))}
           </section>
         </Card>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h3 className="font-display text-lg font-semibold">Relatório consolidado do ciclo (5 ondas)</h3>
+              <p className="text-xs text-muted-foreground">Prévia com dados simulados das 5 ondas: PHQ-9, ECIG, COPSOQ, MDiSH/SHRAS e LIPT-60.</p>
+            </div>
+          </div>
+          <CycleReportPreview />
+        </div>
       </TabsContent>
 
       {/* ===== Per-company notes ===== */}
