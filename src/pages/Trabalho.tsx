@@ -489,7 +489,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             ))}
           </div>
 
-          <RecomendacaoHorario />
+          
         </div>
       </section>
 
