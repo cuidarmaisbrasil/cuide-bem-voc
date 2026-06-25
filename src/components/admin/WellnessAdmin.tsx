@@ -16,6 +16,7 @@ import { TatAdmin } from "@/components/admin/TatAdmin";
 import { RorschachAdmin } from "@/components/admin/RorschachAdmin";
 import { EditableTextsAdmin } from "@/components/admin/EditableTextsAdmin";
 import { WellnessPreviewAdmin } from "@/components/admin/WellnessPreviewAdmin";
+import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
 import { useEditableText } from "@/hooks/useEditableText";
 
 interface RoundData {
@@ -162,6 +163,7 @@ export const WellnessAdmin = () => {
         <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="program">Programa por empresa</TabsTrigger>
           <TabsTrigger value="preview">Prévia colaborador</TabsTrigger>
+          <TabsTrigger value="cycle">Relatório de ciclo</TabsTrigger>
           <TabsTrigger value="test">Teste de ondas</TabsTrigger>
           <TabsTrigger value="items">Editar perguntas</TabsTrigger>
           <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
@@ -172,6 +174,10 @@ export const WellnessAdmin = () => {
 
         <TabsContent value="preview" className="space-y-4 pt-4">
           <WellnessPreviewAdmin />
+        </TabsContent>
+
+        <TabsContent value="cycle" className="space-y-4 pt-4">
+          <CycleReportPreview />
         </TabsContent>
 
         <TabsContent value="texts" className="space-y-4 pt-4">
