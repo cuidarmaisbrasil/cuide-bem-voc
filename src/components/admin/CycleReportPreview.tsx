@@ -89,10 +89,12 @@ export const CycleReportPreview = () => {
       </Card>
 
       <Tabs defaultValue="company">
-        <TabsList>
-          <TabsTrigger value="company">Visão empresa (agregada)</TabsTrigger>
-          <TabsTrigger value="worker">Visão colaborador (individual)</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-2 px-2">
+          <TabsList className="inline-flex w-max min-w-full">
+            <TabsTrigger value="company">Visão empresa (agregada)</TabsTrigger>
+            <TabsTrigger value="worker">Visão colaborador (individual)</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* =========== VISÃO EMPRESA =========== */}
         <TabsContent value="company" className="space-y-4 pt-4">
@@ -112,7 +114,7 @@ export const CycleReportPreview = () => {
           <Card className="p-5 space-y-3">
             <h3 className="font-semibold">Resumo executivo</h3>
             <p className="text-sm whitespace-pre-wrap">{execSummary}</p>
-            <div className="grid grid-cols-3 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <Stat label="Convidados" value={MOCK.participants.invited} />
               <Stat label="Completaram as 5 ondas" value={MOCK.participants.completed_all} />
               <Stat label="Parcial (1–4 ondas)" value={MOCK.participants.partial} />
@@ -153,7 +155,7 @@ export const CycleReportPreview = () => {
               <span className="text-xs text-muted-foreground">n = {w.ecig.n}</span>
             </div>
             <p className="text-sm whitespace-pre-wrap">{ecigTxt}</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {Object.entries(w.ecig.scales).map(([k, v]) => (
                 <div key={k} className="rounded border p-2">
                   <div className="text-muted-foreground">{k.replace(/_/g, " ")}</div>
@@ -190,7 +192,7 @@ export const CycleReportPreview = () => {
               <span className="text-xs text-muted-foreground">n = {w.psicossocial.n}</span>
             </div>
             <p className="text-sm whitespace-pre-wrap">{psicoTxt}</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <Stat label="IGAP (média geral)" value={w.psicossocial.IGAP} />
               <Stat label="NEAP (nº itens > 0)" value={w.psicossocial.NEAP} />
               <Stat label="% com indicativo" value={`${w.psicossocial.flagged}%`} />
@@ -204,7 +206,7 @@ export const CycleReportPreview = () => {
               <span className="text-xs text-muted-foreground">n = {w.assedio_sexual.n}</span>
             </div>
             <p className="text-sm whitespace-pre-wrap">{asxTxt}</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <Stat label="MDiSH total" value={w.assedio_sexual.MDiSH_total} />
               <Stat label="SHRAS total" value={w.assedio_sexual.SHRAS_total} />
               <Stat label="% com ao menos 1 item" value={`${w.assedio_sexual.any_endorsed}%`} />
