@@ -234,6 +234,39 @@ Deno.serve(async (req) => {
           ? { n: phqPerRound[rn].n, hidden: phqPerRound[rn].n < MIN_RECORTE,
               severity_dist: phqPerRound[rn].n < MIN_RECORTE ? {} : phqPerRound[rn].dist }
           : { n: 0, hidden: true, severity_dist: {} },
+        psicossocial: (() => {
+          const b = psiPerRound[rn];
+          if (!b || b.n < MIN_RECORTE) return { n: b?.n ?? 0, hidden: true, IGAP: 0, NEAP: 0, flagged_pct: 0, subscales: {}, flagged_departments: [] };
+          const subscales = Object.fromEntries(
+            Object.entries(b.sub).map(([k, v]) => [k, +(v.sum / v.count).toFixed(2)]),
+          );
+          const flagged_departments = Object.entries(b.dept_flag)
+            .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([d]) => d);
+          return {
+            n: b.n,
+            hidden: false,
+            IGAP: +(b.igap_sum / b.n).toFixed(2),
+            NEAP: +(b.neap_sum / b.n).toFixed(1),
+            flagged_pct: Math.round((b.flagged / b.n) * 100),
+            subscales,
+            flagged_departments,
+          };
+        })(),
+        assedio_sexual: (() => {
+          const b = asxPerRound[rn];
+          if (!b || b.n < MIN_RECORTE) return { n: b?.n ?? 0, hidden: true, MDiSH_total: 0, SHRAS_total: 0, any_endorsed_pct: 0, subscales: {} };
+          const subscales = Object.fromEntries(
+            Object.entries(b.sub).map(([k, v]) => [k, +(v.sum / v.count).toFixed(2)]),
+          );
+          return {
+            n: b.n,
+            hidden: false,
+            MDiSH_total: b.mdish_count ? +(b.mdish_sum / b.mdish_count).toFixed(2) : 0,
+            SHRAS_total: b.shras_count ? +(b.shras_sum / b.shras_count).toFixed(2) : 0,
+            any_endorsed_pct: Math.round((b.any_endorsed / b.n) * 100),
+            subscales,
+          };
+        })(),
       };
     });
 
