@@ -89,10 +89,12 @@ export const CycleReportPreview = () => {
       </Card>
 
       <Tabs defaultValue="company">
-        <TabsList>
-          <TabsTrigger value="company">Visão empresa (agregada)</TabsTrigger>
-          <TabsTrigger value="worker">Visão colaborador (individual)</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-2 px-2">
+          <TabsList className="inline-flex w-max min-w-full">
+            <TabsTrigger value="company">Visão empresa (agregada)</TabsTrigger>
+            <TabsTrigger value="worker">Visão colaborador (individual)</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* =========== VISÃO EMPRESA =========== */}
         <TabsContent value="company" className="space-y-4 pt-4">
