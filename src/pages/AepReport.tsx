@@ -39,6 +39,39 @@ function bandColor(label: string) {
 }
 function fmtDate(s: string | null) { return s ? new Date(s).toLocaleDateString("pt-BR") : "—"; }
 
+// ===== LIPT-60 (psicossocial) — subscale labels e leitura clínica =====
+const LIPT_LABELS: Record<string, { label: string; detail: string }> = {
+  desprestigio: { label: "Desprestígio profissional", detail: "Críticas injustas, atribuição de tarefas humilhantes ou abaixo da qualificação, supervisão exagerada." },
+  ampliacao_es: { label: "Bloqueio / ampliação do escopo", detail: "Sobrecarga deliberada, prazos impossíveis, interrupções recorrentes." },
+  desacreditacao: { label: "Desacreditação pessoal", detail: "Boatos, ridicularização, exposição pública constrangedora." },
+  comunicacao: { label: "Limitação da comunicação", detail: "Restrição de acesso a informação, isolamento em reuniões, silenciamento." },
+  contato_social: { label: "Isolamento social", detail: "Exclusão da convivência da equipe, almoços, eventos." },
+  saude: { label: "Violência física / ameaças à saúde", detail: "Ameaças, agressões físicas ou imposição de condições insalubres." },
+};
+function liptBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  return mean < 0.5 ? "Saudável" : mean <= 1.0 ? "Atenção" : "Risco";
+}
+
+// ===== Assédio sexual — MDiSH (negativa) e SHRAS (positiva) =====
+const MDISH_LABELS: Record<string, { label: string; detail: string }> = {
+  mdish_moral_justification: { label: "Justificação moral", detail: "Justifica condutas como tradição/cultura. Treinar código de conduta com exemplos." },
+  mdish_euphemistic_labeling: { label: "Rotulação eufemística", detail: "Trata como 'brincadeira', 'paquera'. Campanha 'isto não é brincadeira'." },
+  mdish_advantageous_comparison: { label: "Comparação vantajosa", detail: "'Em outros lugares é pior' — relativizar o problema." },
+  mdish_displacement_responsibility: { label: "Deslocamento da responsabilidade", detail: "Atribui à chefia / clima. Responsabilizar individualmente e publicar política." },
+  mdish_diffusion_responsibility: { label: "Difusão da responsabilidade", detail: "'Todo mundo faz' — diluição da culpa." },
+  mdish_distortion_consequences: { label: "Distorção das consequências", detail: "Subestima impacto. Trabalhar relatos reais e dados de afastamento." },
+  mdish_dehumanization: { label: "Desumanização", detail: "Coisificação da vítima." },
+  mdish_attribution_blame: { label: "Atribuição de culpa à vítima", detail: "'Ela provocou' / 'jeito de vestir'. Treinamento antivitimização + comitê de ética." },
+};
+function mdishBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  return mean <= 1.5 ? "Saudável" : mean <= 2.5 ? "Atenção" : "Risco";
+}
+function shrasBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  // SHRAS positiva (1-5): ≥4 saudável | 3.3-3.9 atenção | <3.3 risco
+  return mean >= 4 ? "Saudável" : mean >= 3.3 ? "Atenção" : "Risco";
+}
+
+
 const AepReport = () => {
   const { companyId, roundNo } = useParams<{ companyId: string; roundNo: string }>();
   const [company, setCompany] = useState<Company | null>(null);
