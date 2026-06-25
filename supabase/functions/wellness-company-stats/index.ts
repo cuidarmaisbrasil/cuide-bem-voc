@@ -133,6 +133,72 @@ Deno.serve(async (req) => {
       b.dist[s] = (b.dist[s] || 0) + 1;
     });
 
+    // LIPT-60 (psicossocial) per round — IGAP, NEAP, % flagged, subscale means
+    const { data: psiRows } = await admin
+      .from("psicossocial_responses")
+      .select("round_no,scores,department")
+      .eq("company_id", company_id);
+    const psiPerRound: Record<number, {
+      n: number;
+      igap_sum: number;
+      neap_sum: number;
+      flagged: number;
+      sub: Record<string, { sum: number; count: number }>;
+      dept_flag: Record<string, number>;
+    }> = {};
+    (psiRows ?? []).forEach((row: any) => {
+      const r = row.round_no ?? 1;
+      const b = psiPerRound[r] = psiPerRound[r] || { n: 0, igap_sum: 0, neap_sum: 0, flagged: 0, sub: {}, dept_flag: {} };
+      const s = row.scores || {};
+      b.n++;
+      if (typeof s.IGAP === "number") {
+        b.igap_sum += s.IGAP;
+        if (s.IGAP >= 0.5) {
+          b.flagged++;
+          const d = row.department || "—";
+          b.dept_flag[d] = (b.dept_flag[d] || 0) + 1;
+        }
+      }
+      if (typeof s.NEAP === "number") b.neap_sum += s.NEAP;
+      for (const [k, v] of Object.entries(s)) {
+        if (k === "IGAP" || k === "NEAP") continue;
+        if (typeof v !== "number" || !isFinite(v)) continue;
+        const acc = b.sub[k] = b.sub[k] || { sum: 0, count: 0 };
+        acc.sum += v;
+        acc.count++;
+      }
+    });
+
+    // Assédio sexual (MDiSH + SHRAS) per round — totals + subscale means
+    const { data: asxRows } = await admin
+      .from("assedio_sexual_responses")
+      .select("round_no,scores")
+      .eq("company_id", company_id);
+    const asxPerRound: Record<number, {
+      n: number;
+      mdish_sum: number; mdish_count: number;
+      shras_sum: number; shras_count: number;
+      any_endorsed: number;
+      sub: Record<string, { sum: number; count: number }>;
+    }> = {};
+    (asxRows ?? []).forEach((row: any) => {
+      const r = row.round_no ?? 1;
+      const b = asxPerRound[r] = asxPerRound[r] || { n: 0, mdish_sum: 0, mdish_count: 0, shras_sum: 0, shras_count: 0, any_endorsed: 0, sub: {} };
+      b.n++;
+      const s = row.scores || {};
+      if (typeof s.MDiSH_total === "number") { b.mdish_sum += s.MDiSH_total; b.mdish_count++; if (s.MDiSH_total > 1) b.any_endorsed++; }
+      if (typeof s.SHRAS_total === "number") { b.shras_sum += s.SHRAS_total; b.shras_count++; }
+      for (const [k, v] of Object.entries(s)) {
+        if (k === "MDiSH_total" || k === "SHRAS_total") continue;
+        if (typeof v !== "number" || !isFinite(v)) continue;
+        const acc = b.sub[k] = b.sub[k] || { sum: 0, count: 0 };
+        acc.sum += v;
+        acc.count++;
+      }
+    });
+
+
+
     const roundsOut = roundList.map((r: any) => {
       const rn = r.round_no;
       const cps = copsoqPerRound[rn];
