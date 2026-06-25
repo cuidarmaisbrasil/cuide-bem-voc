@@ -13,6 +13,17 @@ interface RoundData {
   waves: Record<string, { scheduled: number; sent: number; completed: number }>;
   copsoq: { n: number; hidden: boolean; scales: Record<string, { mean: number; n: number }> };
   phq9: { n: number; hidden: boolean; severity_dist: Record<string, number> };
+  psicossocial: {
+    n: number; hidden: boolean;
+    IGAP: number; NEAP: number; flagged_pct: number;
+    subscales: Record<string, number>;
+    flagged_departments: string[];
+  };
+  assedio_sexual: {
+    n: number; hidden: boolean;
+    MDiSH_total: number; SHRAS_total: number; any_endorsed_pct: number;
+    subscales: Record<string, number>;
+  };
 }
 interface StatsResp { rounds: RoundData[]; min_recorte: number }
 interface Company { id: string; name: string; cnpj?: string | null; sector?: string | null; size_range?: string | null }
