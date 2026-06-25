@@ -16,6 +16,8 @@ import { useReveal } from "@/hooks/useReveal";
 import heroPhoto from "@/assets/trabalho-hero.jpg";
 import loungePhoto from "@/assets/trabalho-lounge.jpg";
 import { useEditableText } from "@/hooks/useEditableText";
+import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
+import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 
 
 interface Company {
@@ -453,7 +455,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                 Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
               </p>
             </Reveal>
-            <Reveal variant="right" className="w-full">
+            <Reveal variant="left" className="w-full">
               <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black aspect-video">
                 <video
                   src={promoVideo.url}
