@@ -16,6 +16,8 @@ import { useReveal } from "@/hooks/useReveal";
 import heroPhoto from "@/assets/trabalho-hero.jpg";
 import loungePhoto from "@/assets/trabalho-lounge.jpg";
 import { useEditableText } from "@/hooks/useEditableText";
+import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
+import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 
 
 interface Company {
@@ -446,12 +448,26 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
       {/* 3 ONDAS — dark editorial */}
       <section id="como-funciona" className="bg-[hsl(210_30%_12%)] text-[hsl(200_15%_90%)] overflow-hidden">
         <div className="container max-w-7xl py-24 md:py-32">
-          <Reveal className="max-w-2xl mb-16">
-            <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ciclos de rastreio</h2>
-            <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
-              Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
-            </p>
-          </Reveal>
+          <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center mb-16">
+            <Reveal className="max-w-2xl">
+              <h2 className="font-serif-editorial text-5xl md:text-6xl mb-6 italic">3 ciclos de rastreio</h2>
+              <p className="text-[hsl(200_15%_70%)] text-lg leading-relaxed">
+                Acompanhamos a jornada de transformação cultural em três etapas científicas que garantem resultados duradouros.
+              </p>
+            </Reveal>
+            <Reveal variant="left" className="w-full">
+              <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black aspect-video">
+                <video
+                  src={promoVideo.url}
+                  poster={promoPoster.url}
+                  controls
+                  preload="metadata"
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </Reveal>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-0 border-t border-white/10">
             {[
