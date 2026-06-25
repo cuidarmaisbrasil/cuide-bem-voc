@@ -160,17 +160,19 @@ export const WellnessAdmin = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="program">
-        <TabsList className="flex flex-wrap h-auto">
-          <TabsTrigger value="program">Programa por empresa</TabsTrigger>
-          <TabsTrigger value="preview">Prévia colaborador</TabsTrigger>
-          <TabsTrigger value="cycle">Relatório de ciclo</TabsTrigger>
-          <TabsTrigger value="test">Teste de ondas</TabsTrigger>
-          <TabsTrigger value="items">Editar perguntas</TabsTrigger>
-          <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
-          <TabsTrigger value="tat">TAT (imagens)</TabsTrigger>
-          <TabsTrigger value="rorschach">Rorschach (pranchas)</TabsTrigger>
-          <TabsTrigger value="latency">Latências</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-2 px-2">
+          <TabsList className="inline-flex w-max min-w-full h-auto flex-nowrap">
+            <TabsTrigger value="program">Programa por empresa</TabsTrigger>
+            <TabsTrigger value="preview">Prévia colaborador</TabsTrigger>
+            <TabsTrigger value="cycle">Relatório de ciclo</TabsTrigger>
+            <TabsTrigger value="test">Teste de ondas</TabsTrigger>
+            <TabsTrigger value="items">Editar perguntas</TabsTrigger>
+            <TabsTrigger value="texts">Textos editáveis</TabsTrigger>
+            <TabsTrigger value="tat">TAT (imagens)</TabsTrigger>
+            <TabsTrigger value="rorschach">Rorschach (pranchas)</TabsTrigger>
+            <TabsTrigger value="latency">Latências</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="preview" className="space-y-4 pt-4">
           <WellnessPreviewAdmin />
