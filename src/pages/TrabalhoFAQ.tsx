@@ -30,8 +30,9 @@ const FAQS: Array<{ q: string; a: React.ReactNode }> = [
       <>
         A empresa <strong>nunca vê respostas individuais</strong>. Os dados são agregados por critérios mínimos
         de grupo. Cada colaborador recebe ao final do primeiro ciclo um <strong>código mestre único</strong> que
-        dá acesso apenas ao seu próprio relatório individual — e esse código não é recuperável, garantindo que
-        nem mesmo a plataforma consegue vincular respostas a pessoas.
+        dá acesso apenas ao seu próprio relatório individual, no qual recebe seu próprio feedback, compreendendo
+        melhor sobre sua própria saúde e bem-estar psicossocial. O código mestre é único e não recuperável,
+        garantindo que nem mesmo a plataforma consiga vincular respostas a pessoas.
       </>
     ),
   },
