@@ -353,8 +353,39 @@ export const CycleReportPreview = () => {
               <StatBand label="NEAP (nº itens > 0)" value={w.psicossocial.NEAP} band={w.psicossocial.bands.NEAP} />
               <StatBand label="% com indicativo" value={`${w.psicossocial.flagged}%`} band={w.psicossocial.bands.flagged} />
             </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">Estratégias de assédio — detalhamento</h4>
+              <div className="space-y-2 text-xs">
+                {w.psicossocial.subscales.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 4</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+              {w.psicossocial.flagged_areas.length > 0 && (
+                <p className="text-[11px] text-amber-700 mt-2">
+                  ⚠ Áreas com maior concentração de indicativos: <b>{w.psicossocial.flagged_areas.join(", ")}</b>.
+                </p>
+              )}
+            </div>
+
             <p className="text-[11px] text-muted-foreground">
-              Critério IGAP: &lt; 0,5 Saudável · 0,5–1,0 Atenção · &gt; 1,0 Risco.
+              Critério IGAP / subescala: &lt; 0,5 Saudável · 0,5–1,0 Atenção · &gt; 1,0 Risco.
             </p>
           </Card>
 
@@ -373,10 +404,62 @@ export const CycleReportPreview = () => {
               <StatBand label="SHRAS (atitudes de denúncia)" value={w.assedio_sexual.SHRAS_total} band={w.assedio_sexual.bands.SHRAS_total} />
               <StatBand label="% com ao menos 1 item endossado" value={`${w.assedio_sexual.any_endorsed}%`} band={w.assedio_sexual.bands.any_endorsed} />
             </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">MDiSH — mecanismos de desengajamento moral</h4>
+              <div className="space-y-2 text-xs">
+                {w.assedio_sexual.mdish_dims.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 5</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">SHRAS — clima para denúncia</h4>
+              <div className="space-y-2 text-xs">
+                {w.assedio_sexual.shras_dims.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 5</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <p className="text-[11px] text-muted-foreground">
-              Critério: ≤ 1,5 Saudável · 1,6–2,5 Atenção · &gt; 2,5 Risco (média de itens).
+              MDiSH (escala negativa): ≤ 1,5 Saudável · 1,6–2,5 Atenção · &gt; 2,5 Risco. SHRAS (escala positiva — recurso): ≥ 4,0 Saudável · 3,3–3,9 Atenção · &lt; 3,3 Risco.
             </p>
           </Card>
+
 
           {/* Cruzamentos */}
           <Card className="p-5 space-y-3 border-amber-300">
