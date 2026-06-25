@@ -13,6 +13,17 @@ interface RoundData {
   waves: Record<string, { scheduled: number; sent: number; completed: number }>;
   copsoq: { n: number; hidden: boolean; scales: Record<string, { mean: number; n: number }> };
   phq9: { n: number; hidden: boolean; severity_dist: Record<string, number> };
+  psicossocial: {
+    n: number; hidden: boolean;
+    IGAP: number; NEAP: number; flagged_pct: number;
+    subscales: Record<string, number>;
+    flagged_departments: string[];
+  };
+  assedio_sexual: {
+    n: number; hidden: boolean;
+    MDiSH_total: number; SHRAS_total: number; any_endorsed_pct: number;
+    subscales: Record<string, number>;
+  };
 }
 interface StatsResp { rounds: RoundData[]; min_recorte: number }
 interface Company { id: string; name: string; cnpj?: string | null; sector?: string | null; size_range?: string | null }
@@ -27,6 +38,39 @@ function bandColor(label: string) {
   return "#b91c1c";
 }
 function fmtDate(s: string | null) { return s ? new Date(s).toLocaleDateString("pt-BR") : "—"; }
+
+// ===== LIPT-60 (psicossocial) — subscale labels e leitura clínica =====
+const LIPT_LABELS: Record<string, { label: string; detail: string }> = {
+  desprestigio: { label: "Desprestígio profissional", detail: "Críticas injustas, atribuição de tarefas humilhantes ou abaixo da qualificação, supervisão exagerada." },
+  ampliacao_es: { label: "Bloqueio / ampliação do escopo", detail: "Sobrecarga deliberada, prazos impossíveis, interrupções recorrentes." },
+  desacreditacao: { label: "Desacreditação pessoal", detail: "Boatos, ridicularização, exposição pública constrangedora." },
+  comunicacao: { label: "Limitação da comunicação", detail: "Restrição de acesso a informação, isolamento em reuniões, silenciamento." },
+  contato_social: { label: "Isolamento social", detail: "Exclusão da convivência da equipe, almoços, eventos." },
+  saude: { label: "Violência física / ameaças à saúde", detail: "Ameaças, agressões físicas ou imposição de condições insalubres." },
+};
+function liptBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  return mean < 0.5 ? "Saudável" : mean <= 1.0 ? "Atenção" : "Risco";
+}
+
+// ===== Assédio sexual — MDiSH (negativa) e SHRAS (positiva) =====
+const MDISH_LABELS: Record<string, { label: string; detail: string }> = {
+  mdish_moral_justification: { label: "Justificação moral", detail: "Justifica condutas como tradição/cultura. Treinar código de conduta com exemplos." },
+  mdish_euphemistic_labeling: { label: "Rotulação eufemística", detail: "Trata como 'brincadeira', 'paquera'. Campanha 'isto não é brincadeira'." },
+  mdish_advantageous_comparison: { label: "Comparação vantajosa", detail: "'Em outros lugares é pior' — relativizar o problema." },
+  mdish_displacement_responsibility: { label: "Deslocamento da responsabilidade", detail: "Atribui à chefia / clima. Responsabilizar individualmente e publicar política." },
+  mdish_diffusion_responsibility: { label: "Difusão da responsabilidade", detail: "'Todo mundo faz' — diluição da culpa." },
+  mdish_distortion_consequences: { label: "Distorção das consequências", detail: "Subestima impacto. Trabalhar relatos reais e dados de afastamento." },
+  mdish_dehumanization: { label: "Desumanização", detail: "Coisificação da vítima." },
+  mdish_attribution_blame: { label: "Atribuição de culpa à vítima", detail: "'Ela provocou' / 'jeito de vestir'. Treinamento antivitimização + comitê de ética." },
+};
+function mdishBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  return mean <= 1.5 ? "Saudável" : mean <= 2.5 ? "Atenção" : "Risco";
+}
+function shrasBand(mean: number): "Saudável" | "Atenção" | "Risco" {
+  // SHRAS positiva (1-5): ≥4 saudável | 3.3-3.9 atenção | <3.3 risco
+  return mean >= 4 ? "Saudável" : mean >= 3.3 ? "Atenção" : "Risco";
+}
+
 
 const AepReport = () => {
   const { companyId, roundNo } = useParams<{ companyId: string; roundNo: string }>();
@@ -221,8 +265,116 @@ const AepReport = () => {
           </section>
         )}
 
+        {/* ===== 5. LIPT-60 ===== */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">5. Devolutiva aos trabalhadores</h2>
+          <h2 className="text-lg font-semibold mb-2">5. LIPT-60 — Assédio moral (detalhamento)</h2>
+          {target.psicossocial?.hidden ? (
+            <p className="text-sm text-neutral-600">
+              <em>Recorte oculto:</em> número de respondentes ({target.psicossocial?.n ?? 0}) abaixo do n mínimo ({stats.min_recorte}).
+            </p>
+          ) : (
+            <>
+              <p className="text-sm mb-2">
+                n = <strong>{target.psicossocial.n}</strong> · IGAP médio <strong>{target.psicossocial.IGAP}</strong> · NEAP médio <strong>{target.psicossocial.NEAP}</strong> ·
+                {" "}<strong>{target.psicossocial.flagged_pct}%</strong> com indicativo (IGAP ≥ 0,5).
+              </p>
+              <table className="aep-table">
+                <thead><tr><th>Estratégia</th><th>Média (0-4)</th><th>Faixa</th><th>Leitura clínica</th></tr></thead>
+                <tbody>
+                  {Object.entries(target.psicossocial.subscales)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([k, mean]) => {
+                      const meta = LIPT_LABELS[k] || { label: k, detail: "—" };
+                      const band = liptBand(mean);
+                      return (
+                        <tr key={k}>
+                          <td>{meta.label}</td>
+                          <td>{mean.toFixed(2)}</td>
+                          <td><span className="aep-badge" style={{ backgroundColor: bandColor(band) }}>{band}</span></td>
+                          <td>{meta.detail}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+              {target.psicossocial.flagged_departments.length > 0 && (
+                <p className="text-xs text-amber-700 mt-2">
+                  ⚠ Áreas com maior concentração de indicativos: <strong>{target.psicossocial.flagged_departments.join(", ")}</strong>.
+                </p>
+              )}
+              <p className="text-xs text-neutral-600 mt-2">
+                Critério IGAP/subescala: &lt; 0,5 Saudável · 0,5–1,0 Atenção · &gt; 1,0 Risco. Itens em Atenção/Risco devem alimentar o
+                plano de ação NR-1 (mediação de conflitos, revisão de canal de denúncia, treinamento de liderança).
+              </p>
+            </>
+          )}
+        </section>
+
+        {/* ===== 6. Assédio sexual ===== */}
+        <section>
+          <h2 className="text-lg font-semibold mb-2">6. Assédio sexual — MDiSH e SHRAS (detalhamento)</h2>
+          {target.assedio_sexual?.hidden ? (
+            <p className="text-sm text-neutral-600">
+              <em>Recorte oculto:</em> número de respondentes ({target.assedio_sexual?.n ?? 0}) abaixo do n mínimo ({stats.min_recorte}).
+            </p>
+          ) : (
+            <>
+              <p className="text-sm mb-2">
+                n = <strong>{target.assedio_sexual.n}</strong> · MDiSH total <strong>{target.assedio_sexual.MDiSH_total}</strong> ·
+                {" "}SHRAS total <strong>{target.assedio_sexual.SHRAS_total}</strong> ·
+                {" "}<strong>{target.assedio_sexual.any_endorsed_pct}%</strong> endossam ao menos 1 item de desengajamento.
+              </p>
+
+              <h3 className="text-sm font-semibold mt-3 mb-1">MDiSH — mecanismos de desengajamento moral</h3>
+              <table className="aep-table">
+                <thead><tr><th>Mecanismo</th><th>Média (1-5)</th><th>Faixa</th><th>Leitura e ação sugerida</th></tr></thead>
+                <tbody>
+                  {Object.entries(target.assedio_sexual.subscales)
+                    .filter(([k]) => k.startsWith("mdish"))
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([k, mean]) => {
+                      const meta = MDISH_LABELS[k] || { label: k, detail: "—" };
+                      const band = mdishBand(mean);
+                      return (
+                        <tr key={k}>
+                          <td>{meta.label}</td>
+                          <td>{mean.toFixed(2)}</td>
+                          <td><span className="aep-badge" style={{ backgroundColor: bandColor(band) }}>{band}</span></td>
+                          <td>{meta.detail}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+
+              {typeof target.assedio_sexual.subscales.shras === "number" && (
+                <>
+                  <h3 className="text-sm font-semibold mt-3 mb-1">SHRAS — clima para denúncia (recurso)</h3>
+                  <table className="aep-table">
+                    <thead><tr><th>Dimensão</th><th>Média (1-5)</th><th>Faixa</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td>SHRAS — atitudes favoráveis à denúncia</td>
+                        <td>{(target.assedio_sexual.subscales.shras as number).toFixed(2)}</td>
+                        <td><span className="aep-badge" style={{ backgroundColor: bandColor(shrasBand(target.assedio_sexual.subscales.shras as number)) }}>
+                          {shrasBand(target.assedio_sexual.subscales.shras as number)}
+                        </span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </>
+              )}
+
+              <p className="text-xs text-neutral-600 mt-2">
+                MDiSH (negativa): ≤ 1,5 Saudável · 1,6–2,5 Atenção · &gt; 2,5 Risco. SHRAS (positiva — recurso): ≥ 4,0 Saudável · 3,3–3,9 Atenção · &lt; 3,3 Risco.
+                Itens em Atenção/Risco indicam necessidade de revisão do canal de denúncia, política antiretaliação e capacitação de liderança.
+              </p>
+            </>
+          )}
+        </section>
+
+        <section>
+          <h2 className="text-lg font-semibold mb-2">7. Devolutiva aos trabalhadores</h2>
           <p className="text-sm">Data de comunicação: <strong>{fmtDate(target.devolutiva_communicated_at)}</strong></p>
           {target.devolutiva_notes && (
             <div className="mt-2 text-sm border-l-4 border-emerald-700 pl-3 whitespace-pre-wrap">
@@ -232,8 +384,9 @@ const AepReport = () => {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold mb-2">6. Próximos passos</h2>
+          <h2 className="text-lg font-semibold mb-2">8. Próximos passos</h2>
           <p className="text-sm">
+
             Os achados em faixa <strong>Risco</strong> e <strong>Atenção</strong> integram o plano de ação do
             Inventário de Riscos da NR-1, conforme hierarquia das medidas de prevenção (subitens 1.4.1 "g" e
             1.5.5.1.2 da NR-1). O acompanhamento ocorrerá na próxima rodada de rastreio.

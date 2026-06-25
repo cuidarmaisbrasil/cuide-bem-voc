@@ -65,6 +65,22 @@ const MOCK = {
         flagged: "Atenção" as Band,
       },
       overall: "Atenção" as Band,
+      // 6 estratégias clássicas do LIPT-60 (Leymann/Zapf adaptado)
+      subscales: [
+        { key: "desprestigio", label: "Desprestígio profissional", mean: 1.12, band: "Risco" as Band,
+          detail: "Críticas injustas ao trabalho realizado, atribuição de tarefas humilhantes ou abaixo da qualificação, supervisão exagerada." },
+        { key: "ampliacao_es", label: "Bloqueio / ampliação do escopo", mean: 0.78, band: "Atenção" as Band,
+          detail: "Sobrecarga deliberada, prazos impossíveis, interrupções recorrentes; sinais de pressão organizada por chefias/pares." },
+        { key: "desacreditacao", label: "Desacreditação pessoal", mean: 0.55, band: "Atenção" as Band,
+          detail: "Boatos, ridicularização de aspectos pessoais, imitação caricata; expõe pessoas a constrangimento público." },
+        { key: "comunicacao", label: "Limitação da comunicação", mean: 0.41, band: "Saudável" as Band,
+          detail: "Acesso a informação e canais de fala preservados; mantenha rituais de reunião e feedback." },
+        { key: "contato_social", label: "Isolamento social", mean: 0.34, band: "Saudável" as Band,
+          detail: "Convivência preservada; ações de integração estão funcionando." },
+        { key: "saude", label: "Violência física / ameaças à saúde", mean: 0.05, band: "Saudável" as Band,
+          detail: "Nenhum indício relevante de agressões físicas, ameaças ou imposição de condições insalubres." },
+      ],
+      flagged_areas: ["Comercial", "Operações — turno noturno"],
     },
     assedio_sexual: {
       n: 92,
@@ -77,6 +93,31 @@ const MOCK = {
         any_endorsed: "Atenção" as Band,
       },
       overall: "Atenção" as Band,
+      // 8 mecanismos de desengajamento moral (Bandura) aplicados a AS
+      mdish_dims: [
+        { key: "moral_justification", label: "Justificação moral", mean: 1.9, band: "Atenção" as Band,
+          detail: "Há quem justifique comportamentos com base em 'tradição' ou 'cultura da equipe'. Treinamento de cultura e código de conduta com exemplos concretos." },
+        { key: "euphemistic_labeling", label: "Rotulação eufemística", mean: 2.1, band: "Atenção" as Band,
+          detail: "Uso de termos como 'brincadeira', 'paquera', 'descontração' para descrever condutas inadequadas. Glossário interno + campanha 'isto não é brincadeira'." },
+        { key: "advantageous_comparison", label: "Comparação vantajosa", mean: 1.4, band: "Saudável" as Band, detail: "Pouco endosso a 'em outros lugares é pior'." },
+        { key: "displacement_responsibility", label: "Deslocamento da responsabilidade", mean: 1.7, band: "Atenção" as Band,
+          detail: "Atribuição da culpa a chefias ou ao 'clima geral'. Reforce responsabilização individual via política disciplinar e exemplos públicos." },
+        { key: "diffusion_responsibility", label: "Difusão da responsabilidade", mean: 1.5, band: "Saudável" as Band, detail: "'Todo mundo faz' tem pouco apoio." },
+        { key: "distortion_consequences", label: "Distorção das consequências", mean: 1.8, band: "Atenção" as Band,
+          detail: "Subestimação do impacto sobre a vítima. Trabalhar relatos reais (anonimizados) e dados de afastamento em treinamentos obrigatórios." },
+        { key: "dehumanization", label: "Desumanização", mean: 1.3, band: "Saudável" as Band, detail: "Baixa adesão a discursos que coisificam a vítima." },
+        { key: "attribution_blame", label: "Atribuição de culpa à vítima", mean: 2.2, band: "Atenção" as Band,
+          detail: "Endosso preocupante a 'ela provocou' / 'o jeito de vestir'. Prioridade: treinamento antivitimização + revisão de comitê de ética." },
+      ],
+      // SHRAS: atitudes de denúncia (quanto MAIOR melhor — usamos como recurso)
+      shras_dims: [
+        { key: "trust_channel", label: "Confiança no canal de denúncia", mean: 3.9, band: "Atenção" as Band,
+          detail: "Pessoas relatam dúvida sobre confidencialidade. Publicar tempo médio de resposta e número de casos tratados (sem identificação)." },
+        { key: "fear_retaliation", label: "Ausência de medo de retaliação", mean: 3.2, band: "Risco" as Band,
+          detail: "Medo de represálias por parte de chefias diretas. Garantir canal externo + política antiretaliação explícita." },
+        { key: "leadership_support", label: "Apoio percebido da liderança", mean: 4.2, band: "Saudável" as Band,
+          detail: "Lideranças seniores são vistas como aliadas. Capilarizar postura entre líderes intermediários." },
+      ],
     },
   },
   cross: [
@@ -312,8 +353,39 @@ export const CycleReportPreview = () => {
               <StatBand label="NEAP (nº itens > 0)" value={w.psicossocial.NEAP} band={w.psicossocial.bands.NEAP} />
               <StatBand label="% com indicativo" value={`${w.psicossocial.flagged}%`} band={w.psicossocial.bands.flagged} />
             </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">Estratégias de assédio — detalhamento</h4>
+              <div className="space-y-2 text-xs">
+                {w.psicossocial.subscales.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 4</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+              {w.psicossocial.flagged_areas.length > 0 && (
+                <p className="text-[11px] text-amber-700 mt-2">
+                  ⚠ Áreas com maior concentração de indicativos: <b>{w.psicossocial.flagged_areas.join(", ")}</b>.
+                </p>
+              )}
+            </div>
+
             <p className="text-[11px] text-muted-foreground">
-              Critério IGAP: &lt; 0,5 Saudável · 0,5–1,0 Atenção · &gt; 1,0 Risco.
+              Critério IGAP / subescala: &lt; 0,5 Saudável · 0,5–1,0 Atenção · &gt; 1,0 Risco.
             </p>
           </Card>
 
@@ -332,10 +404,62 @@ export const CycleReportPreview = () => {
               <StatBand label="SHRAS (atitudes de denúncia)" value={w.assedio_sexual.SHRAS_total} band={w.assedio_sexual.bands.SHRAS_total} />
               <StatBand label="% com ao menos 1 item endossado" value={`${w.assedio_sexual.any_endorsed}%`} band={w.assedio_sexual.bands.any_endorsed} />
             </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">MDiSH — mecanismos de desengajamento moral</h4>
+              <div className="space-y-2 text-xs">
+                {w.assedio_sexual.mdish_dims.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 5</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <h4 className="text-sm font-semibold mb-2">SHRAS — clima para denúncia</h4>
+              <div className="space-y-2 text-xs">
+                {w.assedio_sexual.shras_dims.map((s) => (
+                  <div
+                    key={s.key}
+                    className={`rounded border p-2 ${
+                      s.band === "Risco" ? "border-red-200 bg-red-50"
+                      : s.band === "Atenção" ? "border-amber-200 bg-amber-50"
+                      : "border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-medium">{s.label}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{s.mean.toFixed(2)} / 5</span>
+                        <BandPill band={s.band} />
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{s.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <p className="text-[11px] text-muted-foreground">
-              Critério: ≤ 1,5 Saudável · 1,6–2,5 Atenção · &gt; 2,5 Risco (média de itens).
+              MDiSH (escala negativa): ≤ 1,5 Saudável · 1,6–2,5 Atenção · &gt; 2,5 Risco. SHRAS (escala positiva — recurso): ≥ 4,0 Saudável · 3,3–3,9 Atenção · &lt; 3,3 Risco.
             </p>
           </Card>
+
 
           {/* Cruzamentos */}
           <Card className="p-5 space-y-3 border-amber-300">

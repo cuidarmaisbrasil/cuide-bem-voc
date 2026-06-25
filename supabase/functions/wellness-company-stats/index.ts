@@ -133,6 +133,72 @@ Deno.serve(async (req) => {
       b.dist[s] = (b.dist[s] || 0) + 1;
     });
 
+    // LIPT-60 (psicossocial) per round — IGAP, NEAP, % flagged, subscale means
+    const { data: psiRows } = await admin
+      .from("psicossocial_responses")
+      .select("round_no,scores,department")
+      .eq("company_id", company_id);
+    const psiPerRound: Record<number, {
+      n: number;
+      igap_sum: number;
+      neap_sum: number;
+      flagged: number;
+      sub: Record<string, { sum: number; count: number }>;
+      dept_flag: Record<string, number>;
+    }> = {};
+    (psiRows ?? []).forEach((row: any) => {
+      const r = row.round_no ?? 1;
+      const b = psiPerRound[r] = psiPerRound[r] || { n: 0, igap_sum: 0, neap_sum: 0, flagged: 0, sub: {}, dept_flag: {} };
+      const s = row.scores || {};
+      b.n++;
+      if (typeof s.IGAP === "number") {
+        b.igap_sum += s.IGAP;
+        if (s.IGAP >= 0.5) {
+          b.flagged++;
+          const d = row.department || "—";
+          b.dept_flag[d] = (b.dept_flag[d] || 0) + 1;
+        }
+      }
+      if (typeof s.NEAP === "number") b.neap_sum += s.NEAP;
+      for (const [k, v] of Object.entries(s)) {
+        if (k === "IGAP" || k === "NEAP") continue;
+        if (typeof v !== "number" || !isFinite(v)) continue;
+        const acc = b.sub[k] = b.sub[k] || { sum: 0, count: 0 };
+        acc.sum += v;
+        acc.count++;
+      }
+    });
+
+    // Assédio sexual (MDiSH + SHRAS) per round — totals + subscale means
+    const { data: asxRows } = await admin
+      .from("assedio_sexual_responses")
+      .select("round_no,scores")
+      .eq("company_id", company_id);
+    const asxPerRound: Record<number, {
+      n: number;
+      mdish_sum: number; mdish_count: number;
+      shras_sum: number; shras_count: number;
+      any_endorsed: number;
+      sub: Record<string, { sum: number; count: number }>;
+    }> = {};
+    (asxRows ?? []).forEach((row: any) => {
+      const r = row.round_no ?? 1;
+      const b = asxPerRound[r] = asxPerRound[r] || { n: 0, mdish_sum: 0, mdish_count: 0, shras_sum: 0, shras_count: 0, any_endorsed: 0, sub: {} };
+      b.n++;
+      const s = row.scores || {};
+      if (typeof s.MDiSH_total === "number") { b.mdish_sum += s.MDiSH_total; b.mdish_count++; if (s.MDiSH_total > 1) b.any_endorsed++; }
+      if (typeof s.SHRAS_total === "number") { b.shras_sum += s.SHRAS_total; b.shras_count++; }
+      for (const [k, v] of Object.entries(s)) {
+        if (k === "MDiSH_total" || k === "SHRAS_total") continue;
+        if (typeof v !== "number" || !isFinite(v)) continue;
+        const acc = b.sub[k] = b.sub[k] || { sum: 0, count: 0 };
+        acc.sum += v;
+        acc.count++;
+      }
+    });
+
+
+
     const roundsOut = roundList.map((r: any) => {
       const rn = r.round_no;
       const cps = copsoqPerRound[rn];
@@ -168,6 +234,39 @@ Deno.serve(async (req) => {
           ? { n: phqPerRound[rn].n, hidden: phqPerRound[rn].n < MIN_RECORTE,
               severity_dist: phqPerRound[rn].n < MIN_RECORTE ? {} : phqPerRound[rn].dist }
           : { n: 0, hidden: true, severity_dist: {} },
+        psicossocial: (() => {
+          const b = psiPerRound[rn];
+          if (!b || b.n < MIN_RECORTE) return { n: b?.n ?? 0, hidden: true, IGAP: 0, NEAP: 0, flagged_pct: 0, subscales: {}, flagged_departments: [] };
+          const subscales = Object.fromEntries(
+            Object.entries(b.sub).map(([k, v]) => [k, +(v.sum / v.count).toFixed(2)]),
+          );
+          const flagged_departments = Object.entries(b.dept_flag)
+            .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([d]) => d);
+          return {
+            n: b.n,
+            hidden: false,
+            IGAP: +(b.igap_sum / b.n).toFixed(2),
+            NEAP: +(b.neap_sum / b.n).toFixed(1),
+            flagged_pct: Math.round((b.flagged / b.n) * 100),
+            subscales,
+            flagged_departments,
+          };
+        })(),
+        assedio_sexual: (() => {
+          const b = asxPerRound[rn];
+          if (!b || b.n < MIN_RECORTE) return { n: b?.n ?? 0, hidden: true, MDiSH_total: 0, SHRAS_total: 0, any_endorsed_pct: 0, subscales: {} };
+          const subscales = Object.fromEntries(
+            Object.entries(b.sub).map(([k, v]) => [k, +(v.sum / v.count).toFixed(2)]),
+          );
+          return {
+            n: b.n,
+            hidden: false,
+            MDiSH_total: b.mdish_count ? +(b.mdish_sum / b.mdish_count).toFixed(2) : 0,
+            SHRAS_total: b.shras_count ? +(b.shras_sum / b.shras_count).toFixed(2) : 0,
+            any_endorsed_pct: Math.round((b.any_endorsed / b.n) * 100),
+            subscales,
+          };
+        })(),
       };
     });
 
