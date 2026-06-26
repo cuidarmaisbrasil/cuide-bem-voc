@@ -22,6 +22,7 @@ import MeuResultado from "./pages/MeuResultado.tsx";
 import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
 import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
 import TrabalhoContato from "./pages/TrabalhoContato.tsx";
+import TrabalhoAmostraRelatorio from "./pages/TrabalhoAmostraRelatorio.tsx";
 
 
 const queryClient = new QueryClient();
