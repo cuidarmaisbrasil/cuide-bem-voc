@@ -1016,6 +1016,54 @@ export type Database = {
           },
         ]
       }
+      sample_report_leads: {
+        Row: {
+          age: number | null
+          company: string
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          notes: string | null
+          phone: string
+          referrer: string | null
+          role: string
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          age?: number | null
+          company: string
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone: string
+          referrer?: string | null
+          role: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          age?: number | null
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          notes?: string | null
+          phone?: string
+          referrer?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           city: string | null
