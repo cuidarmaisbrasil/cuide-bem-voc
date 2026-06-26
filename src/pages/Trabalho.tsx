@@ -18,6 +18,7 @@ import loungePhoto from "@/assets/trabalho-lounge.jpg";
 import { useEditableText } from "@/hooks/useEditableText";
 import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
 import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
+import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
 
 
 interface Company {
