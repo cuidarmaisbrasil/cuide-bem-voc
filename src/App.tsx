@@ -22,6 +22,7 @@ import MeuResultado from "./pages/MeuResultado.tsx";
 import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
 import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
 import TrabalhoContato from "./pages/TrabalhoContato.tsx";
+import TrabalhoAmostraRelatorio from "./pages/TrabalhoAmostraRelatorio.tsx";
 
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/trabalho/termos" element={<TrabalhoTermos />} />
             <Route path="/trabalho/faq" element={<TrabalhoFAQ />} />
             <Route path="/trabalho/contato" element={<TrabalhoContato />} />
+            <Route path="/trabalho/amostra-relatorio" element={<TrabalhoAmostraRelatorio />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 
             <Route path="*" element={<NotFound />} />

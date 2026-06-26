@@ -24,6 +24,7 @@ import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
 import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
 import { WellnessAdmin } from "@/components/admin/WellnessAdmin";
 import { TatRequestsAdmin } from "@/components/admin/TatRequestsAdmin";
+import { SampleReportLeadsAdmin } from "@/components/admin/SampleReportLeadsAdmin";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
@@ -641,6 +642,7 @@ const Admin = () => {
               {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
               {!readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
               {!readOnly && <TabsTrigger value="tat-requests">TAT (solicitações)</TabsTrigger>}
+              {!readOnly && <TabsTrigger value="sample-leads">Amostras (leads)</TabsTrigger>}
             </TabsList>
           </div>
 
@@ -1531,6 +1533,12 @@ const Admin = () => {
           {!readOnly && (
             <TabsContent value="tat-requests" className="space-y-4 pt-4">
               <TatRequestsAdmin />
+            </TabsContent>
+          )}
+
+          {!readOnly && (
+            <TabsContent value="sample-leads" className="space-y-4 pt-4">
+              <SampleReportLeadsAdmin />
             </TabsContent>
           )}
 

@@ -18,6 +18,7 @@ import loungePhoto from "@/assets/trabalho-lounge.jpg";
 import { useEditableText } from "@/hooks/useEditableText";
 import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
 import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
+import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
 
 
 interface Company {
@@ -399,6 +400,9 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                   <Button size="lg" variant="outline" onClick={() => document.getElementById("como-funciona")?.scrollIntoView({ behavior: "smooth" })}>
                     Como funciona
                   </Button>
+                </div>
+                <div className="pt-2">
+                  <SampleReportRequestDialog />
                 </div>
               </Reveal>
               <Reveal delay={320}>
