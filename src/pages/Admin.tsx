@@ -24,6 +24,7 @@ import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
 import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
 import { WellnessAdmin } from "@/components/admin/WellnessAdmin";
 import { TatRequestsAdmin } from "@/components/admin/TatRequestsAdmin";
+import { SampleReportLeadsAdmin } from "@/components/admin/SampleReportLeadsAdmin";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 const SEVERITIES = ["Mínima", "Leve", "Moderada", "Moderadamente grave", "Grave"] as const;
