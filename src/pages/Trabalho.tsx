@@ -401,6 +401,9 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                     Como funciona
                   </Button>
                 </div>
+                <div className="pt-2">
+                  <SampleReportRequestDialog />
+                </div>
               </Reveal>
               <Reveal delay={320}>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">
