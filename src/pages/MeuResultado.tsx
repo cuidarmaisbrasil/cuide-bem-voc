@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 
 interface Section { section_key: string; severity: string; title: string; body: string; metadata: any }
@@ -32,6 +33,41 @@ export default function MeuResultado() {
   const [code, setCode] = useState(params.get("code") || "");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ReportPayload | null>(null);
+
+  // View-only protections: block print, copy, context menu, drag, selection and save/print shortcuts.
+  useEffect(() => {
+    const prevent = (e: Event) => { e.preventDefault(); };
+    const onKey = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && ["p", "s", "c", "a", "x"].includes(k)) {
+        e.preventDefault();
+        toast.info("Visualização apenas — salvar, copiar e imprimir estão desativados.");
+      }
+    };
+    const beforePrint = () => {
+      toast.info("Impressão desativada — este relatório é apenas para visualização.");
+    };
+    document.addEventListener("copy", prevent);
+    document.addEventListener("cut", prevent);
+    document.addEventListener("contextmenu", prevent);
+    document.addEventListener("dragstart", prevent);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("beforeprint", beforePrint);
+    const style = document.createElement("style");
+    style.id = "meuresultado-noprint";
+    style.textContent = `@media print { body { display:none !important; } } .mr-noselect { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }`;
+    document.head.appendChild(style);
+    return () => {
+      document.removeEventListener("copy", prevent);
+      document.removeEventListener("cut", prevent);
+      document.removeEventListener("contextmenu", prevent);
+      document.removeEventListener("dragstart", prevent);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("beforeprint", beforePrint);
+      document.getElementById("meuresultado-noprint")?.remove();
+    };
+  }, []);
+
 
   const submit = async () => {
     if (!code.trim()) return;
@@ -82,12 +118,17 @@ export default function MeuResultado() {
     );
   }
 
+
+
   return (
-    <main className="min-h-screen bg-background py-8">
+    <main className="min-h-screen bg-background py-8 mr-noselect">
       <div className="container max-w-2xl space-y-5">
         <div className="text-center space-y-1">
           <h1 className="font-display text-2xl font-semibold">Seu relatório pessoal</h1>
           <p className="text-xs text-muted-foreground">{data.company.name}</p>
+          <p className="text-[11px] text-muted-foreground inline-flex items-center gap-1 mt-1">
+            <Lock className="h-3 w-3" /> Visualização apenas — salvar, copiar e imprimir estão desativados para preservar seu anonimato.
+          </p>
         </div>
 
         {data.global_sections.filter(s => s.section_key === "header" || s.section_key === "intro").map((s, i) => (
