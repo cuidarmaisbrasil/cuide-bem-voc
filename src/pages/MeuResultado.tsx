@@ -118,39 +118,7 @@ export default function MeuResultado() {
     );
   }
 
-  // View-only protections: block print, copy, context menu, drag, selection, common save/print shortcuts.
-  useEffect(() => {
-    const prevent = (e: Event) => { e.preventDefault(); };
-    const onKey = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && ["p", "s", "c", "a", "x"].includes(k)) {
-        e.preventDefault();
-        toast.info("Visualização apenas — salvar, copiar e imprimir estão desativados.");
-      }
-    };
-    const beforePrint = () => {
-      toast.info("Impressão desativada — este relatório é apenas para visualização.");
-    };
-    document.addEventListener("copy", prevent);
-    document.addEventListener("cut", prevent);
-    document.addEventListener("contextmenu", prevent);
-    document.addEventListener("dragstart", prevent);
-    document.addEventListener("keydown", onKey);
-    window.addEventListener("beforeprint", beforePrint);
-    const style = document.createElement("style");
-    style.id = "meuresultado-noprint";
-    style.textContent = `@media print { body { display:none !important; } } .mr-noselect { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }`;
-    document.head.appendChild(style);
-    return () => {
-      document.removeEventListener("copy", prevent);
-      document.removeEventListener("cut", prevent);
-      document.removeEventListener("contextmenu", prevent);
-      document.removeEventListener("dragstart", prevent);
-      document.removeEventListener("keydown", onKey);
-      window.removeEventListener("beforeprint", beforePrint);
-      document.getElementById("meuresultado-noprint")?.remove();
-    };
-  }, []);
+
 
   return (
     <main className="min-h-screen bg-background py-8 mr-noselect">
