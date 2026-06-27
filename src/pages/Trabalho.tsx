@@ -532,6 +532,19 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                 Quero o relatório da minha empresa
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
+              <div className="mt-3">
+                <SampleReportRequestDialog
+                  trigger={
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      Acessar amostra de relatório
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  }
+                />
+              </div>
             </Reveal>
             <div className="space-y-3">
               {[
