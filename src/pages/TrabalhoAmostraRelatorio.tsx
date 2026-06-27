@@ -44,6 +44,9 @@ const TrabalhoAmostraRelatorio = () => {
           </p>
         </div>
         <CycleReportPreview />
+        <div className="mt-6">
+          <PsychometricsReport />
+        </div>
       </div>
     </main>
   );
