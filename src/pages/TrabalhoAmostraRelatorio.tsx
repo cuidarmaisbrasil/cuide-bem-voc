@@ -38,10 +38,14 @@ const TrabalhoAmostraRelatorio = () => {
           <h1 className="font-display text-2xl font-semibold">
             Amostra — Relatório consolidado de ciclo
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Visualização demonstrativa com dados fictícios. Use "Salvar / imprimir PDF" para
-            exportar.
-          </p>
+        </div>
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+          <strong>Exemplo educacional.</strong> Os blocos textuais e a estrutura abaixo refletem
+          o formato real do relatório entregue às empresas. As pontuações exibidas neste preview
+          ainda são ilustrativas — o gerador de amostra com dados sintéticos declarados (calculado
+          pelo mesmo pipeline real usado em produção) está em implementação. A seção de psicometria
+          (CFA / viés) já mostra apenas valores reais quando há ciclo selecionado, e estado vazio
+          caso contrário.
         </div>
         <CycleReportPreview />
         <div className="mt-6">

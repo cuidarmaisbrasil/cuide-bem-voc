@@ -1,69 +1,135 @@
 
-# Avaliação preventiva continuada para empresas
+# Psicometria real — CFA, invariância, viés
 
-Programa de 30 dias por trabalhador, disparado por e-mail corporativo, com 3 testes, tudo editável pelo admin e medindo latência de resposta por questão.
+Objetivo: substituir o `PsychometricsReport.tsx` atual (valores hardcoded) por um pipeline em que **todo número exibido vem de cálculo real** sobre as respostas do ciclo. Onde n for insuficiente, o relatório mostra "indisponível — n < mínimo" em vez de inventar valores.
+
+## Regra fixada como memória do projeto
+
+Salva em `mem://preferences/no-fake-samples.md`: nenhuma tela de relatório/estatística pode renderizar valores demonstrativos hardcoded. Toda métrica = cálculo real, ou rótulo explícito de "exemplo educacional" + aviso visível. Vou aplicar isso retroativamente nesta entrega.
+
+## Arquitetura
 
 ```text
-D0  ──► PHQ-9 (depressão)         ┐
-D15 ──► ECIG (conflito intragrupo) │── mesmo token, anonimato p/ empresa
-D30 ──► COPSOQ (bem-estar)        ┘
+Browser ──► Edge Function ──► Worker Python (Modal)
+  (UI)      wellness-psychometrics      ├── semopy  → CFA, invariância
+              (Deno/TS)                 ├── pingouin → α, ω, correlações
+              ├── valida n mínimo       ├── factor_analyzer → Harman, PCA
+              ├── busca respostas       └── statsmodels → DIF (logística ordinal)
+              ├── calcula em TS o que    
+              │   for trivial (α,        Retorna JSON com fit indices,
+              │   midpoint, straight,    bias metrics, invariance deltas
+              │   aquiescência, Harman)
+              └── delega ao worker
+                  o que exige álgebra
 ```
 
-## 1. Modelo de dados (migrations)
+## Por que worker externo
 
-- `wellness_programs` — programa por empresa (active, intervalos D0/D15/D30 configuráveis, criado_por_admin).
-- `wellness_participants` — `company_id`, `email`, `token` (uuid), `enrolled_at`, `unsubscribed_at`. Token usado em todos os 3 links. Empresa nunca vê `email`.
-- `wellness_invitations` — `participant_id`, `wave` (`phq9` | `ecig` | `copsoq`), `scheduled_at`, `sent_at`, `opened_at`, `completed_at`, `status`.
-- `ecig_responses` — `company_id`, `participant_token_hash`, `answers` (jsonb), `scores` (jsonb: tarefa/relacionamento/processo), `latencies_ms` (jsonb), demografia, `created_at`.
-- `phq9_company_responses` — versão corporativa do PHQ-9 (já capturamos latências em `test_events`; aqui adicionamos `company_id` + `participant_token_hash` + `wave='phq9'`).
-- `copsoq_responses` — adicionar colunas `participant_token_hash` e `wave='copsoq'` (sem quebrar respostas públicas).
-- `instrument_questions` — tabela única de itens editáveis: `instrument` (`phq9`|`ecig`|`copsoq_<version>`), `n`, `text`, `scale`, `reverse`, `response_set`, `active`. Substitui/estende `copsoq_question_overrides` e permite editar PHQ-9 e ECIG da mesma forma.
-- RLS: admins gerenciam tudo; donos da empresa veem só agregados; tokens públicos resolvem participante via edge function (não expostos via RLS direto).
+Deno Edge não tem álgebra matricial dimensionada (autovalores grandes, otimização WLSMV iterativa, regressão ordinal). Opções consideradas:
+- **Modal (escolhida):** Python serverless, pay-per-second, cold start ~2s, sem custo fixo. Endpoint HTTPS protegido por token. `semopy` + `pingouin` + `factor_analyzer` + `statsmodels` instalam limpos.
+- Fly.io / Railway: bom, mas exige container sempre ligado → custo fixo.
+- R/lavaan: padrão-ouro acadêmico, mas dobra a complexidade de hosting sem ganho sobre `semopy` para nossos modelos.
 
-## 2. Edge functions
+## Etapas
 
-- `wellness-enroll` — admin/empresa envia lista de e-mails → cria participantes + 3 convites agendados.
-- `wellness-dispatch` (cron a cada 15 min) — varre `wellness_invitations` com `scheduled_at <= now()` e `sent_at IS NULL`, enfileira e-mail transacional com link `/w/<token>/<wave>`.
-- `wellness-resolve-token` — valida token, retorna `company`, `wave`, questões ativas.
-- `wellness-submit` — recebe respostas + latências, calcula score, grava na tabela certa, marca convite como `completed`.
-- `submit-copsoq` e `track-event` ajustados para aceitar `participant_token` opcional.
+### 1. Pré-requisitos de dados (sem isso, números não fecham)
 
-## 3. Frontend
+- **MC-SDS-10 (Marlowe-Crowne 10 itens, PT-BR):** adicionar como bloco de 10 itens dicotômicos no fim da Onda 3 (COPSOQ já é a mais longa, evita inflar outras). Sem isso, "desejabilidade social" não existe.
+- **Pareamento longitudinal anônimo:** o `participant_token_hash` já existe por ciclo, mas não persiste entre ciclos para o mesmo e-mail. Adicionar `wellness_participants.longitudinal_hash` = HMAC-SHA256(email_normalizado, segredo do servidor) — mesmo valor entre ciclos, irreversível, empresa não vê. Habilita invariância longitudinal e análise de mudança intra-sujeito.
+- **n mínimo por análise:** configurável em `wellness_company_settings` (já existe `n_min_privacy`). Adicionar `n_min_cfa` (default 150), `n_min_invariance` (default 200/grupo), `n_min_dif` (default 100/grupo).
 
-- **Rotas públicas anônimas:**
-  - `/w/:token/phq9` — reaproveita `DepressionTest` (já tem latência), submete via `wellness-submit`.
-  - `/w/:token/ecig` — novo `EcigTest` (placeholder de itens até você colar; mesma UI Likert do COPSOQ, captura latência por questão).
-  - `/w/:token/copsoq` — reaproveita `CopsoqResponder`, adiciona captura de latência (hoje não captura).
-- **Admin (`TrabalhoAdmin` + nova aba "Programa"):**
-  - Editor de itens unificado: tabs PHQ-9 / ECIG / COPSOQ (×6 versões), com ativar/desativar e editar texto — salva auto.
-  - Por empresa: importar CSV/colar e-mails, ver progresso (enviados/abertos/concluídos por onda), reenviar, cancelar.
-  - Painel de latências: média/mediana por questão, outliers (cliques < 500ms ou > 2 min), por onda.
+### 2. Migrations
 
-## 4. Latência (padrão único)
+- `wellness_psychometrics_runs`: 1 linha por (company_id, round_no, instrument). Colunas: `fit_indices jsonb`, `bias_metrics jsonb`, `invariance jsonb`, `n_used int`, `computed_at`, `status` (`ok` | `insufficient_n` | `worker_error`), `error_msg`. RLS: admins e owners da empresa leem; só service_role escreve.
+- `instrument_questions`: marcar 10 novos itens MC-SDS-10 com `instrument='mc_sds_10'`, `scale='dichotomous'`.
+- `copsoq_responses`: adicionar coluna `social_desirability_score smallint` (0–10), preenchida no submit quando os 10 itens vierem juntos.
+- `wellness_participants`: adicionar `longitudinal_hash text` (nullable, index).
+- Função `compute_longitudinal_hash(email text) returns text` security definer, lê segredo de `vault` (ou de env via edge function — não fica no DB).
 
-Em todos os 3 testes: ao montar a questão, `shownAt = Date.now()`. No clique, `latency = clamp(0, 600000, now - shownAt)`. Enviado como `latencies_ms: number[]` alinhado às respostas. Já existe no PHQ-9 — replicar no ECIG e adicionar no COPSOQ.
+### 3. Cálculos em TypeScript (rodam no Deno Edge, sem worker)
 
-## 5. E-mails
+Função `wellness-psychometrics-light`:
+- **α de Cronbach:** fórmula direta sobre matriz de covariância dos itens.
+- **Harman single-factor:** PCA via `ml-pca` (npm), % variância do 1º componente.
+- **Aquiescência:** índice em pares de itens reversos quando o instrumento tem reversos (PHQ-9 não tem; ECIG tem; COPSOQ tem alguns).
+- **Midpoint %:** trivial.
+- **Straightlining %:** variância intra-respondente ≈ 0.
+- **Correlação com MC-SDS-10:** Pearson direto.
 
-Usar infra transacional Lovable Emails já existente. 3 templates:
-- `wellness-invite-phq9`, `wellness-invite-ecig`, `wellness-invite-copsoq` — todos com link único por token, rodapé de anonimato e link de descadastro (`/unsubscribe?token=…`).
+Resultado: maioria do quadro de viés roda nativo, sem custo externo.
 
-## 6. O que fica em stand-by
+### 4. Worker Python no Modal
 
-- Projeções de melhora por ação (conforme você pediu).
-- Catálogo de ações e cutoffs oficiais — só voltamos quando você trouxer fontes.
+Repo separado `cuidar-psychometrics-worker`:
+```text
+app.py
+  @app.function(image=Image.debian_slim().pip_install("semopy","pingouin","factor_analyzer","statsmodels","numpy","pandas"))
+  @app.web_endpoint(method="POST", custom_domains=[...])
+  def compute(payload):
+      # payload = {instrument, responses: [[...]], model_spec, demographics?}
+      # devolve {fit:{chi2_df,cfi,tli,rmsea,srmr,omega}, dif:[...], invariance:{configural,metric,scalar}}
+```
 
-## 7. O que preciso de você antes de codar o ECIG
+Modelos pré-especificados (sintaxe lavaan/semopy) versionados em código, um por instrumento:
+- PHQ-9: 1 fator, 9 indicadores.
+- ECIG: 2 fatores (tarefa/relacionamento) com cargas-cruzadas zero.
+- COPSOQ-II BR curto: modelo multidimensional 8 fatores com base em Pejtersen 2010 + adaptação Rosário 2017.
+- LIPT-60: 6 fatores (Zapf 1996 / González de Rivera 2003).
+- MDiSH: 4 fatores (Page 2016, validação BR Felix 2022 quando disponível).
+- SHRAS: 2 fatores.
 
-Cole aqui os itens do ECIG que devo usar (ex.: versão Jehn 1995 adaptada por Martins, 9 ou 12 itens, com escala Likert 1–5 ou 1–7) e qualquer cutoff/escoragem. Sem isso, deixo o ECIG com estrutura de 3 subescalas (tarefa/relacionamento/processo) e itens placeholder marcados visivelmente como `[EDITAR]` para você preencher no admin.
+Estimador WLSMV para itens ordinais.
 
-## 8. Ordem de execução (após aprovação)
+### 5. Edge function `wellness-psychometrics` (orquestrador)
 
-1. Migrations (tabelas + RLS + colunas novas).
-2. Edge functions (enroll, dispatch, resolve, submit) + cron.
-3. Editor unificado de itens no admin.
-4. Rotas `/w/:token/:wave` + captura de latência no COPSOQ e ECIG.
-5. Setup de e-mails transacionais (3 templates) + envio.
-6. Painel de progresso e latências por empresa.
+Disparada quando uma rodada fecha (`wellness_company_rounds.closed_at`) OU manualmente pelo admin:
+1. Para cada instrumento da rodada: contar n.
+2. Se n < n_min_cfa → gravar `status='insufficient_n'`, pular.
+3. Calcular bloco TS (α, Harman, viés).
+4. Chamar worker Modal com timeout 60s. Token de auth via secret `MODAL_WORKER_TOKEN`.
+5. Persistir resultado em `wellness_psychometrics_runs`.
+6. Para invariância: se houver ≥2 rodadas com n suficiente, montar payload longitudinal e chamar worker de novo.
 
-Aprovado? Se sim, já começo pelas migrations. Se você puder colar o ECIG junto, melhor — saio com o instrumento real em vez de placeholders.
+### 6. UI — `PsychometricsReport.tsx` reescrito
+
+Recebe `company_id` + `round_no` como props, busca de `wellness_psychometrics_runs`. Estados possíveis por linha:
+- `ok` → mostra valores reais + badge.
+- `insufficient_n` → mostra "n=X, mínimo Y — análise indisponível neste ciclo".
+- `worker_error` → mostra erro técnico discreto para admin, oculta para owner.
+- `pending` → "calculando…" com botão de re-disparar para admin.
+
+**Sem fallback hardcoded.** Se `wellness_psychometrics_runs` está vazio, a seção mostra "Análise psicométrica ainda não executada para este ciclo" + botão "Calcular agora" (admin only).
+
+### 7. Página `/trabalho/amostra-relatorio` (lead capture)
+
+Hoje é puro mock. Duas opções honestas:
+- **(a)** Apontar para um ciclo real anonimizado de empresa-piloto que autorizou uso como caso, com banner "Dados reais — empresa Y, ciclo 2025-Q2, n=...".
+- **(b)** Gerador determinístico de dados sintéticos com seed fixo, documentado: `npm:@faker-js/faker` gera 250 respostas via distribuições calibradas em médias publicadas dos manuais → roda o pipeline real → exibe relatório real sobre dados sintéticos, com banner "Dados simulados a partir de distribuições publicadas — não corresponde a empresa real".
+
+Recomendo **(b)** até termos uma empresa-piloto que autorize. Implemento o gerador em `supabase/functions/_generate-synthetic-cycle/` (admin-only), roda uma vez, popula uma `company_id` chamada `__SAMPLE__` e o pipeline psicométrico real calcula em cima. O lead capture vê números reais sobre amostra sintética declarada.
+
+### 8. Segurança / privacidade
+
+- Worker Modal recebe apenas matriz numérica + demografia agregada (gênero, faixa etária). Nunca tokens, e-mails, ou IDs.
+- `longitudinal_hash` é HMAC, não reversível sem o segredo. Segredo fica em edge function env, não no DB.
+- `wellness_psychometrics_runs` herda RLS de owner-da-empresa só para agregados; itens brutos nunca saem.
+
+### 9. Limpeza
+
+- Remover arrays `FIT` e `BIAS` hardcoded de `src/components/admin/PsychometricsReport.tsx`.
+- Substituir aviso atual ("valores ilustrativos") por estados reais.
+- Atualizar texto da página `/trabalho/amostra-relatorio` para refletir origem dos dados.
+
+## O que preciso de você antes de começar
+
+1. **Modal account:** você abre conta gratuita em modal.com, gera token, eu peço via `add_secret` (`MODAL_WORKER_TOKEN` + `MODAL_WORKER_URL`). Tier free cobre desenvolvimento; produção fica ~US$ 5-20/mês conforme volume.
+2. **MC-SDS-10 PT-BR:** quer a versão de Gouveia et al. (2009) ou Ribas Jr. et al. (2004)? As duas têm validação BR.
+3. **Caminho da amostra:** (a) empresa-piloto real autorizada ou (b) dados sintéticos declarados? Default sugerido: (b) agora, migrar para (a) quando tivermos piloto.
+4. **Ordem de execução:** posso entregar em 3 PRs — (i) migrations + cálculos TS + UI reescrita já mostrando "indisponível" honestamente; (ii) worker Modal + integração CFA/invariância; (iii) gerador sintético + página de amostra. Aprova essa ordem?
+
+## Fora de escopo desta entrega
+
+- Análise de mudança causal (necessita design quase-experimental, fica para depois).
+- IRT (modelo Rasch / 2PL) — útil mas não pedido; podemos adicionar depois com `mirt` se virar prioridade.
+- DIF por raça/etnia — só faz sentido se coletarmos a variável, hoje não coletamos.
+

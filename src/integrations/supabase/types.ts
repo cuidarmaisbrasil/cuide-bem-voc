@@ -294,6 +294,7 @@ export type Database = {
           region: string | null
           round_no: number | null
           scores: Json | null
+          social_desirability_score: number | null
           tenure_range: string | null
           user_agent: string | null
           version: string
@@ -315,6 +316,7 @@ export type Database = {
           region?: string | null
           round_no?: number | null
           scores?: Json | null
+          social_desirability_score?: number | null
           tenure_range?: string | null
           user_agent?: string | null
           version: string
@@ -336,6 +338,7 @@ export type Database = {
           region?: string | null
           round_no?: number | null
           scores?: Json | null
+          social_desirability_score?: number | null
           tenure_range?: string | null
           user_agent?: string | null
           version?: string
@@ -1581,6 +1584,9 @@ export type Database = {
           created_at: string
           min_recorte_company: number
           min_recorte_department: number
+          n_min_cfa: number
+          n_min_dif: number
+          n_min_invariance: number
           reminder_days: number[]
           signal_max_days_since_devolutiva: number
           signal_min_adherence_pct: number
@@ -1594,6 +1600,9 @@ export type Database = {
           created_at?: string
           min_recorte_company?: number
           min_recorte_department?: number
+          n_min_cfa?: number
+          n_min_dif?: number
+          n_min_invariance?: number
           reminder_days?: number[]
           signal_max_days_since_devolutiva?: number
           signal_min_adherence_pct?: number
@@ -1607,6 +1616,9 @@ export type Database = {
           created_at?: string
           min_recorte_company?: number
           min_recorte_department?: number
+          n_min_cfa?: number
+          n_min_dif?: number
+          n_min_invariance?: number
           reminder_days?: number[]
           signal_max_days_since_devolutiva?: number
           signal_min_adherence_pct?: number
@@ -1711,6 +1723,7 @@ export type Database = {
           email: string
           enrolled_at: string
           id: string
+          longitudinal_hash: string | null
           token: string
           token_hash: string | null
           unsubscribed_at: string | null
@@ -1724,6 +1737,7 @@ export type Database = {
           email: string
           enrolled_at?: string
           id?: string
+          longitudinal_hash?: string | null
           token?: string
           token_hash?: string | null
           unsubscribed_at?: string | null
@@ -1737,6 +1751,7 @@ export type Database = {
           email?: string
           enrolled_at?: string
           id?: string
+          longitudinal_hash?: string | null
           token?: string
           token_hash?: string | null
           unsubscribed_at?: string | null
@@ -1744,6 +1759,62 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "wellness_participants_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_psychometrics_runs: {
+        Row: {
+          bias_metrics: Json | null
+          company_id: string
+          computed_at: string | null
+          created_at: string
+          error_msg: string | null
+          fit_indices: Json | null
+          id: string
+          instrument: string
+          invariance: Json | null
+          n_used: number
+          round_no: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          bias_metrics?: Json | null
+          company_id: string
+          computed_at?: string | null
+          created_at?: string
+          error_msg?: string | null
+          fit_indices?: Json | null
+          id?: string
+          instrument: string
+          invariance?: Json | null
+          n_used?: number
+          round_no: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          bias_metrics?: Json | null
+          company_id?: string
+          computed_at?: string | null
+          created_at?: string
+          error_msg?: string | null
+          fit_indices?: Json | null
+          id?: string
+          instrument?: string
+          invariance?: Json | null
+          n_used?: number
+          round_no?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_psychometrics_runs_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
