@@ -189,13 +189,18 @@ export const TrabalhoAdmin = () => {
     <Tabs defaultValue="questions" className="space-y-4">
       <div className="overflow-x-auto -mx-2 px-2">
         <TabsList className="inline-flex w-max min-w-full">
-          <TabsTrigger value="questions">Perguntas</TabsTrigger>
+          <TabsTrigger value="questions">COPSOQ — perguntas</TabsTrigger>
+          <TabsTrigger value="instruments">Outros instrumentos</TabsTrigger>
           <TabsTrigger value="template">Template do relatório</TabsTrigger>
           <TabsTrigger value="sample">Sample do relatório</TabsTrigger>
           <TabsTrigger value="notes">Observações por empresa</TabsTrigger>
           <TabsTrigger value="individual">Relatório individual</TabsTrigger>
         </TabsList>
       </div>
+
+      <TabsContent value="instruments" className="space-y-3">
+        <InstrumentQuestionsAdmin />
+      </TabsContent>
 
       {/* ===== Questions editor ===== */}
       <TabsContent value="questions" className="space-y-3">
