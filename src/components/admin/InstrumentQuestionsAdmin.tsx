@@ -156,6 +156,35 @@ export default function InstrumentQuestionsAdmin() {
         </p>
       </Card>
 
+      {(() => {
+        const sets = Array.from(new Set(rows.map(r => r.response_set).filter(Boolean))) as string[];
+        if (sets.length === 0) return null;
+        return (
+          <Card className="p-4 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium">Respostas possíveis (visto pelo colaborador)</p>
+            {sets.map(s => {
+              const opts = RESPONSE_SETS[s];
+              return (
+                <div key={s} className="space-y-1">
+                  <Badge variant="outline" className="text-[10px] font-mono">{s}</Badge>
+                  {opts ? (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {opts.map(o => (
+                        <Badge key={o.value} variant="secondary" className="text-[11px]">
+                          <span className="font-mono mr-1 opacity-60">{o.value}</span>{o.label}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-destructive">⚠ Conjunto não mapeado em WellnessResponder — colaborador verá o fallback COPSOQ 1–5.</p>
+                  )}
+                </div>
+              );
+            })}
+          </Card>
+        );
+      })()}
+
       {loading && <p className="text-sm text-muted-foreground text-center py-6">Carregando…</p>}
 
       <div className="space-y-2">
