@@ -15,6 +15,7 @@ import { aggregateScales, bandLabel, type ScaleScore } from "@/lib/copsoqScoring
 import { Plus, Trash2, RotateCcw } from "lucide-react";
 import IndividualReportAdmin from "@/components/admin/IndividualReportAdmin";
 import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
+import InstrumentQuestionsAdmin from "@/components/admin/InstrumentQuestionsAdmin";
 
 interface Override { n: number; text_override: string; active: boolean; }
 
