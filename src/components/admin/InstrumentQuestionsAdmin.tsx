@@ -22,6 +22,49 @@ interface Q {
   active: boolean;
 }
 
+const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
+  phq9_freq: [
+    { value: 0, label: "Nenhuma vez" },
+    { value: 1, label: "Vários dias" },
+    { value: 2, label: "Mais da metade dos dias" },
+    { value: 3, label: "Quase todos os dias" },
+  ],
+  phq9_impact: [
+    { value: 0, label: "Nada difícil" },
+    { value: 1, label: "Um pouco difícil" },
+    { value: 2, label: "Muito difícil" },
+    { value: 3, label: "Extremamente difícil" },
+  ],
+  ecig_5: [
+    { value: 1, label: "Nunca" },
+    { value: 2, label: "Raramente" },
+    { value: 3, label: "Às vezes" },
+    { value: 4, label: "Frequentemente" },
+    { value: 5, label: "Sempre" },
+  ],
+  copsoq_5_freq: [
+    { value: 1, label: "Nunca" },
+    { value: 2, label: "Raramente" },
+    { value: 3, label: "Às vezes" },
+    { value: 4, label: "Frequentemente" },
+    { value: 5, label: "Sempre" },
+  ],
+  lipt_0_4: [
+    { value: 0, label: "Nunca" },
+    { value: 1, label: "Raramente" },
+    { value: 2, label: "Algumas vezes/mês" },
+    { value: 3, label: "Várias vezes/semana" },
+    { value: 4, label: "Diariamente" },
+  ],
+  asx_5: [
+    { value: 1, label: "Discordo totalmente" },
+    { value: 2, label: "Discordo" },
+    { value: 3, label: "Neutro" },
+    { value: 4, label: "Concordo" },
+    { value: 5, label: "Concordo totalmente" },
+  ],
+};
+
 const INSTRUMENTS: { value: string; label: string; wave: string }[] = [
   { value: "phq9", label: "PHQ-9 — Depressão", wave: "Onda 1" },
   { value: "ecig", label: "ECIG — Conflito intragrupal", wave: "Onda 2" },
