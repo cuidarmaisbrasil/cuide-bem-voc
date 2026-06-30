@@ -22,6 +22,49 @@ interface Q {
   active: boolean;
 }
 
+const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
+  phq9_freq: [
+    { value: 0, label: "Nenhuma vez" },
+    { value: 1, label: "Vários dias" },
+    { value: 2, label: "Mais da metade dos dias" },
+    { value: 3, label: "Quase todos os dias" },
+  ],
+  phq9_impact: [
+    { value: 0, label: "Nada difícil" },
+    { value: 1, label: "Um pouco difícil" },
+    { value: 2, label: "Muito difícil" },
+    { value: 3, label: "Extremamente difícil" },
+  ],
+  ecig_5: [
+    { value: 1, label: "Nunca" },
+    { value: 2, label: "Raramente" },
+    { value: 3, label: "Às vezes" },
+    { value: 4, label: "Frequentemente" },
+    { value: 5, label: "Sempre" },
+  ],
+  copsoq_5_freq: [
+    { value: 1, label: "Nunca" },
+    { value: 2, label: "Raramente" },
+    { value: 3, label: "Às vezes" },
+    { value: 4, label: "Frequentemente" },
+    { value: 5, label: "Sempre" },
+  ],
+  lipt_0_4: [
+    { value: 0, label: "Nunca" },
+    { value: 1, label: "Raramente" },
+    { value: 2, label: "Algumas vezes/mês" },
+    { value: 3, label: "Várias vezes/semana" },
+    { value: 4, label: "Diariamente" },
+  ],
+  asx_5: [
+    { value: 1, label: "Discordo totalmente" },
+    { value: 2, label: "Discordo" },
+    { value: 3, label: "Neutro" },
+    { value: 4, label: "Concordo" },
+    { value: 5, label: "Concordo totalmente" },
+  ],
+};
+
 const INSTRUMENTS: { value: string; label: string; wave: string }[] = [
   { value: "phq9", label: "PHQ-9 — Depressão", wave: "Onda 1" },
   { value: "ecig", label: "ECIG — Conflito intragrupal", wave: "Onda 2" },
@@ -113,6 +156,35 @@ export default function InstrumentQuestionsAdmin() {
         </p>
       </Card>
 
+      {(() => {
+        const sets = Array.from(new Set(rows.map(r => r.response_set).filter(Boolean))) as string[];
+        if (sets.length === 0) return null;
+        return (
+          <Card className="p-4 space-y-3 bg-muted/30">
+            <p className="text-sm font-medium">Respostas possíveis (visto pelo colaborador)</p>
+            {sets.map(s => {
+              const opts = RESPONSE_SETS[s];
+              return (
+                <div key={s} className="space-y-1">
+                  <Badge variant="outline" className="text-[10px] font-mono">{s}</Badge>
+                  {opts ? (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {opts.map(o => (
+                        <Badge key={o.value} variant="secondary" className="text-[11px]">
+                          <span className="font-mono mr-1 opacity-60">{o.value}</span>{o.label}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-destructive">⚠ Conjunto não mapeado em WellnessResponder — colaborador verá o fallback COPSOQ 1–5.</p>
+                  )}
+                </div>
+              );
+            })}
+          </Card>
+        );
+      })()}
+
       {loading && <p className="text-sm text-muted-foreground text-center py-6">Carregando…</p>}
 
       <div className="space-y-2">
@@ -142,6 +214,22 @@ export default function InstrumentQuestionsAdmin() {
                 rows={2}
                 className="text-sm"
               />
+
+              {(() => {
+                const rs = (e.response_set ?? row.response_set) || "";
+                const opts = RESPONSE_SETS[rs];
+                if (!opts) return null;
+                return (
+                  <div className="flex flex-wrap gap-1 pl-1">
+                    <span className="text-[10px] text-muted-foreground mr-1">Opções:</span>
+                    {opts.map(o => (
+                      <Badge key={o.value} variant="outline" className="text-[10px] font-normal">
+                        <span className="font-mono mr-1 opacity-60">{o.value}</span>{o.label}
+                      </Badge>
+                    ))}
+                  </div>
+                );
+              })()}
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                 <div>
