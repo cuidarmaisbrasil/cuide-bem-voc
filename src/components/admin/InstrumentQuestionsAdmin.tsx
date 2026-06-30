@@ -215,6 +215,22 @@ export default function InstrumentQuestionsAdmin() {
                 className="text-sm"
               />
 
+              {(() => {
+                const rs = (e.response_set ?? row.response_set) || "";
+                const opts = RESPONSE_SETS[rs];
+                if (!opts) return null;
+                return (
+                  <div className="flex flex-wrap gap-1 pl-1">
+                    <span className="text-[10px] text-muted-foreground mr-1">Opções:</span>
+                    {opts.map(o => (
+                      <Badge key={o.value} variant="outline" className="text-[10px] font-normal">
+                        <span className="font-mono mr-1 opacity-60">{o.value}</span>{o.label}
+                      </Badge>
+                    ))}
+                  </div>
+                );
+              })()}
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                 <div>
                   <Label className="text-[11px]">Escala / fator</Label>
