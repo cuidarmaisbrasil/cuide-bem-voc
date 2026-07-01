@@ -66,12 +66,11 @@ const RESPONSE_SETS: Record<string, { value: number; label: string }[]> = {
 };
 
 const INSTRUMENTS: { value: string; label: string; wave: string }[] = [
-  { value: "phq9", label: "PHQ-9 — Depressão (+ TAT)", wave: "Onda 1" },
+  { value: "phq9", label: "PHQ-9 — Depressão (+ TAT)", wave: "Onda 1 + reteste Onda 4" },
   { value: "copsoq_short_br", label: "COPSOQ II — Fatores psicossociais (versão curta BR)", wave: "Onda 2" },
-  { value: "copsoq_mid_br", label: "COPSOQ II — versão média BR", wave: "Onda 2" },
+  { value: "copsoq_mid_br", label: "COPSOQ II — versão média BR", wave: "Onda 2 (alternativa)" },
   { value: "ecig", label: "ECIG — Conflito intragrupal (+ Rorschach)", wave: "Onda 3" },
   { value: "lipt60", label: "LIPT-60 — Assédio moral", wave: "Onda 4" },
-  { value: "phq9", label: "PHQ-9 — Reteste", wave: "Onda 4 (reteste)" },
   { value: "assedio_sexual", label: "MDiSH + SHRAS — Assédio sexual", wave: "Onda 5" },
 ];
 
