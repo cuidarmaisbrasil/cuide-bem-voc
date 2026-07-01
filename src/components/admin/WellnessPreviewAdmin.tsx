@@ -259,10 +259,11 @@ function EmailFrame({ subject, children }: { subject: string; children: React.Re
 }
 
 const inviteCopy: Record<Wave, { title: string; intro: string; minutes: string }> = {
-  phq9: { title: "Etapa 1: como você tem se sentido?", intro: WAVE_META.phq9.intro, minutes: WAVE_META.phq9.minutes },
-  ecig: { title: "Etapa 2: como está o clima na sua equipe?", intro: WAVE_META.ecig.intro, minutes: WAVE_META.ecig.minutes },
-  copsoq: { title: "Etapa 3: como está o seu trabalho?", intro: WAVE_META.copsoq.intro, minutes: WAVE_META.copsoq.minutes },
+  phq9: { title: "Etapa 1: como você tem se sentido? (+ atividade narrativa)", intro: WAVE_META.phq9.intro, minutes: WAVE_META.phq9.minutes },
+  copsoq: { title: "Etapa 2: como está o seu trabalho?", intro: WAVE_META.copsoq.intro, minutes: WAVE_META.copsoq.minutes },
+  ecig: { title: "Etapa 3: clima na equipe (+ atividade Rorschach)", intro: WAVE_META.ecig.intro, minutes: WAVE_META.ecig.minutes },
   psicossocial: { title: "Etapa 4: clima psicossocial e situações no trabalho", intro: WAVE_META.psicossocial.intro, minutes: WAVE_META.psicossocial.minutes },
+  phq9_retest: { title: "Etapa 4: reteste breve de humor (PHQ-9)", intro: WAVE_META.phq9_retest.intro, minutes: WAVE_META.phq9_retest.minutes },
   assedio_sexual: { title: "Etapa 5: percepções sobre assédio sexual no trabalho", intro: WAVE_META.assedio_sexual.intro, minutes: WAVE_META.assedio_sexual.minutes },
 };
 
