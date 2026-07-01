@@ -49,7 +49,7 @@ export const WellnessAdmin = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [emails, setEmails] = useState("");
-  const [intervals, setIntervals] = useState({ phq9: 1, ecig: 7, copsoq: 15, psicossocial: 22, assedio_sexual: 30 });
+  const [intervals, setIntervals] = useState({ phq9: 1, copsoq: 7, ecig: 15, psicossocial: 22, phq9_retest: 22, assedio_sexual: 30 });
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
