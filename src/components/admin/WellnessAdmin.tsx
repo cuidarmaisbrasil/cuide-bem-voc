@@ -243,7 +243,7 @@ export const WellnessAdmin = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((w) => (
+                {(["phq9", "copsoq", "ecig", "psicossocial", "assedio_sexual"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
                     <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
@@ -664,7 +664,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   );
 }
 
-const WAVES = ["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const;
+const WAVES = ["phq9", "copsoq", "ecig", "psicossocial", "assedio_sexual"] as const;
 type Wave = typeof WAVES[number];
 const WAVE_LABEL: Record<Wave, string> = {
   phq9: "PHQ-9 (depressão)",
