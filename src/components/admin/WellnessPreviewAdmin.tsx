@@ -398,7 +398,7 @@ export const WellnessPreviewAdmin = () => {
               <TabsTrigger value="retest">Lembrete (retestagem)</TabsTrigger>
               <TabsTrigger value="contact">Contato (recebido por você)</TabsTrigger>
             </TabsList>
-            {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as Wave[]).map((w) => (
+            {(["phq9", "copsoq", "ecig", "psicossocial", "phq9_retest", "assedio_sexual"] as Wave[]).map((w) => (
               <TabsContent key={w} value={`invite_${w}`} className="pt-4">
                 <InviteEmail wave={w} />
               </TabsContent>
