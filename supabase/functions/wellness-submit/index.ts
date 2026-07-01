@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     }
 
 
-    if (wave === "phq9") {
+    if (scoringWave === "phq9") {
       const phqAnswers = Array.from({ length: 9 }, (_, i) => Number(answers[String(i + 1)] ?? 0));
       const score = phqAnswers.reduce((a, b) => a + b, 0);
       const severity = score <= 4 ? "minimal" : score <= 9 ? "mild" : score <= 14 ? "moderate" : score <= 19 ? "moderately_severe" : "severe";
@@ -94,6 +94,7 @@ Deno.serve(async (req) => {
         gender: demo.gender,
         department: demo.department,
         tenure_range: demo.tenure_range,
+        is_retest: isRetest,
       });
 
     } else if (wave === "ecig") {
