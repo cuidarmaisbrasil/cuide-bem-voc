@@ -207,7 +207,7 @@ const WellnessResponder = () => {
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
-    if (wave === "phq9" && step === "form") {
+    if (isPhqLike && step === "form") {
       // For PHQ-9, after answering items go to symptoms checklist before final submit
       setStep("symptoms");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -222,7 +222,7 @@ const WellnessResponder = () => {
           answers,
           latencies_ms: latencies,
           demographics: demo,
-          extras: wave === "phq9" ? { symptoms } : undefined,
+          extras: isPhqLike ? { symptoms } : undefined,
         },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
@@ -350,7 +350,7 @@ const WellnessResponder = () => {
               <Progress value={progress} />
               <p className="text-xs text-muted-foreground text-center mt-1">{answered} / {questions.length}</p>
             </div>
-            {wave === "phq9" && (
+            {isPhqLike && (
               <Card className="p-4 bg-muted/40">
                 <p className="text-sm font-medium">
                   Nas últimas 2 semanas, com que frequência você foi incomodado(a) por:
@@ -383,7 +383,7 @@ const WellnessResponder = () => {
               })}
             </div>
             <Button className="w-full" size="lg" onClick={submit} disabled={submitting || answered < questions.length}>
-              {submitting ? "Enviando…" : wave === "phq9" ? `Continuar (${answered}/${questions.length})` : `Enviar (${answered}/${questions.length})`}
+              {submitting ? "Enviando…" : isPhqLike ? `Continuar (${answered}/${questions.length})` : `Enviar (${answered}/${questions.length})`}
             </Button>
           </>
         )}
