@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
       ? `copsoq_${(p as any).companies.default_version || "short_br"}`
       : wave === "psicossocial" ? "lipt60"
       : wave === "assedio_sexual" ? "assedio_sexual"
+      : wave === "phq9_retest" ? "phq9"
       : wave;
     const { data: qs } = await admin
       .from("instrument_questions")
