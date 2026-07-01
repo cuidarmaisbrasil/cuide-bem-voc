@@ -709,6 +709,7 @@ export type Database = {
           functional_impact: number | null
           gender: string | null
           id: string
+          is_retest: boolean
           latencies_ms: Json
           participant_token_hash: string
           round_no: number | null
@@ -728,6 +729,7 @@ export type Database = {
           functional_impact?: number | null
           gender?: string | null
           id?: string
+          is_retest?: boolean
           latencies_ms: Json
           participant_token_hash: string
           round_no?: number | null
@@ -747,6 +749,7 @@ export type Database = {
           functional_impact?: number | null
           gender?: string | null
           id?: string
+          is_retest?: boolean
           latencies_ms?: Json
           participant_token_hash?: string
           round_no?: number | null
