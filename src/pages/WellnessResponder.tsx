@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { tenSymptoms } from "@/data/symptoms";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
 interface TatImage { id: string; label: string; url: string; sort_order: number }
