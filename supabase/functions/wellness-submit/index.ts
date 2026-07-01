@@ -20,15 +20,19 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const body = await req.json();
-    const { token, wave, answers, latencies_ms, demographics, extras } = body as {
+    const { token, wave: rawWave, answers, latencies_ms, demographics, extras } = body as {
       token: string;
-      wave: "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+      wave: "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
       answers: Record<string, number>;
       latencies_ms: Record<string, number>;
       demographics?: { age_range?: string; gender?: string; department?: string; tenure_range?: string };
       extras?: any;
     };
-    if (!token || !wave || !answers || !latencies_ms) return j({ error: "bad_request" }, 400);
+    if (!token || !rawWave || !answers || !latencies_ms) return j({ error: "bad_request" }, 400);
+
+    const wave = rawWave;
+    const isRetest = wave === "phq9_retest";
+    const scoringWave = isRetest ? "phq9" : wave;
 
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
