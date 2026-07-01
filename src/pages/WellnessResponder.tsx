@@ -65,6 +65,7 @@ const WAVE_TITLES: Record<Wave, string> = {
   copsoq: "Bem-estar no trabalho (COPSOQ)",
   psicossocial: "Clima psicossocial / situações no trabalho (LIPT-60)",
   assedio_sexual: "Percepções sobre assédio sexual no trabalho (MDiSH + SHRAS)",
+  phq9_retest: "Reavaliação de humor (PHQ-9 — reteste)",
 };
 
 const TAT_LIMIT_MS = 10 * 60 * 1000;
