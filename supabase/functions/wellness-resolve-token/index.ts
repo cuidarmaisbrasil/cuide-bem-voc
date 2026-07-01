@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const token = url.searchParams.get("token");
     const wave = url.searchParams.get("wave");
-    if (!token || !wave || !["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"].includes(wave)) return j({ error: "bad_request" }, 400);
+    if (!token || !wave || !["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual", "phq9_retest"].includes(wave)) return j({ error: "bad_request" }, 400);
 
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
       ? `copsoq_${(p as any).companies.default_version || "short_br"}`
       : wave === "psicossocial" ? "lipt60"
       : wave === "assedio_sexual" ? "assedio_sexual"
+      : wave === "phq9_retest" ? "phq9"
       : wave;
     const { data: qs } = await admin
       .from("instrument_questions")

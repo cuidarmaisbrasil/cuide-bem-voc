@@ -14,31 +14,31 @@ import { Progress } from "@/components/ui/progress";
  * instrument_questions so the preview matches what employees will see.
  */
 
-type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+type Wave = "phq9" | "copsoq" | "ecig" | "psicossocial" | "phq9_retest" | "assedio_sexual";
 
 const WAVE_META: Record<Wave, { title: string; instrument: string; projective?: "tat" | "rorschach"; minutes: string; intro: string; emailSubject: string }> = {
   phq9: {
-    title: "Onda 1 — PHQ-9 (humor)",
+    title: "Onda 1 — PHQ-9 + TAT (humor)",
     instrument: "phq9",
     projective: "tat",
-    minutes: "3 a 5 minutos",
-    intro: "Esta primeira avaliação foca em sintomas de humor e bem-estar emocional. É anônima — sua empresa só verá resultados agregados.",
+    minutes: "8 a 12 minutos",
+    intro: "Esta primeira avaliação foca em sintomas de humor e bem-estar emocional, e inclui uma atividade narrativa breve (TAT). É anônima — sua empresa só verá resultados agregados.",
     emailSubject: "Avaliação de bem-estar — etapa 1 (humor)",
   },
-  ecig: {
-    title: "Onda 2 — ECIG (clima da equipe)",
-    instrument: "ecig",
-    projective: "rorschach",
-    minutes: "3 a 4 minutos",
-    intro: "Esta etapa avalia conflitos e tensões dentro do grupo de trabalho. É anônima e leva poucos minutos.",
-    emailSubject: "Avaliação de bem-estar — etapa 2 (clima da equipe)",
-  },
   copsoq: {
-    title: "Onda 3 — COPSOQ (trabalho)",
+    title: "Onda 2 — COPSOQ (trabalho)",
     instrument: "copsoq_short_br",
     minutes: "8 a 15 minutos",
     intro: "Esta etapa avalia fatores psicossociais do seu trabalho (exigências, autonomia, apoio, reconhecimento). É anônima.",
-    emailSubject: "Avaliação de bem-estar — etapa 3 (trabalho)",
+    emailSubject: "Avaliação de bem-estar — etapa 2 (trabalho)",
+  },
+  ecig: {
+    title: "Onda 3 — ECIG + Rorschach (clima da equipe)",
+    instrument: "ecig",
+    projective: "rorschach",
+    minutes: "8 a 12 minutos",
+    intro: "Esta etapa avalia conflitos e tensões dentro do grupo de trabalho e inclui a atividade Rorschach. É anônima.",
+    emailSubject: "Avaliação de bem-estar — etapa 3 (clima da equipe)",
   },
   psicossocial: {
     title: "Onda 4 — LIPT-60 (clima psicossocial)",
@@ -46,6 +46,13 @@ const WAVE_META: Record<Wave, { title: string; instrument: string; projective?: 
     minutes: "6 a 10 minutos",
     intro: "Esta etapa avalia a frequência de situações de assédio moral, hostilidade e exclusão (Inventário de Leymann — LIPT-60). É anônima e estritamente confidencial.",
     emailSubject: "Avaliação de bem-estar — etapa 4 (clima psicossocial)",
+  },
+  phq9_retest: {
+    title: "Onda 4 — PHQ-9 reteste (humor)",
+    instrument: "phq9",
+    minutes: "3 a 5 minutos",
+    intro: "Reavaliação breve de humor para comparar com a primeira aplicação e observar mudanças ao longo do ciclo. É anônima.",
+    emailSubject: "Avaliação de bem-estar — reteste PHQ-9 (etapa 4)",
   },
   assedio_sexual: {
     title: "Onda 5 — MDiSH + SHRAS (assédio sexual)",
@@ -252,10 +259,11 @@ function EmailFrame({ subject, children }: { subject: string; children: React.Re
 }
 
 const inviteCopy: Record<Wave, { title: string; intro: string; minutes: string }> = {
-  phq9: { title: "Etapa 1: como você tem se sentido?", intro: WAVE_META.phq9.intro, minutes: WAVE_META.phq9.minutes },
-  ecig: { title: "Etapa 2: como está o clima na sua equipe?", intro: WAVE_META.ecig.intro, minutes: WAVE_META.ecig.minutes },
-  copsoq: { title: "Etapa 3: como está o seu trabalho?", intro: WAVE_META.copsoq.intro, minutes: WAVE_META.copsoq.minutes },
+  phq9: { title: "Etapa 1: como você tem se sentido? (+ atividade narrativa)", intro: WAVE_META.phq9.intro, minutes: WAVE_META.phq9.minutes },
+  copsoq: { title: "Etapa 2: como está o seu trabalho?", intro: WAVE_META.copsoq.intro, minutes: WAVE_META.copsoq.minutes },
+  ecig: { title: "Etapa 3: clima na equipe (+ atividade Rorschach)", intro: WAVE_META.ecig.intro, minutes: WAVE_META.ecig.minutes },
   psicossocial: { title: "Etapa 4: clima psicossocial e situações no trabalho", intro: WAVE_META.psicossocial.intro, minutes: WAVE_META.psicossocial.minutes },
+  phq9_retest: { title: "Etapa 4: reteste breve de humor (PHQ-9)", intro: WAVE_META.phq9_retest.intro, minutes: WAVE_META.phq9_retest.minutes },
   assedio_sexual: { title: "Etapa 5: percepções sobre assédio sexual no trabalho", intro: WAVE_META.assedio_sexual.intro, minutes: WAVE_META.assedio_sexual.minutes },
 };
 
@@ -390,7 +398,7 @@ export const WellnessPreviewAdmin = () => {
               <TabsTrigger value="retest">Lembrete (retestagem)</TabsTrigger>
               <TabsTrigger value="contact">Contato (recebido por você)</TabsTrigger>
             </TabsList>
-            {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as Wave[]).map((w) => (
+            {(["phq9", "copsoq", "ecig", "psicossocial", "phq9_retest", "assedio_sexual"] as Wave[]).map((w) => (
               <TabsContent key={w} value={`invite_${w}`} className="pt-4">
                 <InviteEmail wave={w} />
               </TabsContent>

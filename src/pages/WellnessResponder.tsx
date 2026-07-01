@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { tenSymptoms } from "@/data/symptoms";
 import { Checkbox } from "@/components/ui/checkbox";
 
-type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
 
 interface Q { n: number; text: string; scale?: string; reverse?: boolean; response_set?: string }
 interface TatImage { id: string; label: string; url: string; sort_order: number }
@@ -65,6 +65,7 @@ const WAVE_TITLES: Record<Wave, string> = {
   copsoq: "Bem-estar no trabalho (COPSOQ)",
   psicossocial: "Clima psicossocial / situações no trabalho (LIPT-60)",
   assedio_sexual: "Percepções sobre assédio sexual no trabalho (MDiSH + SHRAS)",
+  phq9_retest: "Reavaliação de humor (PHQ-9 — reteste)",
 };
 
 const TAT_LIMIT_MS = 10 * 60 * 1000;
@@ -93,7 +94,8 @@ const WellnessResponder = () => {
   const [tatSubmitting, setTatSubmitting] = useState(false);
   const tatAutoSubmittedRef = useRef(false);
 
-  const isTatWave = wave === "phq9";
+  const isPhqLike = wave === "phq9" || wave === "phq9_retest";
+  const isTatWave = wave === "phq9"; // TAT only on initial PHQ-9, not on retest
   const isRorschachWave = wave === "ecig";
   const hasProjective = isTatWave || isRorschachWave;
   const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
@@ -205,7 +207,7 @@ const WellnessResponder = () => {
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
-    if (wave === "phq9" && step === "form") {
+    if (isPhqLike && step === "form") {
       // For PHQ-9, after answering items go to symptoms checklist before final submit
       setStep("symptoms");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -220,7 +222,7 @@ const WellnessResponder = () => {
           answers,
           latencies_ms: latencies,
           demographics: demo,
-          extras: wave === "phq9" ? { symptoms } : undefined,
+          extras: isPhqLike ? { symptoms } : undefined,
         },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
@@ -348,7 +350,7 @@ const WellnessResponder = () => {
               <Progress value={progress} />
               <p className="text-xs text-muted-foreground text-center mt-1">{answered} / {questions.length}</p>
             </div>
-            {wave === "phq9" && (
+            {isPhqLike && (
               <Card className="p-4 bg-muted/40">
                 <p className="text-sm font-medium">
                   Nas últimas 2 semanas, com que frequência você foi incomodado(a) por:
@@ -381,7 +383,7 @@ const WellnessResponder = () => {
               })}
             </div>
             <Button className="w-full" size="lg" onClick={submit} disabled={submitting || answered < questions.length}>
-              {submitting ? "Enviando…" : wave === "phq9" ? `Continuar (${answered}/${questions.length})` : `Enviar (${answered}/${questions.length})`}
+              {submitting ? "Enviando…" : isPhqLike ? `Continuar (${answered}/${questions.length})` : `Enviar (${answered}/${questions.length})`}
             </Button>
           </>
         )}

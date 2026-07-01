@@ -49,7 +49,7 @@ export const WellnessAdmin = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>("");
   const [emails, setEmails] = useState("");
-  const [intervals, setIntervals] = useState({ phq9: 1, ecig: 7, copsoq: 15, psicossocial: 22, assedio_sexual: 30 });
+  const [intervals, setIntervals] = useState({ phq9: 1, copsoq: 7, ecig: 15, psicossocial: 22, phq9_retest: 22, assedio_sexual: 30 });
   const [statsPeriod, setStatsPeriod] = useState<"30d" | "all">("all");
   const [busy, setBusy] = useState(false);
   const [stats, setStats] = useState<any>(null);
@@ -207,12 +207,13 @@ export const WellnessAdmin = () => {
 
             <EnrollRecommendation />
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div><Label>Dias até PHQ-9</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
-              <div><Label>Dias até ECIG</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
-              <div><Label>Dias até COPSOQ</Label><Input type="number" value={intervals.copsoq} onChange={(e) => setIntervals({ ...intervals, copsoq: +e.target.value })} /></div>
-              <div><Label>Dias até Psicossocial (LIPT-60)</Label><Input type="number" value={intervals.psicossocial} onChange={(e) => setIntervals({ ...intervals, psicossocial: +e.target.value })} /></div>
-              <div><Label>Dias até Assédio sexual (MDiSH+SHRAS)</Label><Input type="number" value={intervals.assedio_sexual} onChange={(e) => setIntervals({ ...intervals, assedio_sexual: +e.target.value })} /></div>
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+              <div><Label>Onda 1 — PHQ-9 + TAT (dias)</Label><Input type="number" value={intervals.phq9} onChange={(e) => setIntervals({ ...intervals, phq9: +e.target.value })} /></div>
+              <div><Label>Onda 2 — COPSOQ (dias)</Label><Input type="number" value={intervals.copsoq} onChange={(e) => setIntervals({ ...intervals, copsoq: +e.target.value })} /></div>
+              <div><Label>Onda 3 — ECIG + Rorschach (dias)</Label><Input type="number" value={intervals.ecig} onChange={(e) => setIntervals({ ...intervals, ecig: +e.target.value })} /></div>
+              <div><Label>Onda 4 — LIPT-60 (dias)</Label><Input type="number" value={intervals.psicossocial} onChange={(e) => setIntervals({ ...intervals, psicossocial: +e.target.value })} /></div>
+              <div><Label>Onda 4 — PHQ-9 reteste (dias)</Label><Input type="number" value={intervals.phq9_retest} onChange={(e) => setIntervals({ ...intervals, phq9_retest: +e.target.value })} /></div>
+              <div><Label>Onda 5 — MDiSH+SHRAS (dias)</Label><Input type="number" value={intervals.assedio_sexual} onChange={(e) => setIntervals({ ...intervals, assedio_sexual: +e.target.value })} /></div>
             </div>
 
             <Label>E-mails dos trabalhadores (um por linha ou separados por vírgula)</Label>
@@ -242,7 +243,7 @@ export const WellnessAdmin = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {(["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const).map((w) => (
+                {(["phq9", "copsoq", "ecig", "psicossocial", "assedio_sexual"] as const).map((w) => (
                   <div key={w} className="rounded border p-3">
                     <div className="text-xs uppercase text-muted-foreground">{w}</div>
                     <div className="text-sm mt-1">Agendados: <b>{stats.summary[w]?.scheduled ?? 0}</b></div>
@@ -663,7 +664,7 @@ function LatencyPanel({ companyId, companies, onSelectCompany }: { companyId: st
   );
 }
 
-const WAVES = ["phq9", "ecig", "copsoq", "psicossocial", "assedio_sexual"] as const;
+const WAVES = ["phq9", "copsoq", "ecig", "psicossocial", "assedio_sexual"] as const;
 type Wave = typeof WAVES[number];
 const WAVE_LABEL: Record<Wave, string> = {
   phq9: "PHQ-9 (depressão)",

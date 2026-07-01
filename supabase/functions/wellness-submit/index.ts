@@ -20,15 +20,19 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const body = await req.json();
-    const { token, wave, answers, latencies_ms, demographics, extras } = body as {
+    const { token, wave: rawWave, answers, latencies_ms, demographics, extras } = body as {
       token: string;
-      wave: "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual";
+      wave: "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
       answers: Record<string, number>;
       latencies_ms: Record<string, number>;
       demographics?: { age_range?: string; gender?: string; department?: string; tenure_range?: string };
       extras?: any;
     };
-    if (!token || !wave || !answers || !latencies_ms) return j({ error: "bad_request" }, 400);
+    if (!token || !rawWave || !answers || !latencies_ms) return j({ error: "bad_request" }, 400);
+
+    const wave = rawWave;
+    const isRetest = wave === "phq9_retest";
+    const scoringWave = isRetest ? "phq9" : wave;
 
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -69,7 +73,7 @@ Deno.serve(async (req) => {
     }
 
 
-    if (wave === "phq9") {
+    if (scoringWave === "phq9") {
       const phqAnswers = Array.from({ length: 9 }, (_, i) => Number(answers[String(i + 1)] ?? 0));
       const score = phqAnswers.reduce((a, b) => a + b, 0);
       const severity = score <= 4 ? "minimal" : score <= 9 ? "mild" : score <= 14 ? "moderate" : score <= 19 ? "moderately_severe" : "severe";
@@ -90,6 +94,7 @@ Deno.serve(async (req) => {
         gender: demo.gender,
         department: demo.department,
         tenure_range: demo.tenure_range,
+        is_retest: isRetest,
       });
 
     } else if (wave === "ecig") {
