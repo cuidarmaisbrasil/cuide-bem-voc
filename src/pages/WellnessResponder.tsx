@@ -94,7 +94,8 @@ const WellnessResponder = () => {
   const [tatSubmitting, setTatSubmitting] = useState(false);
   const tatAutoSubmittedRef = useRef(false);
 
-  const isTatWave = wave === "phq9";
+  const isPhqLike = wave === "phq9" || wave === "phq9_retest";
+  const isTatWave = wave === "phq9"; // TAT only on initial PHQ-9, not on retest
   const isRorschachWave = wave === "ecig";
   const hasProjective = isTatWave || isRorschachWave;
   const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
