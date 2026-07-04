@@ -556,6 +556,71 @@ export type Database = {
         }
         Relationships: []
       }
+      gad7_company_responses: {
+        Row: {
+          access_code_hash: string | null
+          age: number | null
+          age_range: string | null
+          answers: Json
+          company_id: string
+          created_at: string
+          department: string | null
+          gender: string | null
+          id: string
+          latencies_ms: Json | null
+          participant_token_hash: string
+          round_no: number
+          score: number
+          severity: string
+          tenure_range: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_code_hash?: string | null
+          age?: number | null
+          age_range?: string | null
+          answers: Json
+          company_id: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms?: Json | null
+          participant_token_hash: string
+          round_no?: number
+          score: number
+          severity: string
+          tenure_range?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_code_hash?: string | null
+          age?: number | null
+          age_range?: string | null
+          answers?: Json
+          company_id?: string
+          created_at?: string
+          department?: string | null
+          gender?: string | null
+          id?: string
+          latencies_ms?: Json | null
+          participant_token_hash?: string
+          round_no?: number
+          score?: number
+          severity?: string
+          tenure_range?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gad7_company_responses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       individual_report_templates: {
         Row: {
           body: string | null
