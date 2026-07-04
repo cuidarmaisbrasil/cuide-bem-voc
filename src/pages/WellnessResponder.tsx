@@ -76,7 +76,11 @@ const WellnessResponder = () => {
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<{ name: string } | null>(null);
   const [questions, setQuestions] = useState<Q[]>([]);
-  const [step, setStep] = useState<"intro" | "tat" | "form" | "symptoms" | "done">("intro");
+  const [gad7Questions, setGad7Questions] = useState<Q[]>([]);
+  const [gad7Answers, setGad7Answers] = useState<Record<number, number>>({});
+  const [gad7Latencies, setGad7Latencies] = useState<Record<number, number>>({});
+  const gad7ShownAtRef = useRef<Record<number, number>>({});
+  const [step, setStep] = useState<"intro" | "tat" | "form" | "symptoms" | "gad7" | "done">("intro");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [latencies, setLatencies] = useState<Record<number, number>>({});
   const shownAtRef = useRef<Record<number, number>>({});
@@ -86,7 +90,7 @@ const WellnessResponder = () => {
   const [accessCode, setAccessCode] = useState<string | null>(null);
   const [codeFirstIssue, setCodeFirstIssue] = useState(false);
 
-  // Projective test (TAT for phq9 wave, Rorschach for ecig wave)
+  // Projective test (Rorschach only for ecig wave; TAT removed from PHQ-9 wave)
   const [tatImage, setTatImage] = useState<TatImage | null>(null);
   const [tatNarrative, setTatNarrative] = useState("");
   const [tatStartedAt, setTatStartedAt] = useState<number | null>(null);
@@ -95,7 +99,8 @@ const WellnessResponder = () => {
   const tatAutoSubmittedRef = useRef(false);
 
   const isPhqLike = wave === "phq9" || wave === "phq9_retest";
-  const isTatWave = wave === "phq9"; // TAT only on initial PHQ-9, not on retest
+  const isPhqFirstWave = wave === "phq9"; // includes GAD-7 after symptoms
+  const isTatWave = false; // TAT removido da Onda 1
   const isRorschachWave = wave === "ecig";
   const hasProjective = isTatWave || isRorschachWave;
   const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
