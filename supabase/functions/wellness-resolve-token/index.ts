@@ -42,6 +42,18 @@ Deno.serve(async (req) => {
       .eq("active", true)
       .order("n");
 
+    // Onda 1 (phq9 inicial, não reteste) inclui também o GAD-7 na mesma sessão
+    let gad7Questions: any[] = [];
+    if (wave === "phq9") {
+      const { data: gq } = await admin
+        .from("instrument_questions")
+        .select("n,text,scale,reverse,response_set")
+        .eq("instrument", "gad7")
+        .eq("active", true)
+        .order("n");
+      gad7Questions = gq ?? [];
+    }
+
     // Mark opened_at
     await admin.from("wellness_invitations").update({ opened_at: new Date().toISOString() }).eq("id", inv.id).is("opened_at", null);
 
@@ -50,6 +62,7 @@ Deno.serve(async (req) => {
       wave,
       instrument,
       questions: qs ?? [],
+      gad7_questions: gad7Questions,
     });
   } catch (e: any) {
     console.error("wellness-resolve-token error", e);

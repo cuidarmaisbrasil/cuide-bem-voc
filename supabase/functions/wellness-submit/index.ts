@@ -97,6 +97,29 @@ Deno.serve(async (req) => {
         is_retest: isRetest,
       });
 
+      // GAD-7 acompanha a Onda 1 (não é aplicado no reteste)
+      if (!isRetest && extras?.gad7_answers) {
+        const gadAnswersRaw = extras.gad7_answers as Record<string, number>;
+        const gadItems = Array.from({ length: 7 }, (_, i) => Number(gadAnswersRaw[String(i + 1)] ?? 0));
+        const gadScore = gadItems.reduce((a, b) => a + b, 0);
+        const gadSeverity = gadScore <= 4 ? "minimal" : gadScore <= 9 ? "mild" : gadScore <= 14 ? "moderate" : "severe";
+        await admin.from("gad7_company_responses").insert({
+          company_id: p.company_id,
+          round_no,
+          participant_token_hash: p.token_hash,
+          access_code_hash: accessCodeHash,
+          answers: gadAnswersRaw,
+          latencies_ms: extras?.gad7_latencies_ms ?? {},
+          score: gadScore,
+          severity: gadSeverity,
+          age: extras?.age ?? null,
+          age_range: demo.age_range,
+          gender: demo.gender,
+          department: demo.department,
+          tenure_range: demo.tenure_range,
+        });
+      }
+
     } else if (wave === "ecig") {
       const { data: qs } = await admin
         .from("instrument_questions")
