@@ -211,12 +211,35 @@ const WellnessResponder = () => {
     }
   }
 
+  const gad7Answered = Object.keys(gad7Answers).length;
+
+  const onGad7Answer = (q: Q, value: number) => {
+    const shown = gad7ShownAtRef.current[q.n] || Date.now();
+    const lat = Math.max(0, Math.min(600000, Date.now() - shown));
+    setGad7Answers((a) => ({ ...a, [q.n]: value }));
+    setGad7Latencies((l) => ({ ...l, [q.n]: lat }));
+    gad7ShownAtRef.current[q.n] = Date.now();
+  };
+
   const submit = async () => {
-    if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
+    if (step === "form" && answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
     if (isPhqLike && step === "form") {
-      // For PHQ-9, after answering items go to symptoms checklist before final submit
+      // Após PHQ-9, checklist de sintomas
       setStep("symptoms");
       window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (isPhqFirstWave && step === "symptoms" && gad7Questions.length > 0) {
+      // Após sintomas, aplicar GAD-7 (somente na Onda 1)
+      gad7ShownAtRef.current = {};
+      const now = Date.now();
+      gad7Questions.forEach((q) => { gad7ShownAtRef.current[q.n] = now; });
+      setStep("gad7");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (step === "gad7" && gad7Answered < gad7Questions.length) {
+      toast.error("Responda todas as perguntas do GAD-7.");
       return;
     }
     setSubmitting(true);
@@ -228,7 +251,14 @@ const WellnessResponder = () => {
           answers,
           latencies_ms: latencies,
           demographics: demo,
-          extras: isPhqLike ? { symptoms } : undefined,
+          extras: isPhqLike
+            ? {
+                symptoms,
+                ...(isPhqFirstWave && gad7Questions.length > 0
+                  ? { gad7_answers: gad7Answers, gad7_latencies_ms: gad7Latencies }
+                  : {}),
+              }
+            : undefined,
         },
       });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
