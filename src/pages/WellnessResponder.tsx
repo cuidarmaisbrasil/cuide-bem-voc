@@ -459,9 +459,55 @@ const WellnessResponder = () => {
               })}
             </div>
             <Button className="w-full" size="lg" onClick={submit} disabled={submitting}>
-              {submitting ? "Enviando…" : `Enviar respostas${symptoms.length ? ` (${symptoms.length} sintoma${symptoms.length > 1 ? "s" : ""})` : ""}`}
+              {submitting
+                ? "Enviando…"
+                : isPhqFirstWave && gad7Questions.length > 0
+                  ? `Continuar para GAD-7${symptoms.length ? ` (${symptoms.length} sintoma${symptoms.length > 1 ? "s" : ""} marcado${symptoms.length > 1 ? "s" : ""})` : ""}`
+                  : `Enviar respostas${symptoms.length ? ` (${symptoms.length} sintoma${symptoms.length > 1 ? "s" : ""})` : ""}`}
             </Button>
           </Card>
+        )}
+
+        {step === "gad7" && (
+          <>
+            <div className="sticky top-0 bg-background/95 backdrop-blur py-2 z-10">
+              <Progress value={gad7Questions.length ? Math.round((gad7Answered / gad7Questions.length) * 100) : 0} />
+              <p className="text-xs text-muted-foreground text-center mt-1">{gad7Answered} / {gad7Questions.length}</p>
+            </div>
+            <Card className="p-4 bg-muted/40">
+              <p className="text-sm font-medium">
+                Agora sobre ansiedade — nas últimas 2 semanas, com que frequência você foi incomodado(a) por:
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Escala GAD-7 (Spitzer et al. 2006; validação brasileira: Moreno et al. 2016). 7 perguntas curtas.
+              </p>
+            </Card>
+            <div className="space-y-3">
+              {gad7Questions.map((q) => {
+                const opts = RESPONSE_SETS[q.response_set || "phq9_freq"] || RESPONSE_SETS.phq9_freq;
+                return (
+                  <Card key={`gad-${q.n}`} className="p-4">
+                    <p className="text-sm font-medium mb-3"><span className="text-muted-foreground mr-2">{q.n}.</span>{q.text}</p>
+                    <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${opts.length}, minmax(0,1fr))` }}>
+                      {opts.map((opt) => {
+                        const selected = gad7Answers[q.n] === opt.value;
+                        return (
+                          <button key={opt.value} type="button" onClick={() => onGad7Answer(q, opt.value)}
+                            className={`p-2 rounded-md border text-xs leading-tight transition-colors ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border hover:bg-accent"}`}>
+                            <div className="font-mono font-semibold">{opt.value}</div>
+                            <div className="text-[10px] mt-0.5">{opt.label}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+            <Button className="w-full" size="lg" onClick={submit} disabled={submitting || gad7Answered < gad7Questions.length}>
+              {submitting ? "Enviando…" : `Enviar respostas (${gad7Answered}/${gad7Questions.length})`}
+            </Button>
+          </>
         )}
 
         {step === "done" && (
