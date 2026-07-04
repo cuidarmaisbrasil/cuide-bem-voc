@@ -118,6 +118,7 @@ const WellnessResponder = () => {
         if (data.status === "completed") { setStep("done"); setCompany(data.company); return; }
         setCompany(data.company);
         setQuestions(data.questions || []);
+        setGad7Questions(data.gad7_questions || []);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
