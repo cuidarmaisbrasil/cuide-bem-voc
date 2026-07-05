@@ -42,9 +42,9 @@ Deno.serve(async (req) => {
       .eq("active", true)
       .order("n");
 
-    // Onda 1 (phq9 inicial, não reteste) inclui também o GAD-7 na mesma sessão
+    // Onda 1 (phq9) e Onda 5 (phq9_retest) incluem o GAD-7 na mesma sessão
     let gad7Questions: any[] = [];
-    if (wave === "phq9") {
+    if (wave === "phq9" || wave === "phq9_retest") {
       const { data: gq } = await admin
         .from("instrument_questions")
         .select("n,text,scale,reverse,response_set")

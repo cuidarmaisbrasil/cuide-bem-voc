@@ -1,0 +1,2 @@
+ALTER TABLE public.gad7_company_responses ADD COLUMN IF NOT EXISTS is_retest boolean NOT NULL DEFAULT false;
+CREATE INDEX IF NOT EXISTS idx_gad7_company_responses_retest ON public.gad7_company_responses(company_id, round_no, is_retest);

@@ -97,8 +97,8 @@ Deno.serve(async (req) => {
         is_retest: isRetest,
       });
 
-      // GAD-7 acompanha a Onda 1 (não é aplicado no reteste)
-      if (!isRetest && extras?.gad7_answers) {
+      // GAD-7 acompanha a Onda 1 e o reteste (Onda 5)
+      if (extras?.gad7_answers) {
         const gadAnswersRaw = extras.gad7_answers as Record<string, number>;
         const gadItems = Array.from({ length: 7 }, (_, i) => Number(gadAnswersRaw[String(i + 1)] ?? 0));
         const gadScore = gadItems.reduce((a, b) => a + b, 0);
@@ -117,6 +117,7 @@ Deno.serve(async (req) => {
           gender: demo.gender,
           department: demo.department,
           tenure_range: demo.tenure_range,
+          is_retest: isRetest,
         });
       }
 
