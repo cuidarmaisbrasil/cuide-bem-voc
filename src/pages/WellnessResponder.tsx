@@ -90,7 +90,8 @@ const WellnessResponder = () => {
   const [accessCode, setAccessCode] = useState<string | null>(null);
   const [codeFirstIssue, setCodeFirstIssue] = useState(false);
 
-  // Projective test (Rorschach only for ecig wave; TAT removed from PHQ-9 wave)
+  // Rorschach removido do fluxo (mantido em admin apenas para histórico).
+  // TAT também está removido da Onda 1. Nenhuma onda usa teste projetivo no fluxo do colaborador.
   const [tatImage, setTatImage] = useState<TatImage | null>(null);
   const [tatNarrative, setTatNarrative] = useState("");
   const [tatStartedAt, setTatStartedAt] = useState<number | null>(null);
@@ -100,11 +101,11 @@ const WellnessResponder = () => {
 
   const isPhqLike = wave === "phq9" || wave === "phq9_retest";
   const isPhqFirstWave = wave === "phq9" || wave === "phq9_retest"; // GAD-7 aplicado após sintomas na Onda 1 e Onda 5 (reteste)
-  const isTatWave = false; // TAT removido da Onda 1
-  const isRorschachWave = wave === "ecig";
-  const hasProjective = isTatWave || isRorschachWave;
-  const projectiveTable = isRorschachWave ? "rorschach_images" : "tat_images";
-  const projectiveFn = isRorschachWave ? "rorschach-submit" : "tat-submit";
+  const isTatWave = false;
+  const isRorschachWave = false;
+  const hasProjective = false;
+  const projectiveTable = "tat_images";
+  const projectiveFn = "tat-submit";
 
   useEffect(() => {
     if (!token || !wave) return;
