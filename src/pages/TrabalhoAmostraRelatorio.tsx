@@ -52,6 +52,7 @@ const TrabalhoAmostraRelatorio = () => {
         <div className="mt-6">
           <PsychometricsReport />
         </div>
+        <SampleValidityReport />
       </div>
     </main>
   );
