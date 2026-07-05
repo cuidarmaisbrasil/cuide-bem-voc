@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       roundNo = created.round_no;
     }
 
-    // New wave order: 1=PHQ-9(+TAT), 2=COPSOQ, 3=ECIG(+Rorschach), 4=LIPT-60 + PHQ-9 retest (same day), 5=MDiSH+SHRAS
+    // Wave order: 1=PHQ-9+DSM+GAD-7, 2=COPSOQ, 3=ECIG, 4=LIPT-60, 5=PHQ-9 retest+GAD-7, 6=MDiSH+SHRAS
     const ivDays = { phq9: 1, copsoq: 7, ecig: 15, psicossocial: 22, phq9_retest: 22, assedio_sexual: 30, ...(intervals_days || {}) };
     const ivMin = intervals_minutes ? { phq9: 0, copsoq: 1, ecig: 2, psicossocial: 3, phq9_retest: 3, assedio_sexual: 4, ...intervals_minutes } : null;
     const now = new Date();
