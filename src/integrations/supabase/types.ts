@@ -567,6 +567,7 @@ export type Database = {
           department: string | null
           gender: string | null
           id: string
+          is_retest: boolean
           latencies_ms: Json | null
           participant_token_hash: string
           round_no: number
@@ -585,6 +586,7 @@ export type Database = {
           department?: string | null
           gender?: string | null
           id?: string
+          is_retest?: boolean
           latencies_ms?: Json | null
           participant_token_hash: string
           round_no?: number
@@ -603,6 +605,7 @@ export type Database = {
           department?: string | null
           gender?: string | null
           id?: string
+          is_retest?: boolean
           latencies_ms?: Json | null
           participant_token_hash?: string
           round_no?: number
