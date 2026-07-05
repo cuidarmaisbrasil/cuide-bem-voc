@@ -99,7 +99,7 @@ const WellnessResponder = () => {
   const tatAutoSubmittedRef = useRef(false);
 
   const isPhqLike = wave === "phq9" || wave === "phq9_retest";
-  const isPhqFirstWave = wave === "phq9"; // includes GAD-7 after symptoms
+  const isPhqFirstWave = wave === "phq9" || wave === "phq9_retest"; // GAD-7 aplicado após sintomas na Onda 1 e Onda 5 (reteste)
   const isTatWave = false; // TAT removido da Onda 1
   const isRorschachWave = wave === "ecig";
   const hasProjective = isTatWave || isRorschachWave;
