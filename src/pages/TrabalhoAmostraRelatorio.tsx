@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
 import { PsychometricsReport } from "@/components/admin/PsychometricsReport";
+import { SampleValidityReport } from "@/components/admin/SampleValidityReport";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 
@@ -51,6 +52,7 @@ const TrabalhoAmostraRelatorio = () => {
         <div className="mt-6">
           <PsychometricsReport />
         </div>
+        <SampleValidityReport />
       </div>
     </main>
   );
