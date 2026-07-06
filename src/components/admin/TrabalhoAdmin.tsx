@@ -18,6 +18,7 @@ import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
 import { PsychometricsReport } from "@/components/admin/PsychometricsReport";
 import { SampleValidityReport } from "@/components/admin/SampleValidityReport";
 import InstrumentQuestionsAdmin from "@/components/admin/InstrumentQuestionsAdmin";
+import { SalesProspectAI } from "@/components/admin/SalesProspectAI";
 
 interface Override { n: number; text_override: string; active: boolean; }
 
