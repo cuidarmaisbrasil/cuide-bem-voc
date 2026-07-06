@@ -1090,6 +1090,72 @@ export type Database = {
           },
         ]
       }
+      sales_prospects: {
+        Row: {
+          ai_model: string | null
+          city: string | null
+          company_name: string
+          created_at: string
+          created_by: string | null
+          employee_size: string | null
+          fit_rationale: string | null
+          fit_score: number
+          id: string
+          outreach_copy: string | null
+          search_query: string | null
+          sector: string | null
+          seller_notes: string | null
+          source_urls: Json | null
+          state: string | null
+          status: string
+          target_role: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          ai_model?: string | null
+          city?: string | null
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          employee_size?: string | null
+          fit_rationale?: string | null
+          fit_score?: number
+          id?: string
+          outreach_copy?: string | null
+          search_query?: string | null
+          sector?: string | null
+          seller_notes?: string | null
+          source_urls?: Json | null
+          state?: string | null
+          status?: string
+          target_role?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          ai_model?: string | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          employee_size?: string | null
+          fit_rationale?: string | null
+          fit_score?: number
+          id?: string
+          outreach_copy?: string | null
+          search_query?: string | null
+          sector?: string | null
+          seller_notes?: string | null
+          source_urls?: Json | null
+          state?: string | null
+          status?: string
+          target_role?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       sample_report_leads: {
         Row: {
           age: number | null
