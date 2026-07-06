@@ -198,8 +198,13 @@ export const TrabalhoAdmin = () => {
           <TabsTrigger value="sample">Sample do relatório</TabsTrigger>
           <TabsTrigger value="notes">Observações por empresa</TabsTrigger>
           <TabsTrigger value="individual">Relatório individual</TabsTrigger>
+          <TabsTrigger value="prospect">Prospecção IA</TabsTrigger>
         </TabsList>
       </div>
+
+      <TabsContent value="prospect" className="space-y-3">
+        <SalesProspectAI />
+      </TabsContent>
 
       <TabsContent value="instruments" className="space-y-3">
         <InstrumentQuestionsAdmin />
