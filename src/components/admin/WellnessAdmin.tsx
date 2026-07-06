@@ -182,6 +182,8 @@ export const WellnessAdmin = () => {
 
         <TabsContent value="cycle" className="space-y-4 pt-4">
           <CycleReportPreview />
+          <PsychometricsReport />
+          <SampleValidityReport />
         </TabsContent>
 
         <TabsContent value="texts" className="space-y-4 pt-4">
