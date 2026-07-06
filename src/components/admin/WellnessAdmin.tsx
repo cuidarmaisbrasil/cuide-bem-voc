@@ -17,6 +17,8 @@ import { RorschachAdmin } from "@/components/admin/RorschachAdmin";
 import { EditableTextsAdmin } from "@/components/admin/EditableTextsAdmin";
 import { WellnessPreviewAdmin } from "@/components/admin/WellnessPreviewAdmin";
 import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
+import { PsychometricsReport } from "@/components/admin/PsychometricsReport";
+import { SampleValidityReport } from "@/components/admin/SampleValidityReport";
 import { useEditableText } from "@/hooks/useEditableText";
 
 interface RoundData {
@@ -180,6 +182,8 @@ export const WellnessAdmin = () => {
 
         <TabsContent value="cycle" className="space-y-4 pt-4">
           <CycleReportPreview />
+          <PsychometricsReport />
+          <SampleValidityReport />
         </TabsContent>
 
         <TabsContent value="texts" className="space-y-4 pt-4">
