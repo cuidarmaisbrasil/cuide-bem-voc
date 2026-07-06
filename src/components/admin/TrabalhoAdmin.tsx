@@ -365,6 +365,8 @@ export const TrabalhoAdmin = () => {
             </div>
           </div>
           <CycleReportPreview />
+          <PsychometricsReport />
+          <SampleValidityReport />
         </div>
       </TabsContent>
 
