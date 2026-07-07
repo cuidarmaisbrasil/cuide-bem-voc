@@ -89,19 +89,37 @@ export const SalesProspectAI = () => {
   async function runProspect() {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("sales-prospect-ai", {
-        body: { sector, employee_size: size, location, trigger, extra, save: true, limit },
-      });
-      if (error) throw error;
+      const payload = { sector, employee_size: size, location, trigger, extra, save: true, limit };
+      console.log("[prospect] payload", payload);
+      const { data, error } = await supabase.functions.invoke("sales-prospect-ai", { body: payload });
+      // Read real backend error body when invoke returns non-2xx
+      if (error) {
+        let detail = error.message;
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx && typeof ctx.text === "function") {
+            const txt = await ctx.text();
+            console.error("[prospect] backend error body:", txt);
+            try {
+              const j = JSON.parse(txt);
+              detail = j.detail || j.error || txt;
+            } catch { detail = txt || detail; }
+          }
+        } catch (readErr) {
+          console.error("[prospect] failed to read error context", readErr);
+        }
+        throw new Error(detail);
+      }
       if ((data as any)?.error) throw new Error((data as any).detail || (data as any).error);
       const n = (data as any)?.saved?.length ?? (data as any)?.count ?? 0;
       toast.success(`${n} empresa(s) encontrada(s) e salva(s) no pipeline`);
       await load();
     } catch (e: any) {
       const msg = String(e?.message || e);
+      console.error("[prospect] error:", msg);
       if (msg.includes("rate_limited")) toast.error("Limite de requisições atingido. Aguarde alguns segundos.");
       else if (msg.includes("credits_exhausted")) toast.error("Créditos de IA esgotados. Adicione créditos no workspace.");
-      else toast.error(`Erro: ${msg}`);
+      else toast.error(`Erro: ${msg.slice(0, 300)}`);
     } finally {
       setLoading(false);
     }

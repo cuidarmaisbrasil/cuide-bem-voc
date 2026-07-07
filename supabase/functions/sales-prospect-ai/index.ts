@@ -158,6 +158,7 @@ Deno.serve(async (req) => {
     if (!roles?.some((r: any) => r.role === "admin")) return j({ error: "forbidden" }, 403);
 
     const body = await req.json().catch(() => ({}));
+    console.log("[sales-prospect-ai] body received:", JSON.stringify(body));
     const {
       sector = "",
       employee_size = "100-1000",
@@ -182,13 +183,35 @@ Deno.serve(async (req) => {
     ].filter(Boolean).join(" ");
 
     if (!queryParts.trim()) return j({ error: "empty_query" }, 400);
+    console.log("[sales-prospect-ai] query:", queryParts);
 
-    const search = await firecrawlSearch(queryParts, Math.min(20, Math.max(5, limit * 2)));
-    // Firecrawl v2 shape: { success, data: { web: [...] } } or { data: [...] }
+    let search: any;
+    try {
+      search = await firecrawlSearch(queryParts, Math.min(20, Math.max(5, limit * 2)));
+    } catch (fe: any) {
+      console.error("[sales-prospect-ai] firecrawl error:", fe?.message || fe);
+      return j({ error: "firecrawl_failed", detail: String(fe?.message || fe) }, 502);
+    }
     const results: any[] =
       search?.data?.web ?? search?.data?.results ?? search?.data ?? search?.web ?? [];
+    console.log("[sales-prospect-ai] firecrawl results:", Array.isArray(results) ? results.length : typeof results);
 
-    const prospects = await aiExtract(results, queryParts);
+    if (!Array.isArray(results) || results.length === 0) {
+      return j({ error: "no_search_results", detail: "Firecrawl retornou 0 resultados para a consulta. Tente ampliar filtros.", query: queryParts }, 200);
+    }
+
+    let prospects: any[] = [];
+    try {
+      prospects = await aiExtract(results, queryParts);
+    } catch (ae: any) {
+      const m = String(ae?.message || ae);
+      console.error("[sales-prospect-ai] ai error:", m);
+      if (m === "rate_limited") return j({ error: "rate_limited" }, 429);
+      if (m === "credits_exhausted") return j({ error: "credits_exhausted" }, 402);
+      return j({ error: "ai_failed", detail: m }, 502);
+    }
+    console.log("[sales-prospect-ai] prospects extracted:", prospects.length);
+
 
     let saved: any[] = [];
     if (save && prospects.length) {
@@ -223,6 +246,7 @@ Deno.serve(async (req) => {
     return j({ ok: true, query: queryParts, count: prospects.length, prospects, saved });
   } catch (e: any) {
     const msg = String(e?.message || e);
+    console.error("[sales-prospect-ai] TOP-LEVEL error:", msg, e?.stack);
     if (msg === "rate_limited") return j({ error: "rate_limited" }, 429);
     if (msg === "credits_exhausted") return j({ error: "credits_exhausted" }, 402);
     return j({ error: "internal", detail: msg }, 500);
