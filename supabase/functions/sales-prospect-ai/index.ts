@@ -246,6 +246,7 @@ Deno.serve(async (req) => {
     return j({ ok: true, query: queryParts, count: prospects.length, prospects, saved });
   } catch (e: any) {
     const msg = String(e?.message || e);
+    console.error("[sales-prospect-ai] TOP-LEVEL error:", msg, e?.stack);
     if (msg === "rate_limited") return j({ error: "rate_limited" }, 429);
     if (msg === "credits_exhausted") return j({ error: "credits_exhausted" }, 402);
     return j({ error: "internal", detail: msg }, 500);
