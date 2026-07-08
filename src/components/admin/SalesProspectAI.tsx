@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ function scoreColor(s: number) {
 }
 
 export const SalesProspectAI = () => {
+  const { session, isAdmin, loading: authLoading } = useAuth();
   const [sector, setSector] = useState<string>(SECTOR_PRESETS[0]);
   const [size, setSize] = useState<string>("100-1000");
   const [location, setLocation] = useState<string>("Brasil");
@@ -87,17 +89,35 @@ export const SalesProspectAI = () => {
   );
 
   async function runProspect() {
+    if (!session?.access_token) {
+      toast.error("Sua sessão expirou. Entre novamente no painel admin.");
+      return;
+    }
+    if (!isAdmin) {
+      toast.error("Apenas administradores podem prospectar com IA.");
+      return;
+    }
     setLoading(true);
     try {
       const payload = { sector, employee_size: size, location, trigger, extra, save: true, limit };
       console.log("[prospect] payload", payload);
-      const { data, error } = await supabase.functions.invoke("sales-prospect-ai", { body: payload });
+      const { data, error } = await supabase.functions.invoke("sales-prospect-ai", {
+        body: payload,
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
       // Read real backend error body when invoke returns non-2xx
       if (error) {
         let detail = error.message;
         try {
           const ctx: any = (error as any).context;
-          if (ctx && typeof ctx.text === "function") {
+          if (ctx && typeof ctx.clone === "function" && typeof ctx.text === "function") {
+            const txt = await ctx.clone().text();
+            console.error("[prospect] backend error body:", txt);
+            try {
+              const j = JSON.parse(txt);
+              detail = j.detail || j.error || txt;
+            } catch { detail = txt || detail; }
+          } else if (ctx && typeof ctx.text === "function") {
             const txt = await ctx.text();
             console.error("[prospect] backend error body:", txt);
             try {
@@ -217,7 +237,7 @@ export const SalesProspectAI = () => {
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={runProspect} disabled={loading}>
+          <Button onClick={runProspect} disabled={loading || authLoading || !session?.access_token || !isAdmin}>
             {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Buscando na web…</> : <><Sparkles className="h-4 w-4 mr-2" /> Prospectar com IA</>}
           </Button>
         </div>
