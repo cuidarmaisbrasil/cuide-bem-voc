@@ -57,6 +57,16 @@ async function firecrawlSearch(query: string, limit: number) {
   return await r.json();
 }
 
+function textField(value: unknown, fallback = "") {
+  return typeof value === "string" ? value.trim() : fallback;
+}
+
+function numberField(value: unknown, fallback: number, min: number, max: number) {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, Math.floor(n)));
+}
+
 async function aiExtract(searchResults: any[], userQuery: string) {
   const key = Deno.env.get("LOVABLE_API_KEY");
   if (!key) throw new Error("LOVABLE_API_KEY not configured");
@@ -110,7 +120,7 @@ ${items}`;
   const r = await fetch(AI_GATEWAY, {
     method: "POST",
     headers: {
-      "Lovable-API-Key": key,
+      Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -159,18 +169,13 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     console.log("[sales-prospect-ai] body received:", JSON.stringify(body));
-    const {
-      sector = "",
-      employee_size = "100-1000",
-      location = "Brasil",
-      trigger = "",
-      extra = "",
-      save = true,
-      limit = 8,
-    } = body as {
-      sector?: string; employee_size?: string; location?: string;
-      trigger?: string; extra?: string; save?: boolean; limit?: number;
-    };
+    const sector = textField((body as Record<string, unknown>).sector);
+    const employee_size = textField((body as Record<string, unknown>).employee_size, "100-1000");
+    const location = textField((body as Record<string, unknown>).location, "Brasil") || "Brasil";
+    const trigger = textField((body as Record<string, unknown>).trigger);
+    const extra = textField((body as Record<string, unknown>).extra);
+    const save = (body as Record<string, unknown>).save !== false;
+    const limit = numberField((body as Record<string, unknown>).limit, 8, 1, 12);
 
     // Build a specific search query blending ICP + user filters.
     const queryParts = [
