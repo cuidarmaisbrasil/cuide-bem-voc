@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   isViewer: boolean;
+  isWaveManager: boolean;
+  waveManagerCompanyIds: string[];
   canView: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
@@ -17,6 +19,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   isAdmin: false,
   isViewer: false,
+  isWaveManager: false,
+  waveManagerCompanyIds: [],
   canView: false,
   loading: true,
   signOut: async () => {},
@@ -27,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isViewer, setIsViewer] = useState(false);
+  const [waveManagerCompanyIds, setWaveManagerCompanyIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setIsAdmin(false);
         setIsViewer(false);
+        setWaveManagerCompanyIds([]);
       }
     });
 
@@ -52,21 +58,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const checkRoles = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-    const roles = (data ?? []).map((r: any) => r.role);
+    const [rolesRes, wmRes] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+      supabase.from("company_wave_managers").select("company_id").eq("user_id", userId),
+    ]);
+    const roles = (rolesRes.data ?? []).map((r: any) => r.role);
     setIsAdmin(roles.includes("admin"));
     setIsViewer(roles.includes("viewer"));
+    setWaveManagerCompanyIds((wmRes.data ?? []).map((r: any) => r.company_id));
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
+  const isWaveManager = waveManagerCompanyIds.length > 0;
+
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isViewer, canView: isAdmin || isViewer, loading, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isAdmin,
+        isViewer,
+        isWaveManager,
+        waveManagerCompanyIds,
+        canView: isAdmin || isViewer,
+        loading,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
