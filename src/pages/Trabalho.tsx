@@ -85,6 +85,12 @@ const Trabalho = () => {
         if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim()) {
           toast.error("Preencha empresa, responsável, cargo, CNPJ e telefone."); return;
         }
+        if (!wmName.trim() || !wmEmail.trim() || !wmRole.trim() || !wmWhatsapp.trim()) {
+          toast.error("Preencha todos os dados do gestor de ondas."); return;
+        }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(wmEmail.trim())) {
+          toast.error("E-mail do gestor de ondas inválido."); return;
+        }
         const { data, error } = await supabase.auth.signUp({
           email, password,
           options: { emailRedirectTo: `${window.location.origin}/trabalho` },
@@ -96,6 +102,10 @@ const Trabalho = () => {
             owner_user_id: data.user.id, name: companyName, contact_name: contactName,
             contact_role: contactRole,
             contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, slug,
+            wave_manager_name: wmName.trim(),
+            wave_manager_email: wmEmail.trim().toLowerCase(),
+            wave_manager_role: wmRole.trim(),
+            wave_manager_whatsapp: wmWhatsapp.trim(),
           });
           if (cErr) throw cErr;
           toast.success("Cadastro recebido! Aguarde aprovação do admin.");
