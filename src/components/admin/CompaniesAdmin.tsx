@@ -104,9 +104,9 @@ export function CompaniesAdmin() {
             <TableHeader>
               <TableRow>
                 <TableHead>Empresa</TableHead>
-                <TableHead>Contato</TableHead>
+                <TableHead>Contato principal</TableHead>
+                <TableHead>Gestor de ondas</TableHead>
                 <TableHead>CNPJ</TableHead>
-                <TableHead>Cadastro</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
@@ -117,14 +117,29 @@ export function CompaniesAdmin() {
                   <TableCell>
                     <div className="font-medium">{c.name}</div>
                     <div className="text-xs text-muted-foreground">/{c.slug}</div>
+                    <div className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString("pt-BR")}</div>
                   </TableCell>
                   <TableCell className="text-sm">
                     <div>{c.contact_name}</div>
                     <div className="text-xs text-muted-foreground">{c.contact_email}</div>
                     {c.contact_phone && <div className="text-xs text-muted-foreground">{c.contact_phone}</div>}
                   </TableCell>
+                  <TableCell className="text-sm">
+                    {c.wave_manager_email ? (
+                      <>
+                        <div>{c.wave_manager_name ?? "—"}</div>
+                        <div className="text-xs text-muted-foreground">{c.wave_manager_email}</div>
+                        {c.wave_manager_role && <div className="text-xs text-muted-foreground">{c.wave_manager_role}</div>}
+                        {c.wave_manager_whatsapp && <div className="text-xs text-muted-foreground">📱 {c.wave_manager_whatsapp}</div>}
+                        <Badge variant={c.wave_manager_user_id ? "default" : "secondary"} className="mt-1 text-[10px]">
+                          {c.wave_manager_user_id ? "Conta ativa" : "Sem conta"}
+                        </Badge>
+                      </>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">— não informado —</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-xs">{c.cnpj ?? "—"}</TableCell>
-                  <TableCell className="text-xs">{new Date(c.created_at).toLocaleDateString("pt-BR")}</TableCell>
                   <TableCell>
                     <Badge variant={c.status === "approved" ? "default" : c.status === "rejected" ? "destructive" : "secondary"}>
                       {c.status === "approved" ? "Aprovada" : c.status === "rejected" ? "Rejeitada" : "Pendente"}
@@ -140,6 +155,9 @@ export function CompaniesAdmin() {
                       )}
                       {c.status !== "pending" && (
                         <Button size="sm" variant="ghost" onClick={() => setStatus(c.id, "pending")}>Reabrir</Button>
+                      )}
+                      {c.status === "approved" && c.wave_manager_email && (
+                        <Button size="sm" variant="secondary" onClick={() => resendWmInvite(c.id)}>Reenviar convite gestor</Button>
                       )}
                     </div>
                   </TableCell>
