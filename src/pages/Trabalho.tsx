@@ -245,11 +245,19 @@ const Trabalho = () => {
                   <h1 className="font-display text-xl font-semibold">{company.name}</h1>
                   <p className="text-xs text-muted-foreground">Cadastrado em {new Date(company.created_at).toLocaleDateString("pt-BR")}</p>
                 </div>
-                <Badge variant={company.status === "approved" ? "default" : "secondary"}>
-                  {company.status === "approved" ? "Aprovada" : company.status === "pending" ? "Aguardando aprovação" : "Rejeitada"}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  {company.status === "approved" && (
+                    <Button size="sm" variant="outline" onClick={() => navigate("/trabalho/ondas")}>
+                      Gerenciar ondas
+                    </Button>
+                  )}
+                  <Badge variant={company.status === "approved" ? "default" : "secondary"}>
+                    {company.status === "approved" ? "Aprovada" : company.status === "pending" ? "Aguardando aprovação" : "Rejeitada"}
+                  </Badge>
+                </div>
               </div>
             </Card>
+
 
             {company.status === "pending" && (
               <Card className="p-6 bg-muted/40">
