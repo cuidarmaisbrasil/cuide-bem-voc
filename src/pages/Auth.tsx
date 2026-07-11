@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,15 +11,39 @@ import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const wmCompanyId = params.get("wm");
+  const prefilledEmail = params.get("email") ?? "";
   const { user, loading } = useAuth();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    document.title = "Entrar — Cuidar+";
-    if (!loading && user) navigate("/admin");
-  }, [user, loading, navigate]);
+    document.title = wmCompanyId
+      ? "Criar conta de gestor de ondas — Cuidar+"
+      : "Entrar — Cuidar+";
+  }, [wmCompanyId]);
+
+  useEffect(() => {
+    if (loading || !user) return;
+    (async () => {
+      if (wmCompanyId) {
+        // Claim wave manager link
+        const { data, error } = await supabase.functions.invoke("wave-manager-claim", {
+          body: { company_id: wmCompanyId },
+        });
+        if (error || (data as any)?.error) {
+          toast.error((data as any)?.error ?? error?.message ?? "Falha ao vincular");
+        } else {
+          toast.success("Conta vinculada à empresa!");
+        }
+        navigate("/trabalho/ondas");
+      } else {
+        navigate("/admin");
+      }
+    })();
+  }, [user, loading, wmCompanyId, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,30 +51,38 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) toast.error(error.message);
-    else navigate("/admin");
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
+    const redirect = wmCompanyId
+      ? `${window.location.origin}/auth?wm=${wmCompanyId}&email=${encodeURIComponent(email)}`
+      : `${window.location.origin}/admin`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/admin` },
+      options: { emailRedirectTo: redirect },
     });
     setBusy(false);
     if (error) toast.error(error.message);
     else toast.success("Conta criada. Verifique seu email para confirmar.");
   };
 
+  const isWaveManagerFlow = Boolean(wmCompanyId);
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md p-6 shadow-card">
-        <h1 className="font-display text-2xl font-semibold text-center mb-1">Cuidar+ Admin</h1>
+        <h1 className="font-display text-2xl font-semibold text-center mb-1">
+          {isWaveManagerFlow ? "Gestor de ondas" : "Cuidar+ Admin"}
+        </h1>
         <p className="text-sm text-muted-foreground text-center mb-6">
-          Acesso restrito ao administrador da plataforma
+          {isWaveManagerFlow
+            ? "Crie sua conta com o e-mail cadastrado pela empresa para gerenciar as ondas de bem-estar."
+            : "Acesso restrito ao administrador da plataforma"}
         </p>
-        <Tabs defaultValue="signin">
+        <Tabs defaultValue={isWaveManagerFlow ? "signup" : "signin"}>
           <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="signin">Entrar</TabsTrigger>
             <TabsTrigger value="signup">Criar conta</TabsTrigger>
@@ -83,9 +115,11 @@ const Auth = () => {
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy ? "Criando..." : "Criar conta"}
               </Button>
-              <p className="text-xs text-muted-foreground">
-                Após criar a conta, peça ao administrador para conceder o papel <code>admin</code>.
-              </p>
+              {!isWaveManagerFlow && (
+                <p className="text-xs text-muted-foreground">
+                  Após criar a conta, peça ao administrador para conceder o papel <code>admin</code>.
+                </p>
+              )}
             </form>
           </TabsContent>
         </Tabs>

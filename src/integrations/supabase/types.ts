@@ -156,6 +156,11 @@ export type Database = {
           slug: string
           status: string
           updated_at: string
+          wave_manager_email: string | null
+          wave_manager_name: string | null
+          wave_manager_role: string | null
+          wave_manager_user_id: string | null
+          wave_manager_whatsapp: string | null
         }
         Insert: {
           allowed_versions?: string[]
@@ -176,6 +181,11 @@ export type Database = {
           slug: string
           status?: string
           updated_at?: string
+          wave_manager_email?: string | null
+          wave_manager_name?: string | null
+          wave_manager_role?: string | null
+          wave_manager_user_id?: string | null
+          wave_manager_whatsapp?: string | null
         }
         Update: {
           allowed_versions?: string[]
@@ -196,8 +206,42 @@ export type Database = {
           slug?: string
           status?: string
           updated_at?: string
+          wave_manager_email?: string | null
+          wave_manager_name?: string | null
+          wave_manager_role?: string | null
+          wave_manager_user_id?: string | null
+          wave_manager_whatsapp?: string | null
         }
         Relationships: []
+      }
+      company_wave_managers: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_wave_managers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       copsoq_company_notes: {
         Row: {
@@ -1676,6 +1720,8 @@ export type Database = {
           created_at: string
           devolutiva_communicated_at: string | null
           devolutiva_notes: string | null
+          first_wave_approved_at: string | null
+          first_wave_approved_by: string | null
           id: string
           opened_at: string
           round_no: number
@@ -1687,6 +1733,8 @@ export type Database = {
           created_at?: string
           devolutiva_communicated_at?: string | null
           devolutiva_notes?: string | null
+          first_wave_approved_at?: string | null
+          first_wave_approved_by?: string | null
           id?: string
           opened_at?: string
           round_no: number
@@ -1698,6 +1746,8 @@ export type Database = {
           created_at?: string
           devolutiva_communicated_at?: string | null
           devolutiva_notes?: string | null
+          first_wave_approved_at?: string | null
+          first_wave_approved_by?: string | null
           id?: string
           opened_at?: string
           round_no?: number
@@ -1855,12 +1905,16 @@ export type Database = {
           access_code_first_used_at: string | null
           access_code_hash: string | null
           access_code_issued_at: string | null
+          area: string | null
           company_id: string
           created_at: string
+          departamento: string | null
           email: string
           enrolled_at: string
+          full_name: string | null
           id: string
           longitudinal_hash: string | null
+          setor: string | null
           token: string
           token_hash: string | null
           unsubscribed_at: string | null
@@ -1869,12 +1923,16 @@ export type Database = {
           access_code_first_used_at?: string | null
           access_code_hash?: string | null
           access_code_issued_at?: string | null
+          area?: string | null
           company_id: string
           created_at?: string
+          departamento?: string | null
           email: string
           enrolled_at?: string
+          full_name?: string | null
           id?: string
           longitudinal_hash?: string | null
+          setor?: string | null
           token?: string
           token_hash?: string | null
           unsubscribed_at?: string | null
@@ -1883,12 +1941,16 @@ export type Database = {
           access_code_first_used_at?: string | null
           access_code_hash?: string | null
           access_code_issued_at?: string | null
+          area?: string | null
           company_id?: string
           created_at?: string
+          departamento?: string | null
           email?: string
           enrolled_at?: string
+          full_name?: string | null
           id?: string
           longitudinal_hash?: string | null
+          setor?: string | null
           token?: string
           token_hash?: string | null
           unsubscribed_at?: string | null
@@ -1980,6 +2042,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_wave_manager_of: {
+        Args: { _company_id: string; _user_id: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -1997,9 +2063,13 @@ export type Database = {
           read_ct: number
         }[]
       }
+      wave_manager_company_ids: {
+        Args: { _user_id: string }
+        Returns: string[]
+      }
     }
     Enums: {
-      app_role: "admin" | "user" | "viewer" | "company"
+      app_role: "admin" | "user" | "viewer" | "company" | "wave_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2127,7 +2197,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "viewer", "company"],
+      app_role: ["admin", "user", "viewer", "company", "wave_manager"],
     },
   },
 } as const
