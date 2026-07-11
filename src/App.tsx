@@ -23,6 +23,7 @@ import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
 import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
 import TrabalhoContato from "./pages/TrabalhoContato.tsx";
 import TrabalhoAmostraRelatorio from "./pages/TrabalhoAmostraRelatorio.tsx";
+import TrabalhoOndas from "./pages/TrabalhoOndas.tsx";
 
 
 const queryClient = new QueryClient();
