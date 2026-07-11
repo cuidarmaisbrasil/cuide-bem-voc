@@ -52,6 +52,8 @@ const Trabalho = () => {
   const [companyName, setCompanyName] = useState(""); const [contactName, setContactName] = useState("");
   const [contactRole, setContactRole] = useState("");
   const [phone, setPhone] = useState(""); const [cnpj, setCnpj] = useState("");
+  const [wmName, setWmName] = useState(""); const [wmEmail, setWmEmail] = useState("");
+  const [wmRole, setWmRole] = useState(""); const [wmWhatsapp, setWmWhatsapp] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
