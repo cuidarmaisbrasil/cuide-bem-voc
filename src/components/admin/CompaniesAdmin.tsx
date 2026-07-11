@@ -18,6 +18,11 @@ interface Company {
   created_at: string;
   approved_at: string | null;
   notes: string | null;
+  wave_manager_name: string | null;
+  wave_manager_email: string | null;
+  wave_manager_role: string | null;
+  wave_manager_whatsapp: string | null;
+  wave_manager_user_id: string | null;
 }
 
 export function CompaniesAdmin() {
