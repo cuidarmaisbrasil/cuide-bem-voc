@@ -52,7 +52,26 @@ export function CompaniesAdmin() {
     const { error } = await supabase.from("companies").update(patch).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(status === "approved" ? "Empresa aprovada" : status === "rejected" ? "Empresa rejeitada" : "Status atualizado");
+
+    if (status === "approved") {
+      const co = items.find((c) => c.id === id);
+      if (co?.wave_manager_email) {
+        const { error: invErr } = await supabase.functions.invoke("wave-manager-invite", {
+          body: { company_id: id },
+        });
+        if (invErr) toast.error("Empresa aprovada, mas o convite ao gestor falhou: " + invErr.message);
+        else toast.success("Convite enviado ao gestor de ondas");
+      }
+    }
     await load();
+  }
+
+  async function resendWmInvite(id: string) {
+    const { error } = await supabase.functions.invoke("wave-manager-invite", {
+      body: { company_id: id },
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Convite reenviado ao gestor");
   }
 
   const filtered = items.filter((c) => filter === "all" || c.status === filter);
