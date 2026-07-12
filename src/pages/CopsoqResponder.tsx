@@ -40,6 +40,21 @@ const CopsoqResponder = () => {
   const [demo, setDemo] = useState({ age_range: "", gender: "", department: "", tenure_range: "" });
   const [submitting, setSubmitting] = useState(false);
 
+  // Token de sessão local (uma coleta = uma aba). Estável durante a sessão.
+  const sessionTokenRef = useRef<string>("");
+  if (!sessionTokenRef.current) {
+    sessionTokenRef.current =
+      (typeof crypto !== "undefined" && "randomUUID" in crypto)
+        ? crypto.randomUUID()
+        : `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+  const telemetry = useTelemetry({
+    enabled: !!company,
+    sessionToken: sessionTokenRef.current,
+    instrument: `copsoq_${version}`,
+    companyId: company?.id ?? null,
+  });
+
   useEffect(() => {
     if (!slug) return;
     supabase.from("companies").select("id, name, allowed_versions, status").eq("slug", slug).maybeSingle()
@@ -48,6 +63,12 @@ const CopsoqResponder = () => {
 
   const answered = Object.keys(answers).length;
   const progress = Math.round((answered / questions.length) * 100);
+
+  // Log view por questão quando o formulário abre
+  useEffect(() => {
+    if (step !== "form") return;
+    questions.forEach((q) => telemetry.logView(q.n));
+  }, [step, questions, telemetry]);
 
   const submit = async () => {
     if (answered < questions.length) { toast.error("Responda todas as perguntas."); return; }
@@ -61,6 +82,7 @@ const CopsoqResponder = () => {
         },
       });
       if (error) throw error;
+      void telemetry.logSubmit();
       setStep("done");
     } catch (e: any) { toast.error(e.message || "Erro ao enviar."); }
     finally { setSubmitting(false); }
