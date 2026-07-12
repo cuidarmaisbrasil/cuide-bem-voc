@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { getCopsoq, responseLabels, versionMeta, type CopsoqVersion } from "@/data/copsoq";
+import { useTelemetry } from "@/hooks/useTelemetry";
 
 const CopsoqResponder = () => {
   const { slug } = useParams<{ slug: string }>();
