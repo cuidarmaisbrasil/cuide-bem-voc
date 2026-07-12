@@ -23,6 +23,7 @@ import { CampaignComposer } from "@/components/admin/CampaignComposer";
 import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
 import { TrabalhoAdmin } from "@/components/admin/TrabalhoAdmin";
 import { WellnessAdmin } from "@/components/admin/WellnessAdmin";
+import { TelemetryAdmin } from "@/components/admin/TelemetryAdmin";
 import { TatRequestsAdmin } from "@/components/admin/TatRequestsAdmin";
 import { SampleReportLeadsAdmin } from "@/components/admin/SampleReportLeadsAdmin";
 
