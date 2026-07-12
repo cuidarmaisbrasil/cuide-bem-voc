@@ -1620,6 +1620,193 @@ export type Database = {
           },
         ]
       }
+      telemetry_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: number
+          instrument: string | null
+          item_index: number | null
+          meta: Json | null
+          session_id: string
+          t_ms: number
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: number
+          instrument?: string | null
+          item_index?: number | null
+          meta?: Json | null
+          session_id: string
+          t_ms: number
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: number
+          instrument?: string | null
+          item_index?: number | null
+          meta?: Json | null
+          session_id?: string
+          t_ms?: number
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telemetry_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "telemetry_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telemetry_scores: {
+        Row: {
+          authenticity_score: number
+          blur_count: number
+          created_at: string
+          fast_ratio: number | null
+          flag: string
+          had_paste: boolean
+          id: string
+          instrument: string
+          median_time_ms: number | null
+          n_items: number | null
+          session_id: string
+          signals: Json | null
+          straightlining: boolean
+          total_time_ms: number | null
+          updated_at: string
+        }
+        Insert: {
+          authenticity_score: number
+          blur_count?: number
+          created_at?: string
+          fast_ratio?: number | null
+          flag?: string
+          had_paste?: boolean
+          id?: string
+          instrument: string
+          median_time_ms?: number | null
+          n_items?: number | null
+          session_id: string
+          signals?: Json | null
+          straightlining?: boolean
+          total_time_ms?: number | null
+          updated_at?: string
+        }
+        Update: {
+          authenticity_score?: number
+          blur_count?: number
+          created_at?: string
+          fast_ratio?: number | null
+          flag?: string
+          had_paste?: boolean
+          id?: string
+          instrument?: string
+          median_time_ms?: number | null
+          n_items?: number | null
+          session_id?: string
+          signals?: Json | null
+          straightlining?: boolean
+          total_time_ms?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telemetry_scores_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "telemetry_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telemetry_sessions: {
+        Row: {
+          browser_name: string | null
+          company_id: string | null
+          created_at: string
+          device_type: string | null
+          dpr: number | null
+          fingerprint_hash: string | null
+          flush_count: number
+          id: string
+          instrument: string | null
+          ip_hash: string | null
+          last_flush_at: string | null
+          locale: string | null
+          os_name: string | null
+          round_no: number | null
+          screen_h: number | null
+          screen_w: number | null
+          session_token: string
+          started_at: string
+          submitted_at: string | null
+          timezone: string | null
+          updated_at: string
+          user_agent: string | null
+          viewport_h: number | null
+          viewport_w: number | null
+        }
+        Insert: {
+          browser_name?: string | null
+          company_id?: string | null
+          created_at?: string
+          device_type?: string | null
+          dpr?: number | null
+          fingerprint_hash?: string | null
+          flush_count?: number
+          id?: string
+          instrument?: string | null
+          ip_hash?: string | null
+          last_flush_at?: string | null
+          locale?: string | null
+          os_name?: string | null
+          round_no?: number | null
+          screen_h?: number | null
+          screen_w?: number | null
+          session_token: string
+          started_at?: string
+          submitted_at?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          viewport_h?: number | null
+          viewport_w?: number | null
+        }
+        Update: {
+          browser_name?: string | null
+          company_id?: string | null
+          created_at?: string
+          device_type?: string | null
+          dpr?: number | null
+          fingerprint_hash?: string | null
+          flush_count?: number
+          id?: string
+          instrument?: string | null
+          ip_hash?: string | null
+          last_flush_at?: string | null
+          locale?: string | null
+          os_name?: string | null
+          round_no?: number | null
+          screen_h?: number | null
+          screen_w?: number | null
+          session_token?: string
+          started_at?: string
+          submitted_at?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          viewport_h?: number | null
+          viewport_w?: number | null
+        }
+        Relationships: []
+      }
       test_events: {
         Row: {
           age: number | null

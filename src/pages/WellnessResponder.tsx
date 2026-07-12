@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { tenSymptoms } from "@/data/symptoms";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTelemetry } from "@/hooks/useTelemetry";
 
 type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
 
@@ -107,6 +108,13 @@ const WellnessResponder = () => {
   const projectiveTable = "tat_images";
   const projectiveFn = "tat-submit";
 
+  // Telemetria comportamental (Fase 1) — não bloqueia envios, apenas observa.
+  const telemetry = useTelemetry({
+    enabled: !!token && !!wave,
+    sessionToken: token ?? null,
+    instrument: (wave as string) ?? null,
+  });
+
   useEffect(() => {
     if (!token || !wave) return;
     const base = import.meta.env.VITE_SUPABASE_URL;
@@ -157,8 +165,13 @@ const WellnessResponder = () => {
   useEffect(() => {
     if (step !== "form") return;
     const now = Date.now();
-    questions.forEach((q) => { if (!shownAtRef.current[q.n]) shownAtRef.current[q.n] = now; });
-  }, [step, questions]);
+    questions.forEach((q) => {
+      if (!shownAtRef.current[q.n]) {
+        shownAtRef.current[q.n] = now;
+        telemetry.logView(q.n);
+      }
+    });
+  }, [step, questions, telemetry]);
 
   const answered = Object.keys(answers).length;
   const progress = questions.length ? Math.round((answered / questions.length) * 100) : 0;
@@ -169,6 +182,7 @@ const WellnessResponder = () => {
     setAnswers((a) => ({ ...a, [q.n]: value }));
     setLatencies((l) => ({ ...l, [q.n]: lat }));
     shownAtRef.current[q.n] = Date.now();
+    telemetry.logAnswer(q.n, value);
   };
 
   const startFlow = () => {
@@ -267,6 +281,7 @@ const WellnessResponder = () => {
         setAccessCode((data as any).access_code);
         setCodeFirstIssue(Boolean((data as any).access_code_first_issue));
       }
+      void telemetry.logSubmit();
       setStep("done");
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar");
