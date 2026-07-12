@@ -108,6 +108,13 @@ const WellnessResponder = () => {
   const projectiveTable = "tat_images";
   const projectiveFn = "tat-submit";
 
+  // Telemetria comportamental (Fase 1) — não bloqueia envios, apenas observa.
+  const telemetry = useTelemetry({
+    enabled: !!token && !!wave,
+    sessionToken: token ?? null,
+    instrument: (wave as string) ?? null,
+  });
+
   useEffect(() => {
     if (!token || !wave) return;
     const base = import.meta.env.VITE_SUPABASE_URL;
