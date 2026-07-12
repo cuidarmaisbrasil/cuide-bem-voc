@@ -233,15 +233,16 @@ Deno.serve(async (req) => {
         .eq("instrument", body.instrument);
 
       const score = computeScore((allEvents ?? []) as EventIn[]);
-      await sb.from("telemetry_scores").upsert(
-        {
-          session_id: sessionId,
-          instrument: body.instrument,
-          ...score,
-        },
-        { onConflict: "session_id,instrument" }
-      ).select();
-      // upsert precisa de unique — fallback: se der erro, faz update/insert manual
+      await sb
+        .from("telemetry_scores")
+        .delete()
+        .eq("session_id", sessionId)
+        .eq("instrument", body.instrument);
+      await sb.from("telemetry_scores").insert({
+        session_id: sessionId,
+        instrument: body.instrument,
+        ...score,
+      });
     }
 
     return respond({ stored: true, session_id: sessionId, count: rows.length });
