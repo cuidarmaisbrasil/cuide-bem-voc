@@ -165,8 +165,13 @@ const WellnessResponder = () => {
   useEffect(() => {
     if (step !== "form") return;
     const now = Date.now();
-    questions.forEach((q) => { if (!shownAtRef.current[q.n]) shownAtRef.current[q.n] = now; });
-  }, [step, questions]);
+    questions.forEach((q) => {
+      if (!shownAtRef.current[q.n]) {
+        shownAtRef.current[q.n] = now;
+        telemetry.logView(q.n);
+      }
+    });
+  }, [step, questions, telemetry]);
 
   const answered = Object.keys(answers).length;
   const progress = questions.length ? Math.round((answered / questions.length) * 100) : 0;
@@ -177,6 +182,7 @@ const WellnessResponder = () => {
     setAnswers((a) => ({ ...a, [q.n]: value }));
     setLatencies((l) => ({ ...l, [q.n]: lat }));
     shownAtRef.current[q.n] = Date.now();
+    telemetry.logAnswer(q.n, value);
   };
 
   const startFlow = () => {
