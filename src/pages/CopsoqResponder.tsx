@@ -128,7 +128,7 @@ const CopsoqResponder = () => {
                       const selected = answers[q.n] === value;
                       return (
                         <button key={value} type="button"
-                          onClick={() => setAnswers({ ...answers, [q.n]: value })}
+                          onClick={() => { setAnswers({ ...answers, [q.n]: value }); telemetry.logAnswer(q.n, value); }}
                           className={`p-2 rounded-md border text-xs leading-tight transition-colors ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-background border-border hover:bg-accent"}`}>
                           <div className="font-mono font-semibold">{value}</div>
                           <div className="text-[10px] mt-0.5">{label}</div>
