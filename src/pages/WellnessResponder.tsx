@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { tenSymptoms } from "@/data/symptoms";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTelemetry } from "@/hooks/useTelemetry";
 
 type Wave = "phq9" | "ecig" | "copsoq" | "psicossocial" | "assedio_sexual" | "phq9_retest";
 
