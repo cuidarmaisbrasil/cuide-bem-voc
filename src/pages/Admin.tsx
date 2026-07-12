@@ -1544,6 +1544,12 @@ const Admin = () => {
             </TabsContent>
           )}
 
+          {!readOnly && (
+            <TabsContent value="telemetry" className="space-y-4 pt-4">
+              <TelemetryAdmin />
+            </TabsContent>
+          )}
+
 
 
 
