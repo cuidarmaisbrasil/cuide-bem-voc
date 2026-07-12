@@ -281,6 +281,7 @@ const WellnessResponder = () => {
         setAccessCode((data as any).access_code);
         setCodeFirstIssue(Boolean((data as any).access_code_first_issue));
       }
+      void telemetry.logSubmit();
       setStep("done");
     } catch (e: any) {
       toast.error(e.message || "Erro ao enviar");
