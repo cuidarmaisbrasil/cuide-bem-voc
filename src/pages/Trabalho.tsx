@@ -555,6 +555,109 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
         </div>
       </section>
 
+      {/* ARQUITETURA PREVENTIVA EM CAMADAS */}
+      <section id="arquitetura" className="border-b border-border/40 bg-background">
+        <div className="container max-w-6xl py-24 md:py-28">
+          <Reveal className="max-w-3xl mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card px-3 py-1 text-xs font-medium text-primary mb-5">
+              <Layers className="h-3.5 w-3.5" />
+              Arquitetura clínico-ocupacional
+            </div>
+            <h2 className="font-serif-editorial text-4xl md:text-5xl font-medium text-foreground mb-5 leading-tight">
+              Ordem estratégica de aplicação para <span className="italic text-primary">prevenir afastamentos</span> por depressão e ansiedade
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Não é empilhamento de testes. É uma sequência científica em 5 camadas — do sintoma individual ao risco psicossocial coletivo — que triangula o mesmo fenômeno por lentes complementares. Cada instrumento cumpre uma função estratégica distinta e, em conjunto, sustentam o cumprimento da <strong className="text-foreground">NR-1</strong> e da <strong className="text-foreground">Lei 14.457/22</strong>.
+            </p>
+          </Reveal>
+
+          <div className="space-y-4">
+            {[
+              {
+                Icon: Activity,
+                n: "Camada 01",
+                inst: "PHQ-9",
+                title: "Sintoma individual",
+                fn: "Sinal precoce de depressão e ansiedade — o que a empresa quer evitar (afastamento CID-F).",
+                tag: "Validado pela OMS · α 0,89",
+              },
+              {
+                Icon: Users,
+                n: "Camada 02",
+                inst: "e-CIG",
+                title: "Clima do grupo",
+                fn: "Captura o microclima imediato antes que o mal-estar vire quadro clínico.",
+                tag: "Escuta contínua",
+              },
+              {
+                Icon: Building2,
+                n: "Camada 03",
+                inst: "COPSOQ III",
+                title: "Risco psicossocial",
+                fn: "Demandas, controle, suporte, reconhecimento e insegurança — evidência formal exigida pelo PGR/NR-1.",
+                tag: "Cobertura NR-1",
+              },
+              {
+                Icon: AlertOctagon,
+                n: "Camada 04",
+                inst: "LIPT-60",
+                title: "Assédio moral",
+                fn: "Amplia a leitura para assédio moral — risco nomeado pelo MTE.",
+                tag: "Risco nomeado (MTE)",
+              },
+              {
+                Icon: ShieldAlert,
+                n: "Camada 05",
+                inst: "MDiSH + SHRAS",
+                title: "Assédio sexual",
+                fn: "Fecha lacunas deixadas por COPSOQ e LIPT; alinhado à Lei 14.457/22 (CIPA+A).",
+                tag: "Lei 14.457/22",
+              },
+            ].map((l, i) => (
+              <Reveal key={l.n} delay={i * 90}>
+                <Card className="p-5 md:p-6 border-border/60 hover:border-primary/40 transition-smooth shadow-card">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                    <div className="flex items-center gap-4 md:w-56 shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0">
+                        <l.Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">{l.n}</div>
+                        <div className="font-serif-editorial text-xl font-medium text-foreground leading-tight">{l.title}</div>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-primary mb-1 tracking-wide">{l.inst}</div>
+                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{l.fn}</p>
+                    </div>
+                    <div className="md:w-40 shrink-0">
+                      <Badge variant="secondary" className="text-[11px] whitespace-normal text-center leading-snug py-1.5">
+                        {l.tag}
+                      </Badge>
+                    </div>
+                  </div>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={200} className="mt-10 rounded-2xl border border-primary/20 bg-primary/5 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 justify-between">
+              <div className="max-w-2xl">
+                <div className="text-primary font-mono text-xs mb-2 italic tracking-widest">PARA QUE SERVE</div>
+                <p className="text-foreground leading-relaxed">
+                  Detectar sofrimento <strong>antes</strong> do afastamento, gerar evidência técnica para o PGR (NR-1) e proteger a empresa juridicamente — enquanto cuida de pessoas reais.
+                </p>
+              </div>
+              <Button onClick={onCadastrar} className="bg-gradient-hero text-primary-foreground hover:opacity-90 group h-11 px-5 shrink-0">
+                Ativar na minha empresa
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+
+
       {/* RELATÓRIO */}
       <section className="border-b border-border/40">
         <div className="container max-w-6xl py-24">
