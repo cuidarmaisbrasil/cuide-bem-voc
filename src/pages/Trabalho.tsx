@@ -656,6 +656,9 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             </div>
           </Reveal>
         </div>
+      </section>
+
+
 
 
       {/* RELATÓRIO */}
