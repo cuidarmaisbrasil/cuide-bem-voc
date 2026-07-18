@@ -555,7 +555,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
         </div>
       </section>
 
-      {/* ARQUITETURA PREVENTIVA EM CAMADAS */}
+      {/* ARQUITETURA PREVENTIVA EM ONDAS */}
       <section id="arquitetura" className="border-b border-border/40 bg-background">
         <div className="container max-w-6xl py-24 md:py-28">
           <Reveal className="max-w-3xl mb-14">
@@ -567,7 +567,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               Ordem estratégica de aplicação para <span className="italic text-primary">prevenir afastamentos</span> por depressão e ansiedade
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Não é empilhamento de testes. É uma sequência científica em 5 camadas — do sintoma individual ao risco psicossocial coletivo — que triangula o mesmo fenômeno por lentes complementares. Cada instrumento cumpre uma função estratégica distinta e, em conjunto, sustentam o cumprimento da <strong className="text-foreground">NR-1</strong> e da <strong className="text-foreground">Lei 14.457/22</strong>.
+              Não é empilhamento de testes. É uma sequência científica em 5 ondas — do sintoma individual ao risco psicossocial coletivo — que triangula o mesmo fenômeno por lentes complementares. Cada onda cumpre uma função estratégica distinta e, em conjunto, sustentam o cumprimento da <strong className="text-foreground">NR-1</strong> e da <strong className="text-foreground">Lei 14.457/22</strong>.
             </p>
           </Reveal>
 
