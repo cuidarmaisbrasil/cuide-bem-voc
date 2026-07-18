@@ -555,7 +555,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
         </div>
       </section>
 
-      {/* ARQUITETURA PREVENTIVA EM CAMADAS */}
+      {/* ARQUITETURA PREVENTIVA EM ONDAS */}
       <section id="arquitetura" className="border-b border-border/40 bg-background">
         <div className="container max-w-6xl py-24 md:py-28">
           <Reveal className="max-w-3xl mb-14">
@@ -567,7 +567,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               Ordem estratégica de aplicação para <span className="italic text-primary">prevenir afastamentos</span> por depressão e ansiedade
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Não é empilhamento de testes. É uma sequência científica em 5 camadas — do sintoma individual ao risco psicossocial coletivo — que triangula o mesmo fenômeno por lentes complementares. Cada instrumento cumpre uma função estratégica distinta e, em conjunto, sustentam o cumprimento da <strong className="text-foreground">NR-1</strong> e da <strong className="text-foreground">Lei 14.457/22</strong>.
+              Não é empilhamento de testes. É uma sequência científica em 5 ondas — do sintoma individual ao risco psicossocial coletivo — que triangula o mesmo fenômeno por lentes complementares. Cada onda cumpre uma função estratégica distinta e, em conjunto, sustentam o cumprimento da <strong className="text-foreground">NR-1</strong> e da <strong className="text-foreground">Lei 14.457/22</strong>.
             </p>
           </Reveal>
 
@@ -575,40 +575,35 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
             {[
               {
                 Icon: Activity,
-                n: "Camada 01",
-                inst: "PHQ-9",
+                n: "Onda 01",
                 title: "Sintoma individual",
                 fn: "Sinal precoce de depressão e ansiedade — o que a empresa quer evitar (afastamento CID-F).",
                 tag: "Validado pela OMS · α 0,89",
               },
               {
                 Icon: Users,
-                n: "Camada 02",
-                inst: "e-CIG",
+                n: "Onda 02",
                 title: "Clima do grupo",
                 fn: "Captura o microclima imediato antes que o mal-estar vire quadro clínico.",
                 tag: "Escuta contínua",
               },
               {
                 Icon: Building2,
-                n: "Camada 03",
-                inst: "COPSOQ III",
+                n: "Onda 03",
                 title: "Risco psicossocial",
                 fn: "Demandas, controle, suporte, reconhecimento e insegurança — evidência formal exigida pelo PGR/NR-1.",
                 tag: "Cobertura NR-1",
               },
               {
                 Icon: AlertOctagon,
-                n: "Camada 04",
-                inst: "LIPT-60",
+                n: "Onda 04",
                 title: "Assédio moral",
                 fn: "Amplia a leitura para assédio moral — risco nomeado pelo MTE.",
                 tag: "Risco nomeado (MTE)",
               },
               {
                 Icon: ShieldAlert,
-                n: "Camada 05",
-                inst: "MDiSH + SHRAS",
+                n: "Onda 05",
                 title: "Assédio sexual",
                 fn: "Fecha lacunas deixadas por COPSOQ e LIPT; alinhado à Lei 14.457/22 (CIPA+A).",
                 tag: "Lei 14.457/22",
@@ -627,7 +622,6 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold text-primary mb-1 tracking-wide">{l.inst}</div>
                       <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{l.fn}</p>
                     </div>
                     <div className="md:w-40 shrink-0">
