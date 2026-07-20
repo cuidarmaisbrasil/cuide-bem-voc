@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2 } from "lucide-react";
 
 type Prospect = {
   id: string;
@@ -27,6 +27,17 @@ type Prospect = {
   seller_notes: string | null;
   source_urls: any;
   created_at: string;
+  cnpj: string | null;
+  razao_social: string | null;
+  cnae_principal: string | null;
+  situacao_cadastral: string | null;
+  municipio: string | null;
+  uf: string | null;
+  porte_receita: string | null;
+  capital_social: number | null;
+  data_abertura: string | null;
+  enriched_at: string | null;
+  enrichment_source: string | null;
 };
 
 const STATUSES = [
