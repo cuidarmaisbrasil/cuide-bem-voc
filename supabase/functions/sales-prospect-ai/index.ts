@@ -6,9 +6,9 @@ const corsHeaders = {
 };
 
 // AI prospecting agent for Cuidar+ Trabalho B2B sales.
-// Uses Firecrawl to search the web for Brazilian companies matching the ICP,
-// then Lovable AI Gateway (Gemini 2.5 Pro) to score fit, write outreach copy,
-// and suggest the target role. Admin-only.
+// Fan-out search: runs multiple targeted queries (sector synonyms + triggers +
+// site: hints for lista/ranking pages) via Firecrawl, aggregates + dedupes
+// results, then asks Lovable AI Gateway (Gemini 2.5 Pro) to extract prospects.
 
 const FIRECRAWL_V2 = "https://api.firecrawl.dev/v2";
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
@@ -25,6 +25,27 @@ Cuidar+ Trabalho é um programa brasileiro de saúde mental ocupacional em 5 ond
 - Empresas com sinais de dor: fiscalização MTE, obrigação NR-1 a cumprir, notícias
   de afastamentos por saúde mental, ações trabalhistas por assédio, alta rotatividade.
 `;
+
+// Sector synonyms/expansions for fan-out queries (PT-BR web).
+const SECTOR_EXPANSIONS: Record<string, string[]> = {
+  "saúde": ["hospitais privados", "redes hospitalares", "operadoras de saúde", "planos de saúde", "clínicas de grande porte"],
+  "call center": ["call center", "BPO", "contact center", "SAC terceirizado", "atendimento telefônico"],
+  "logística": ["transportadoras", "logística e-commerce", "operadores logísticos", "centros de distribuição", "última milha"],
+  "bancos": ["bancos", "financeiras", "cooperativas de crédito", "fintechs de crédito", "seguradoras"],
+  "segurança": ["empresas de segurança privada", "vigilância patrimonial", "segurança pública", "polícias militares", "guardas municipais"],
+  "educação": ["redes de ensino", "grupos educacionais", "universidades privadas", "faculdades particulares", "colégios de grande porte"],
+  "mineração": ["mineradoras", "siderúrgicas", "metalúrgicas", "indústria pesada", "petroquímicas"],
+  "varejo": ["redes de varejo", "supermercados", "atacarejo", "farmácias em rede", "lojas de departamento"],
+  "tecnologia": ["empresas de tecnologia", "software houses", "unicórnios brasileiros", "empresas SaaS", "consultorias de TI"],
+};
+
+function normalizeSectorKey(sector: string): string {
+  const s = sector.toLowerCase();
+  for (const k of Object.keys(SECTOR_EXPANSIONS)) {
+    if (s.includes(k)) return k;
+  }
+  return "";
+}
 
 function j(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -67,15 +88,36 @@ function numberField(value: unknown, fallback: number, min: number, max: number)
   return Math.min(max, Math.max(min, Math.floor(n)));
 }
 
-async function aiExtract(searchResults: any[], userQuery: string) {
+function hostOf(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; }
+}
+
+function dedupeResults(all: any[]): any[] {
+  const seen = new Set<string>();
+  const out: any[] = [];
+  for (const r of all) {
+    const url = r?.url || "";
+    const key = hostOf(url) + "|" + (r?.title || "").slice(0, 80).toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(r);
+  }
+  return out;
+}
+
+async function aiExtract(searchResults: any[], userQuery: string, alreadyKnown: string[], targetCount: number) {
   const key = Deno.env.get("LOVABLE_API_KEY");
   if (!key) throw new Error("LOVABLE_API_KEY not configured");
 
   // Compact context (title + url + snippet) to keep tokens sane.
-  const items = (searchResults || []).slice(0, 20).map((r: any, i: number) => {
-    const md = (r.markdown || r.description || "").toString().slice(0, 800);
+  const items = (searchResults || []).slice(0, 40).map((r: any, i: number) => {
+    const md = (r.markdown || r.description || r.content || "").toString().slice(0, 700);
     return `[${i + 1}] ${r.title || "(sem título)"}\nURL: ${r.url || ""}\n${md}`;
   }).join("\n\n---\n\n");
+
+  const knownBlock = alreadyKnown.length
+    ? `\n\nEmpresas JÁ presentes no pipeline (NÃO repita, escolha OUTRAS):\n${alreadyKnown.slice(0, 60).map((n) => `- ${n}`).join("\n")}`
+    : "";
 
   const system = `Você é um analista de vendas B2B do Cuidar+ Trabalho.
 Sua tarefa: extrair, a partir dos resultados de busca fornecidos, empresas brasileiras
@@ -105,11 +147,14 @@ Retorne APENAS JSON válido no formato:
 
 Regras:
 - Só inclua empresas que aparecem nas fontes; NÃO invente.
-- Descarte empresas com <100 colaboradores prováveis.
+- Se o resultado é uma LISTA/RANKING (ex: "melhores empresas do setor X"), extraia
+  cada empresa citada como um prospect separado (mesmo se o snippet for curto).
+- Descarte só empresas obviamente muito pequenas (<50 colaboradores prováveis).
 - fit_score 80-100: setor de alto risco + porte + gatilho de urgência.
 - fit_score 60-79: setor + porte, sem gatilho claro.
 - fit_score 40-59: só um critério forte.
-- Máx 8 prospects. Ordene por fit_score desc.`;
+- Retorne no MÍNIMO ${Math.min(targetCount, 6)} e no MÁXIMO ${targetCount} prospects, se as fontes permitirem.
+- Ordene por fit_score desc.${knownBlock}`;
 
   const user = `Consulta do vendedor: "${userQuery}"
 
@@ -149,6 +194,32 @@ ${items}`;
   }
 }
 
+function buildQueries(sector: string, size: string, location: string, trigger: string, extra: string): string[] {
+  const key = normalizeSectorKey(sector);
+  const expansions = key ? SECTOR_EXPANSIONS[key] : [sector];
+  const locPart = location && location !== "Brasil" ? ` em ${location}` : " no Brasil";
+  const sizePart = size ? ` ${size} colaboradores` : "";
+
+  const queries: string[] = [];
+  // 1) Rankings & listas (alta densidade de nomes)
+  for (const exp of expansions.slice(0, 3)) {
+    queries.push(`maiores ${exp}${locPart} ranking 2024 2025`);
+    queries.push(`lista ${exp}${locPart}${sizePart}`);
+  }
+  // 2) Fontes tipo "melhores para trabalhar" (proxy de porte + RH ativo)
+  queries.push(`GPTW Great Place to Work ${expansions[0] || sector}${locPart}`);
+  queries.push(`melhores empresas para trabalhar ${expansions[0] || sector}${locPart}`);
+  // 3) Sinais NR-1 / saúde mental
+  queries.push(`${expansions[0] || sector}${locPart} NR-1 riscos psicossociais programa saúde mental`);
+  // 4) Gatilho customizado
+  if (trigger) queries.push(`${expansions[0] || sector}${locPart} ${trigger}`);
+  // 5) Extra
+  if (extra) queries.push(`${expansions[0] || sector}${locPart} ${extra}`);
+
+  // Dedup queries
+  return Array.from(new Set(queries)).slice(0, 8);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -175,39 +246,50 @@ Deno.serve(async (req) => {
     const trigger = textField((body as Record<string, unknown>).trigger);
     const extra = textField((body as Record<string, unknown>).extra);
     const save = (body as Record<string, unknown>).save !== false;
-    const limit = numberField((body as Record<string, unknown>).limit, 8, 1, 12);
+    const limit = numberField((body as Record<string, unknown>).limit, 8, 1, 20);
 
-    // Build a specific search query blending ICP + user filters.
-    const queryParts = [
-      sector && `empresas ${sector} no Brasil`,
-      employee_size && `com ${employee_size} colaboradores`,
-      location && location !== "Brasil" && `em ${location}`,
-      trigger && trigger,
-      extra && extra,
-      "saúde mental ocupacional OR NR-1 OR bem-estar OR ESG",
-    ].filter(Boolean).join(" ");
+    if (!sector) return j({ error: "empty_query", detail: "Escolha um setor." }, 400);
 
-    if (!queryParts.trim()) return j({ error: "empty_query" }, 400);
-    console.log("[sales-prospect-ai] query:", queryParts);
+    // Fan-out: build 5-8 targeted queries and run them in parallel.
+    const queries = buildQueries(sector, employee_size, location, trigger, extra);
+    console.log("[sales-prospect-ai] fan-out queries:", queries);
 
-    let search: any;
-    try {
-      search = await firecrawlSearch(queryParts, Math.min(20, Math.max(5, limit * 2)));
-    } catch (fe: any) {
-      console.error("[sales-prospect-ai] firecrawl error:", fe?.message || fe);
-      return j({ error: "firecrawl_failed", detail: String(fe?.message || fe) }, 502);
+    const perQueryLimit = 6;
+    const searchResults = await Promise.allSettled(
+      queries.map((q) => firecrawlSearch(q, perQueryLimit)),
+    );
+
+    const merged: any[] = [];
+    let firecrawlErrors = 0;
+    for (const s of searchResults) {
+      if (s.status === "rejected") { firecrawlErrors++; continue; }
+      const data = s.value;
+      const items: any[] =
+        data?.data?.web ?? data?.data?.results ?? data?.data ?? data?.web ?? [];
+      if (Array.isArray(items)) merged.push(...items);
     }
-    const results: any[] =
-      search?.data?.web ?? search?.data?.results ?? search?.data ?? search?.web ?? [];
-    console.log("[sales-prospect-ai] firecrawl results:", Array.isArray(results) ? results.length : typeof results);
+    const results = dedupeResults(merged);
+    console.log("[sales-prospect-ai] merged results:", merged.length, "dedup:", results.length, "errors:", firecrawlErrors);
 
-    if (!Array.isArray(results) || results.length === 0) {
-      return j({ error: "no_search_results", detail: "Firecrawl retornou 0 resultados para a consulta. Tente ampliar filtros.", query: queryParts }, 200);
+    if (results.length === 0) {
+      return j({
+        error: "no_search_results",
+        detail: `Firecrawl retornou 0 resultados úteis (${firecrawlErrors} de ${queries.length} consultas falharam). Tente outro setor ou gatilho.`,
+        queries,
+      }, 200);
     }
+
+    // Load already-known companies to prompt AI to bring new ones.
+    const { data: known } = await admin
+      .from("sales_prospects")
+      .select("company_name")
+      .order("created_at", { ascending: false })
+      .limit(80);
+    const knownNames = (known ?? []).map((r: any) => r.company_name).filter(Boolean);
 
     let prospects: any[] = [];
     try {
-      prospects = await aiExtract(results, queryParts);
+      prospects = await aiExtract(results, `${sector} · ${employee_size} · ${location}${trigger ? " · " + trigger : ""}`, knownNames, limit);
     } catch (ae: any) {
       const m = String(ae?.message || ae);
       console.error("[sales-prospect-ai] ai error:", m);
@@ -215,8 +297,14 @@ Deno.serve(async (req) => {
       if (m === "credits_exhausted") return j({ error: "credits_exhausted" }, 402);
       return j({ error: "ai_failed", detail: m }, 502);
     }
-    console.log("[sales-prospect-ai] prospects extracted:", prospects.length);
 
+    // Client-side dedup against known names (case-insensitive).
+    const knownLower = new Set(knownNames.map((n: string) => n.toLowerCase().trim()));
+    prospects = prospects.filter((p) => {
+      const n = String(p?.company_name || "").toLowerCase().trim();
+      return n && !knownLower.has(n);
+    });
+    console.log("[sales-prospect-ai] prospects after dedup:", prospects.length);
 
     let saved: any[] = [];
     if (save && prospects.length) {
@@ -232,7 +320,7 @@ Deno.serve(async (req) => {
         target_role: p.target_role || null,
         outreach_copy: p.outreach_copy || null,
         source_urls: Array.isArray(p.source_urls) ? p.source_urls : [],
-        search_query: queryParts,
+        search_query: queries.join(" | "),
         ai_model: AI_MODEL,
         created_by: user.id,
         status: "novo",
@@ -248,7 +336,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    return j({ ok: true, query: queryParts, count: prospects.length, prospects, saved });
+    return j({
+      ok: true,
+      queries,
+      queries_ok: queries.length - firecrawlErrors,
+      results_found: results.length,
+      count: prospects.length,
+      prospects,
+      saved,
+    });
   } catch (e: any) {
     const msg = String(e?.message || e);
     console.error("[sales-prospect-ai] TOP-LEVEL error:", msg, e?.stack);

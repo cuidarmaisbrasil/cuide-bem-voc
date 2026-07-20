@@ -64,7 +64,7 @@ export const SalesProspectAI = () => {
   const [location, setLocation] = useState<string>("Brasil");
   const [trigger, setTrigger] = useState<string>("");
   const [extra, setExtra] = useState<string>("");
-  const [limit, setLimit] = useState<number>(6);
+  const [limit, setLimit] = useState<number>(10);
   const [loading, setLoading] = useState(false);
 
   const [prospects, setProspects] = useState<Prospect[]>([]);
@@ -214,7 +214,8 @@ export const SalesProspectAI = () => {
           </div>
           <div>
             <Label className="text-xs">Nº máx. de prospects</Label>
-            <Input type="number" min={1} max={12} value={limit} onChange={(e) => setLimit(Math.max(1, Math.min(12, Number(e.target.value) || 6)))} />
+            <Input type="number" min={1} max={20} value={limit} onChange={(e) => setLimit(Math.max(1, Math.min(20, Number(e.target.value) || 10)))} />
+            <p className="text-[10px] text-muted-foreground mt-1">A IA dispara 5–8 buscas em paralelo (sinônimos + rankings + gatilho) e evita repetir empresas já no pipeline.</p>
           </div>
         </div>
 
