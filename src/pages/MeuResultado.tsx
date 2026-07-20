@@ -278,8 +278,25 @@ export default function MeuResultado() {
                 <div className="space-y-1">{renderBody(s.body)}</div>
               </div>
             ))}
+            {r.timings && <TimingsBlock timings={r.timings} />}
           </Card>
         ))}
+
+        {data.timing_comparisons && Object.entries(data.timing_comparisons).some(([, rows]) => rows.length >= 2) && (
+          <Card className="p-5 space-y-4">
+            <div>
+              <h2 className="font-display text-lg font-semibold">Sua evolução no tempo de resposta</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Comparação do seu ritmo entre os ciclos. Isso ajuda você a perceber se está respondendo com mais atenção ou com pressa — não é avaliado pela empresa.
+              </p>
+            </div>
+            {Object.entries(data.timing_comparisons)
+              .filter(([, rows]) => rows.length >= 2)
+              .map(([wave, rows]) => (
+                <TimingComparison key={wave} rows={rows} waveLabel={WAVE_LABEL[wave] || wave} />
+              ))}
+          </Card>
+        )}
 
         {data.global_sections.filter(s => s.section_key === "closing" || s.section_key === "disclaimer").map((s, i) => (
           <Card key={i} className="p-5 space-y-2 bg-muted/30">
