@@ -172,6 +172,37 @@ export const SalesProspectAI = () => {
     setProspects((ps) => ps.filter((p) => p.id !== id));
   }
 
+  async function enrichCnpj(p: Prospect, rawCnpj?: string) {
+    const cnpj = (rawCnpj ?? p.cnpj ?? "").replace(/\D+/g, "");
+    if (cnpj.length !== 14) {
+      toast.error("Informe um CNPJ com 14 dígitos.");
+      return;
+    }
+    if (!session?.access_token) {
+      toast.error("Sua sessão expirou.");
+      return;
+    }
+    const t = toast.loading(`Consultando Receita Federal (CNPJ.ws)…`);
+    try {
+      const { data, error } = await supabase.functions.invoke("cnpj-enrich", {
+        body: { cnpj, prospect_id: p.id },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).detail || (data as any).error);
+      const updated = (data as any).prospect as Prospect | null;
+      if (updated) {
+        setProspects((ps) => ps.map((x) => x.id === p.id ? { ...x, ...updated } : x));
+      }
+      toast.success("Dados oficiais da Receita Federal carregados", { id: t });
+    } catch (e: any) {
+      const msg = String(e?.message || e);
+      if (msg.includes("rate_limited")) toast.error("CNPJ.ws limita 3 consultas/min. Aguarde ~20s.", { id: t });
+      else if (msg.includes("cnpj_not_found")) toast.error("CNPJ não encontrado na Receita Federal.", { id: t });
+      else toast.error(`Falha: ${msg.slice(0, 200)}`, { id: t });
+    }
+  }
+
   function copyText(txt: string | null) {
     if (!txt) return;
     navigator.clipboard.writeText(txt).then(() => toast.success("Copiado"));
