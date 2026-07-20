@@ -81,16 +81,54 @@ Deno.serve(async (req) => {
 
     const globalSections = renderSection("global", "all", { company: (participant as any).companies?.name });
 
+    // --- Timing helpers ---
+    // Each `latencies_ms` is { "<n>": ms }. Compute total, median, min/max, per-item list.
+    function summarizeTimings(latencies: Record<string, number> | null | undefined) {
+      if (!latencies || typeof latencies !== "object") return null;
+      const entries = Object.entries(latencies)
+        .map(([k, v]) => ({ n: Number(k), ms: Number(v) }))
+        .filter((e) => Number.isFinite(e.n) && Number.isFinite(e.ms) && e.ms >= 0 && e.ms < 30 * 60 * 1000)
+        .sort((a, b) => a.n - b.n);
+      if (!entries.length) return null;
+      const ms = entries.map((e) => e.ms);
+      const total_ms = ms.reduce((a, b) => a + b, 0);
+      const sorted = [...ms].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median_ms = sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+      const mean_ms = Math.round(total_ms / ms.length);
+      return {
+        n_items: entries.length,
+        total_ms,
+        mean_ms,
+        median_ms,
+        min_ms: sorted[0],
+        max_ms: sorted[sorted.length - 1],
+        per_item: entries, // [{n, ms}]
+      };
+    }
+
     const waves: Record<string, any> = {};
 
     (phq9.data ?? []).forEach((r: any) => {
       const sev = r.severity || classifyPhq9(Number(r.score || 0));
-      waves["phq9_" + r.round_no] = {
-        wave: "phq9",
+      const key = "phq9_" + r.round_no + (r.is_retest ? "_retest" : "");
+      waves[key] = {
+        wave: r.is_retest ? "phq9_retest" : "phq9",
         round_no: r.round_no,
         completed_at: r.created_at,
         metrics: { score: r.score, severity: sev, functional_impact: r.functional_impact },
+        timings: summarizeTimings(r.latencies_ms),
         sections: renderSection("phq9", sev, { score: r.score, severity: sev, functional_impact: r.functional_impact ?? "" }),
+      };
+    });
+    (gad7.data ?? []).forEach((r: any) => {
+      waves["gad7_" + r.round_no + (r.is_retest ? "_retest" : "")] = {
+        wave: r.is_retest ? "gad7_retest" : "gad7",
+        round_no: r.round_no,
+        completed_at: r.created_at,
+        metrics: { score: r.score, severity: r.severity },
+        timings: summarizeTimings(r.latencies_ms),
+        sections: renderSection("gad7", r.severity || "all", { score: r.score, severity: r.severity ?? "" }),
       };
     });
     (ecig.data ?? []).forEach((r: any) => {
@@ -99,6 +137,7 @@ Deno.serve(async (req) => {
         round_no: r.round_no,
         completed_at: r.created_at,
         metrics: { scores: r.scores },
+        timings: summarizeTimings(r.latencies_ms),
         sections: renderSection("ecig", "all", { ...(r.scores || {}) }),
       };
     });
@@ -108,6 +147,7 @@ Deno.serve(async (req) => {
         round_no: r.round_no,
         completed_at: r.created_at,
         metrics: { scores: r.scores, version: r.version },
+        timings: summarizeTimings(r.latencies_ms),
         sections: renderSection("copsoq", "all", { ...(r.scores || {}) }),
       };
     });
@@ -117,6 +157,7 @@ Deno.serve(async (req) => {
         round_no: r.round_no,
         completed_at: r.created_at,
         metrics: { scores: r.scores },
+        timings: summarizeTimings(r.latencies_ms),
         sections: renderSection("psicossocial", "all", { ...(r.scores || {}) }),
       };
     });
@@ -126,9 +167,33 @@ Deno.serve(async (req) => {
         round_no: r.round_no,
         completed_at: r.created_at,
         metrics: { scores: r.scores },
+        timings: summarizeTimings(r.latencies_ms),
         sections: renderSection("assedio_sexual", "all", { ...(r.scores || {}) }),
       };
     });
+
+    // Build a per-wave cross-cycle comparison of timings.
+    // Groups by wave key (phq9, gad7, ecig, copsoq, psicossocial, assedio_sexual)
+    // regardless of is_retest, so the participant can see whether they became
+    // faster or slower across rounds.
+    const timingComparisons: Record<string, Array<{ round_no: number; is_retest?: boolean; total_ms: number; median_ms: number; mean_ms: number; n_items: number; completed_at: string }>> = {};
+    Object.values(waves).forEach((w: any) => {
+      if (!w.timings) return;
+      const baseWave = String(w.wave).replace(/_retest$/, "");
+      timingComparisons[baseWave] = timingComparisons[baseWave] || [];
+      timingComparisons[baseWave].push({
+        round_no: w.round_no,
+        is_retest: String(w.wave).endsWith("_retest"),
+        total_ms: w.timings.total_ms,
+        median_ms: w.timings.median_ms,
+        mean_ms: w.timings.mean_ms,
+        n_items: w.timings.n_items,
+        completed_at: w.completed_at,
+      });
+    });
+    for (const k of Object.keys(timingComparisons)) {
+      timingComparisons[k].sort((a, b) => a.round_no - b.round_no);
+    }
 
     return j({
       company: { name: (participant as any).companies?.name },
