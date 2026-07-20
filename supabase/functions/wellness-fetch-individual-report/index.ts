@@ -50,12 +50,13 @@ Deno.serve(async (req) => {
     }
 
     // Pull responses by access_code_hash across all waves
-    const [phq9, ecig, copsoq, psicossocial, asx] = await Promise.all([
-      admin.from("phq9_company_responses").select("round_no,score,severity,scores,functional_impact,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
-      admin.from("ecig_responses").select("round_no,scores,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
-      admin.from("copsoq_responses").select("round_no,scores,version,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
-      admin.from("psicossocial_responses").select("round_no,scores,instrument,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
-      admin.from("assedio_sexual_responses").select("round_no,scores,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+    const [phq9, gad7, ecig, copsoq, psicossocial, asx] = await Promise.all([
+      admin.from("phq9_company_responses").select("round_no,score,severity,scores,functional_impact,latencies_ms,is_retest,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+      admin.from("gad7_company_responses").select("round_no,score,severity,latencies_ms,is_retest,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+      admin.from("ecig_responses").select("round_no,scores,latencies_ms,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+      admin.from("copsoq_responses").select("round_no,scores,version,latencies_ms,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+      admin.from("psicossocial_responses").select("round_no,scores,instrument,latencies_ms,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
+      admin.from("assedio_sexual_responses").select("round_no,scores,latencies_ms,created_at").eq("access_code_hash", access_code_hash).order("created_at"),
     ]);
 
     // Load all enabled templates once
