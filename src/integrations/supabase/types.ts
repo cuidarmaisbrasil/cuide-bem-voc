@@ -1137,64 +1137,97 @@ export type Database = {
       sales_prospects: {
         Row: {
           ai_model: string | null
+          capital_social: number | null
           city: string | null
+          cnae_principal: string | null
+          cnpj: string | null
           company_name: string
           created_at: string
           created_by: string | null
+          data_abertura: string | null
           employee_size: string | null
+          enriched_at: string | null
+          enrichment_source: string | null
           fit_rationale: string | null
           fit_score: number
           id: string
+          municipio: string | null
           outreach_copy: string | null
+          porte_receita: string | null
+          razao_social: string | null
           search_query: string | null
           sector: string | null
           seller_notes: string | null
+          situacao_cadastral: string | null
           source_urls: Json | null
           state: string | null
           status: string
           target_role: string | null
+          uf: string | null
           updated_at: string
           website: string | null
         }
         Insert: {
           ai_model?: string | null
+          capital_social?: number | null
           city?: string | null
+          cnae_principal?: string | null
+          cnpj?: string | null
           company_name: string
           created_at?: string
           created_by?: string | null
+          data_abertura?: string | null
           employee_size?: string | null
+          enriched_at?: string | null
+          enrichment_source?: string | null
           fit_rationale?: string | null
           fit_score?: number
           id?: string
+          municipio?: string | null
           outreach_copy?: string | null
+          porte_receita?: string | null
+          razao_social?: string | null
           search_query?: string | null
           sector?: string | null
           seller_notes?: string | null
+          situacao_cadastral?: string | null
           source_urls?: Json | null
           state?: string | null
           status?: string
           target_role?: string | null
+          uf?: string | null
           updated_at?: string
           website?: string | null
         }
         Update: {
           ai_model?: string | null
+          capital_social?: number | null
           city?: string | null
+          cnae_principal?: string | null
+          cnpj?: string | null
           company_name?: string
           created_at?: string
           created_by?: string | null
+          data_abertura?: string | null
           employee_size?: string | null
+          enriched_at?: string | null
+          enrichment_source?: string | null
           fit_rationale?: string | null
           fit_score?: number
           id?: string
+          municipio?: string | null
           outreach_copy?: string | null
+          porte_receita?: string | null
+          razao_social?: string | null
           search_query?: string | null
           sector?: string | null
           seller_notes?: string | null
+          situacao_cadastral?: string | null
           source_urls?: Json | null
           state?: string | null
           status?: string
           target_role?: string | null
+          uf?: string | null
           updated_at?: string
           website?: string | null
         }

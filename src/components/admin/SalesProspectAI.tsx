@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2 } from "lucide-react";
 
 type Prospect = {
   id: string;
@@ -27,6 +27,17 @@ type Prospect = {
   seller_notes: string | null;
   source_urls: any;
   created_at: string;
+  cnpj: string | null;
+  razao_social: string | null;
+  cnae_principal: string | null;
+  situacao_cadastral: string | null;
+  municipio: string | null;
+  uf: string | null;
+  porte_receita: string | null;
+  capital_social: number | null;
+  data_abertura: string | null;
+  enriched_at: string | null;
+  enrichment_source: string | null;
 };
 
 const STATUSES = [
@@ -161,6 +172,37 @@ export const SalesProspectAI = () => {
     setProspects((ps) => ps.filter((p) => p.id !== id));
   }
 
+  async function enrichCnpj(p: Prospect, rawCnpj?: string) {
+    const cnpj = (rawCnpj ?? p.cnpj ?? "").replace(/\D+/g, "");
+    if (cnpj.length !== 14) {
+      toast.error("Informe um CNPJ com 14 dígitos.");
+      return;
+    }
+    if (!session?.access_token) {
+      toast.error("Sua sessão expirou.");
+      return;
+    }
+    const t = toast.loading(`Consultando Receita Federal (CNPJ.ws)…`);
+    try {
+      const { data, error } = await supabase.functions.invoke("cnpj-enrich", {
+        body: { cnpj, prospect_id: p.id },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).detail || (data as any).error);
+      const updated = (data as any).prospect as Prospect | null;
+      if (updated) {
+        setProspects((ps) => ps.map((x) => x.id === p.id ? { ...x, ...updated } : x));
+      }
+      toast.success("Dados oficiais da Receita Federal carregados", { id: t });
+    } catch (e: any) {
+      const msg = String(e?.message || e);
+      if (msg.includes("rate_limited")) toast.error("CNPJ.ws limita 3 consultas/min. Aguarde ~20s.", { id: t });
+      else if (msg.includes("cnpj_not_found")) toast.error("CNPJ não encontrado na Receita Federal.", { id: t });
+      else toast.error(`Falha: ${msg.slice(0, 200)}`, { id: t });
+    }
+  }
+
   function copyText(txt: string | null) {
     if (!txt) return;
     navigator.clipboard.writeText(txt).then(() => toast.success("Copiado"));
@@ -290,9 +332,17 @@ export const SalesProspectAI = () => {
                     <div className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap mt-0.5">
                       {p.sector && <Badge variant="outline" className="text-[10px]">{p.sector}</Badge>}
                       {p.employee_size && <Badge variant="outline" className="text-[10px]">{p.employee_size} colab.</Badge>}
-                      {(p.city || p.state) && <span>{[p.city, p.state].filter(Boolean).join(" / ")}</span>}
+                      {p.porte_receita && <Badge variant="secondary" className="text-[10px]">Receita: {p.porte_receita}</Badge>}
+                      {p.enriched_at && <Badge className="text-[10px]" variant="default">✓ RF</Badge>}
+                      {(p.municipio || p.uf || p.city || p.state) && <span>{[p.municipio || p.city, p.uf || p.state].filter(Boolean).join(" / ")}</span>}
                       {p.target_role && <span>· alvo: <strong>{p.target_role}</strong></span>}
                     </div>
+                    {p.cnpj && (
+                      <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">
+                        CNPJ {p.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")}
+                        {p.situacao_cadastral && <span className="ml-2">· {p.situacao_cadastral}</span>}
+                      </div>
+                    )}
                   </div>
                   <Select value={p.status} onValueChange={(v) => updateStatus(p.id, v)}>
                     <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
@@ -310,6 +360,46 @@ export const SalesProspectAI = () => {
 
                 {isOpen && (
                   <div className="space-y-2 pt-2 border-t border-border/40">
+                    {/* Receita Federal enrichment */}
+                    <div className="rounded border border-border/60 bg-muted/30 p-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Building2 className="h-4 w-4" />
+                        <Label className="text-[11px] uppercase">Dados oficiais (Receita Federal via CNPJ.ws)</Label>
+                      </div>
+                      {p.enriched_at ? (
+                        <div className="text-xs mt-1 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-0.5">
+                          {p.razao_social && <div><strong>Razão social:</strong> {p.razao_social}</div>}
+                          {p.cnae_principal && <div><strong>CNAE:</strong> {p.cnae_principal}</div>}
+                          {p.situacao_cadastral && <div><strong>Situação:</strong> {p.situacao_cadastral}</div>}
+                          {p.porte_receita && <div><strong>Porte:</strong> {p.porte_receita}</div>}
+                          {(p.municipio || p.uf) && <div><strong>Local:</strong> {[p.municipio, p.uf].filter(Boolean).join(" / ")}</div>}
+                          {p.data_abertura && <div><strong>Abertura:</strong> {new Date(p.data_abertura).toLocaleDateString("pt-BR")}</div>}
+                          {p.capital_social != null && <div><strong>Capital social:</strong> R$ {Number(p.capital_social).toLocaleString("pt-BR")}</div>}
+                          <div className="col-span-full text-[10px] text-muted-foreground">Consultado em {new Date(p.enriched_at).toLocaleString("pt-BR")}</div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                          <Input
+                            placeholder="CNPJ (14 dígitos)"
+                            defaultValue={p.cnpj ?? ""}
+                            className="h-8 max-w-[220px] font-mono text-xs"
+                            id={`cnpj-input-${p.id}`}
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const el = document.getElementById(`cnpj-input-${p.id}`) as HTMLInputElement | null;
+                              enrichCnpj(p, el?.value);
+                            }}
+                          >
+                            Enriquecer com Receita Federal
+                          </Button>
+                          <span className="text-[10px] text-muted-foreground">Grátis · limite 3 consultas/min</span>
+                        </div>
+                      )}
+                    </div>
+
                     {p.fit_rationale && (
                       <div>
                         <Label className="text-[11px] text-muted-foreground uppercase">Por que é fit</Label>

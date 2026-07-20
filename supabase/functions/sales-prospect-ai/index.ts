@@ -131,6 +131,7 @@ Retorne APENAS JSON válido no formato:
   "prospects": [
     {
       "company_name": "Nome da empresa",
+      "cnpj": "14 dígitos SEM pontuação se identificável na fonte, senão null",
       "website": "https://... (opcional)",
       "sector": "Setor específico",
       "employee_size": "faixa estimada (ex: 500-1000)",
@@ -308,23 +309,27 @@ Deno.serve(async (req) => {
 
     let saved: any[] = [];
     if (save && prospects.length) {
-      const rows = prospects.slice(0, limit).map((p: any) => ({
-        company_name: String(p.company_name || "").slice(0, 200),
-        website: p.website || null,
-        sector: p.sector || sector || null,
-        employee_size: p.employee_size || employee_size || null,
-        city: p.city || null,
-        state: p.state || null,
-        fit_score: Math.max(0, Math.min(100, Number(p.fit_score) || 0)),
-        fit_rationale: p.fit_rationale || null,
-        target_role: p.target_role || null,
-        outreach_copy: p.outreach_copy || null,
-        source_urls: Array.isArray(p.source_urls) ? p.source_urls : [],
-        search_query: queries.join(" | "),
-        ai_model: AI_MODEL,
-        created_by: user.id,
-        status: "novo",
-      })).filter((r) => r.company_name);
+      const rows = prospects.slice(0, limit).map((p: any) => {
+        const cnpjDigits = typeof p.cnpj === "string" ? p.cnpj.replace(/\D+/g, "") : "";
+        return {
+          company_name: String(p.company_name || "").slice(0, 200),
+          cnpj: cnpjDigits.length === 14 ? cnpjDigits : null,
+          website: p.website || null,
+          sector: p.sector || sector || null,
+          employee_size: p.employee_size || employee_size || null,
+          city: p.city || null,
+          state: p.state || null,
+          fit_score: Math.max(0, Math.min(100, Number(p.fit_score) || 0)),
+          fit_rationale: p.fit_rationale || null,
+          target_role: p.target_role || null,
+          outreach_copy: p.outreach_copy || null,
+          source_urls: Array.isArray(p.source_urls) ? p.source_urls : [],
+          search_query: queries.join(" | "),
+          ai_model: AI_MODEL,
+          created_by: user.id,
+          status: "novo",
+        };
+      }).filter((r) => r.company_name);
 
       if (rows.length) {
         const { data, error } = await admin
