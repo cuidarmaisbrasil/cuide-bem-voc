@@ -199,6 +199,7 @@ Deno.serve(async (req) => {
       company: { name: (participant as any).companies?.name },
       global_sections: globalSections,
       reports: Object.values(waves),
+      timing_comparisons: timingComparisons,
     });
   } catch (e: any) {
     console.error("wellness-fetch-individual-report error", e);
