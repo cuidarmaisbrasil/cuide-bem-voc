@@ -35,3 +35,13 @@ verify_jwt = false
 
 [functions.submit-copsoq]
 verify_jwt = false
+
+[functions.wellness-fetch-individual-report]
+verify_jwt = false
+
+[functions.wellness-individual-ai-summary]
+verify_jwt = false
+
+[functions.wellness-individual-question]
+verify_jwt = false
+

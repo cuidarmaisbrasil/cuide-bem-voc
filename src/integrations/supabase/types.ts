@@ -2061,6 +2061,44 @@ export type Database = {
         }
         Relationships: []
       }
+      wellness_individual_questions: {
+        Row: {
+          access_code_hash: string
+          answer: string | null
+          answered_at: string | null
+          company_id: string
+          created_at: string
+          id: string
+          question: string
+        }
+        Insert: {
+          access_code_hash: string
+          answer?: string | null
+          answered_at?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          question: string
+        }
+        Update: {
+          access_code_hash?: string
+          answer?: string | null
+          answered_at?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_individual_questions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wellness_invitations: {
         Row: {
           attempts: number
