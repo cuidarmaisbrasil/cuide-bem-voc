@@ -28,10 +28,10 @@ Deno.serve(async (req) => {
     if (!participant) return j({ error: "invalid_code" }, 404);
 
     // Store as feedback tagged for individual report Q&A. Anonymous: only hash + company_id.
-    await admin.from("feedback").insert({
-      message: question.trim(),
-      source: "meu-relatorio",
-      metadata: { company_id: (participant as any).company_id, access_code_hash },
+    await admin.from("wellness_individual_questions").insert({
+      company_id: (participant as any).company_id,
+      access_code_hash,
+      question: question.trim(),
     });
 
     return j({ ok: true });
