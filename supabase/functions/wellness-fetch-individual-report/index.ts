@@ -195,11 +195,37 @@ Deno.serve(async (req) => {
       timingComparisons[k].sort((a, b) => a.round_no - b.round_no);
     }
 
+    // Score comparisons across cycles (per base wave)
+    const scoreComparisons: Record<string, Array<any>> = {};
+    Object.values(waves).forEach((w: any) => {
+      const baseWave = String(w.wave).replace(/_retest$/, "");
+      scoreComparisons[baseWave] = scoreComparisons[baseWave] || [];
+      scoreComparisons[baseWave].push({
+        round_no: w.round_no,
+        is_retest: String(w.wave).endsWith("_retest"),
+        completed_at: w.completed_at,
+        score: w.metrics?.score ?? null,
+        severity: w.metrics?.severity ?? null,
+        scores: w.metrics?.scores ?? null,
+      });
+    });
+    for (const k of Object.keys(scoreComparisons)) {
+      scoreComparisons[k].sort((a, b) => a.round_no - b.round_no);
+    }
+
+    // Flag high severity for referral card
+    const needsReferral = Object.values(waves).some((w: any) => {
+      const sev = w.metrics?.severity;
+      return sev === "severe" || sev === "moderately_severe";
+    });
+
     return j({
       company: { name: (participant as any).companies?.name },
       global_sections: globalSections,
       reports: Object.values(waves),
       timing_comparisons: timingComparisons,
+      score_comparisons: scoreComparisons,
+      needs_referral: needsReferral,
     });
   } catch (e: any) {
     console.error("wellness-fetch-individual-report error", e);
