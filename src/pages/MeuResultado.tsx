@@ -506,7 +506,7 @@ export default function MeuResultado() {
                   <div className="space-y-1">{renderBody(s.body)}</div>
                 </div>
               ))}
-              {r.timings && <TimingsBlock timings={r.timings} />}
+              
             </Card>
           );
         })}
