@@ -526,29 +526,6 @@ export default function MeuResultado() {
           </Card>
         )}
 
-        {/* Timing comparison */}
-        {data.timing_comparisons && Object.entries(data.timing_comparisons).some(([, rows]) => rows.length >= 2) && (
-          <Card className="p-5 space-y-3">
-            <div>
-              <h2 className="font-display text-base font-semibold">Seu ritmo entre os ciclos</h2>
-              <p className="text-xs text-muted-foreground mt-1">Se você respondeu mais rápido ou mais devagar. Não é avaliado pela empresa — é só para você.</p>
-            </div>
-            {Object.entries(data.timing_comparisons)
-              .filter(([, rows]) => rows.length >= 2)
-              .map(([wave, rows]) => {
-                const first = rows[0], last = rows[rows.length - 1];
-                const delta = last.total_ms - first.total_ms;
-                const pct = first.total_ms ? Math.round((delta / first.total_ms) * 100) : 0;
-                const trend = delta === 0 ? "estável" : delta < 0 ? "mais rápido" : "mais lento";
-                return (
-                  <div key={wave} className="text-xs text-muted-foreground border-t pt-2">
-                    Em <strong className="text-foreground">{WAVE_LABEL[wave] || wave}</strong> você ficou <strong className="text-foreground">{trend}</strong>
-                    {delta !== 0 && <> ({pct > 0 ? "+" : ""}{pct}%)</>}.
-                  </div>
-                );
-              })}
-          </Card>
-        )}
 
         {/* Extended psychoeducation when relevant */}
         <ExtendedContent reports={data.reports} />
