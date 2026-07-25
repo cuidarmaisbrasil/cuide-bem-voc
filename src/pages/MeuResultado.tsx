@@ -660,31 +660,74 @@ export default function MeuResultado() {
           const sev = r.metrics?.severity as string | undefined;
           const tone = sev ? SEVERITY_TONE[sev] : null;
           const dims = r.metrics?.scores as Record<string, number> | undefined;
+          const overview = WAVE_OVERVIEW[r.wave] || WAVE_OVERVIEW[base];
+          const meaning = severityMeaning(base, sev);
+
+          // "O que apareceu para você" — pega até 2 dimensões mais altas com help.
+          const topDims = dims
+            ? Object.entries(dims)
+                .filter(([, v]) => typeof v === "number")
+                .sort((a, b) => (b[1] as number) - (a[1] as number))
+                .slice(0, 2)
+                .map(([k, v]) => ({ label: labelFor(base, k), help: helpFor(base, k), value: v as number }))
+                .filter((d) => d.help)
+            : [];
+
           return (
             <Card key={r.wave + r.round_no} className="p-5 space-y-3">
               <div className="flex items-baseline justify-between flex-wrap gap-1">
                 <h3 className="font-display text-lg font-semibold">Sobre {WAVE_LABEL[r.wave] || WAVE_LABEL[base] || r.wave}</h3>
                 <span className="text-[11px] text-muted-foreground">Ciclo {r.round_no} · {new Date(r.completed_at).toLocaleDateString("pt-BR")}</span>
               </div>
+
+              {/* O que estamos observando aqui */}
+              {overview && (
+                <p className="text-sm leading-relaxed text-foreground/85">{overview}</p>
+              )}
+
               {tone && (
                 <div className={`inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full border ${tone.bg} ${tone.color}`}>
                   Seu nível: <strong>{tone.label}</strong>
                   {typeof r.metrics?.score === "number" && <span className="opacity-70">· escore {r.metrics.score}</span>}
                 </div>
               )}
+
+              {/* Gráfico com nomes traduzidos */}
               {dims && Object.keys(dims).length > 0 && (
-                <div className="pt-1">
-                  <p className="text-xs text-muted-foreground mb-2">Como cada dimensão apareceu para você:</p>
-                  <DimensionBars scores={dims} />
+                <div className="pt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Como cada aspecto apareceu nas suas respostas — barras maiores e vermelhas indicam onde a experiência foi mais intensa.
+                  </p>
+                  <DimensionBars base={base} scores={dims} />
                 </div>
               )}
-              {r.sections.map((s, i) => (
-                <div key={i} className="space-y-1 border-t pt-3">
-                  {s.title && <p className="text-sm font-semibold">{s.title}</p>}
-                  <div className="space-y-1">{renderBody(s.body)}</div>
+
+              {/* O que isso quer dizer para você */}
+              {(meaning || topDims.length > 0) && (
+                <div className="border-t pt-3 space-y-2">
+                  <p className="text-sm font-semibold">O que isso quer dizer para você</p>
+                  {meaning && <p className="text-sm leading-relaxed">{meaning}</p>}
+                  {topDims.length > 0 && (
+                    <ul className="text-sm space-y-1.5 list-disc list-inside marker:text-primary/60">
+                      {topDims.map((d, i) => (
+                        <li key={i}>
+                          <strong>{d.label}:</strong> {d.help}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              ))}
-              
+              )}
+
+              {/* Nota específica de assédio sexual */}
+              {base === "assedio_sexual" && (
+                <div className="border-t pt-3 space-y-2 bg-rose-50/40 -mx-5 px-5 -mb-3 pb-3 rounded-b-lg">
+                  <p className="text-sm font-semibold text-rose-900">Se você presenciou ou sofreu</p>
+                  <p className="text-sm text-rose-950/90 leading-relaxed">
+                    Reconhecer é o primeiro passo. Situações de assédio sexual — vividas ou testemunhadas — costumam gerar culpa, medo ou dúvida ("será que foi tão grave assim?"). Se algo do que você respondeu remete a uma experiência real, você não precisa lidar sozinho(a): a Central de Atendimento à Mulher (<a className="underline" href="tel:180">180</a>) e o CVV (<a className="underline" href="tel:188">188</a>) atendem 24h, gratuito e sigiloso. Também é seu direito reportar internamente pelo canal de ética da sua empresa.
+                  </p>
+                </div>
+              )}
             </Card>
           );
         })}
