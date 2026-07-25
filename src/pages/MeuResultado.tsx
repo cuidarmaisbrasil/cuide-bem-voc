@@ -33,11 +33,149 @@ const WAVE_LABEL: Record<string, string> = {
   phq9_retest: "humor e depressão (reteste)",
   gad7: "ansiedade",
   gad7_retest: "ansiedade (reteste)",
-  ecig: "clima do seu grupo",
+  ecig: "clima do seu grupo de trabalho",
   copsoq: "seu bem-estar no trabalho",
   psicossocial: "clima psicossocial",
-  assedio_sexual: "assédio sexual",
+  assedio_sexual: "situações de assédio sexual",
 };
+
+/** Texto acolhedor por instrumento — "o que estamos observando aqui" em linguagem do colaborador. */
+const WAVE_OVERVIEW: Record<string, string> = {
+  phq9: "Aqui estão os sinais que você indicou sobre o seu humor nas últimas duas semanas — como tem sido dormir, ter energia, sentir prazer nas coisas, se concentrar. Não é um diagnóstico; é uma leitura de como você está se sentindo agora.",
+  gad7: "Estes itens falam sobre ansiedade: preocupações que voltam, sensação de tensão, dificuldade de relaxar. Ajuda a perceber se algo tem tirado sua tranquilidade com frequência.",
+  copsoq: "Aqui você olha para o seu trabalho: quanto ele exige de você, o quanto você tem voz sobre o que faz, o apoio que recebe, o sentido que enxerga no dia a dia. São fatores que, com o tempo, protegem ou desgastam a saúde mental.",
+  psicossocial: "Estas respostas mostram o quanto o ambiente ao seu redor tem sido hostil, injusto ou desrespeitoso com você. Não é sobre 'ser forte' — é sobre reconhecer o que está te afetando.",
+  ecig: "Aqui aparece como você percebe o clima entre as pessoas do seu grupo — se há colaboração, respeito, ou se algo tem pesado no convívio.",
+  assedio_sexual: "Este bloco convida você a olhar para situações de assédio sexual no trabalho — algo que você tenha vivido ou presenciado, mesmo que tenha achado 'pequeno' ou 'não é comigo'. Reconhecer é o primeiro passo de proteção.",
+};
+
+/** Legendas humanizadas por dimensão. Chave normalizada (lowercase, sem acento, sem espaço). */
+const DIMENSION_LABELS: Record<string, Record<string, string>> = {
+  copsoq: {
+    exigencias_quantitativas: "Volume de trabalho",
+    ritmo_trabalho: "Ritmo cobrado",
+    exigencias_emocionais: "Desgaste emocional",
+    exigencias_cognitivas: "Esforço mental",
+    influencia_no_trabalho: "Sua voz nas decisões",
+    influencia_trabalho: "Sua voz nas decisões",
+    possibilidades_desenvolvimento: "Chance de crescer",
+    sentido_do_trabalho: "Sentido no que você faz",
+    sentido_trabalho: "Sentido no que você faz",
+    compromisso_local_trabalho: "Vínculo com o trabalho",
+    previsibilidade: "Previsibilidade do dia a dia",
+    recompensas: "Reconhecimento que recebe",
+    clareza_papel: "Clareza do seu papel",
+    conflitos_papel: "Cobranças que se contradizem",
+    qualidade_lideranca: "Qualidade da liderança",
+    apoio_social_colegas: "Apoio dos colegas",
+    apoio_social_supervisor: "Apoio da liderança",
+    apoio_social: "Apoio das pessoas ao redor",
+    comunidade_social: "Sensação de fazer parte",
+    inseguranca_trabalho: "Medo de perder o trabalho",
+    inseguranca: "Medo de perder o trabalho",
+    satisfacao_trabalho: "Satisfação com o trabalho",
+    saude_geral: "Como sua saúde tem estado",
+    burnout: "Esgotamento",
+    stress: "Estresse no corpo",
+    conflito_trabalho_familia: "Trabalho invadindo a vida pessoal",
+  },
+  psicossocial: {
+    do: "Desprestígio no trabalho",
+    dp: "Desprestígio pessoal",
+    en: "Sensação de entorpecimento",
+    iga: "Quanto o assédio pesa no seu dia",
+    neap: "Quantidade de situações vividas",
+    imap: "Intensidade com que atingem você",
+    intimidacao: "Intimidações",
+    bloqueio_comunicacao: "Ser deixado(a) de fora",
+    desprestigio: "Desprestígio",
+    entorpecimento: "Esgotamento emocional",
+    isolamento: "Isolamento",
+  },
+  ecig: {
+    coesao: "Sensação de time",
+    conflito: "Conflitos no grupo",
+    suporte: "Apoio entre colegas",
+    respeito: "Respeito no convívio",
+    autonomia: "Espaço para se expressar",
+  },
+  assedio_sexual: {
+    mdish_total: "Justificativas para não agir",
+    mdish: "Justificativas para não agir",
+    shras_total: "Disposição para reportar",
+    shras: "Disposição para reportar",
+    difusao_responsabilidade: "'Não é problema meu'",
+    minimizacao: "Tratar como brincadeira",
+    culpabilizacao_vitima: "Culpar quem sofre",
+    reportar_formal: "Confiança em denunciar",
+    apoio_colega: "Apoiar quem sofreu",
+  },
+};
+
+/** Mapa dim→leitura em 1 frase do que ela sinaliza sobre a experiência do colaborador. */
+const DIMENSION_HELP: Record<string, Record<string, string>> = {
+  copsoq: {
+    exigencias_quantitativas: "quando alto, é sinal de que o volume vem passando do que cabe no seu tempo.",
+    ritmo_trabalho: "quando alto, mostra que a pressão de velocidade tem sido constante.",
+    exigencias_emocionais: "quando alto, indica que lidar com pessoas ou situações difíceis tem drenado sua energia.",
+    influencia_no_trabalho: "quando baixo, você sente pouco controle sobre como e quando faz o seu trabalho.",
+    influencia_trabalho: "quando baixo, você sente pouco controle sobre como e quando faz o seu trabalho.",
+    sentido_do_trabalho: "quando baixo, o que você faz tem parecido pouco significativo ou repetitivo.",
+    sentido_trabalho: "quando baixo, o que você faz tem parecido pouco significativo ou repetitivo.",
+    apoio_social_colegas: "quando baixo, você se sente sozinho(a) nos momentos difíceis.",
+    apoio_social_supervisor: "quando baixo, você não se sente ouvido(a) ou amparado(a) pela liderança.",
+    qualidade_lideranca: "quando baixo, a gestão não tem oferecido clareza, justiça ou cuidado.",
+    conflitos_papel: "quando alto, você recebe demandas que se contradizem — não dá para agradar todo mundo.",
+    inseguranca_trabalho: "quando alto, o medo de perder o emprego tem ocupado espaço na sua cabeça.",
+    burnout: "quando alto, é o sinal clássico de esgotamento — o corpo pedindo pausa.",
+    stress: "quando alto, seu corpo está reagindo (sono, dor, irritação) ao que você vive no trabalho.",
+    conflito_trabalho_familia: "quando alto, o trabalho tem invadido momentos que deveriam ser seus.",
+  },
+  psicossocial: {
+    iga: "quanto maior, mais o ambiente hostil pesa no seu dia — reconhecer isso não é fraqueza, é lucidez.",
+    neap: "conta quantos tipos de situação você marcou como já vividas.",
+    imap: "mostra o quanto essas situações mexem com você emocionalmente.",
+    do: "quando alto, você vem sentindo que seu trabalho é diminuído ou desqualificado por outros.",
+    dp: "quando alto, ataques têm sido dirigidos a você como pessoa, não ao seu trabalho.",
+    en: "quando alto, é comum sentir-se anestesiado(a), como se algo em você tivesse desligado para aguentar.",
+  },
+  ecig: {
+    coesao: "quando alto, você sente que faz parte de um time de verdade.",
+    conflito: "quando alto, o clima entre as pessoas tem sido pesado.",
+    suporte: "quando baixo, faltam pessoas com quem contar no grupo.",
+  },
+  assedio_sexual: {
+    mdish_total: "mede o quanto você (ou o ambiente) tende a justificar situações inaceitáveis — quanto menor, melhor.",
+    mdish: "mede o quanto você (ou o ambiente) tende a justificar situações inaceitáveis — quanto menor, melhor.",
+    shras_total: "mede sua disposição para reportar assédio — quanto maior, mais próxima do cuidado com você e com quem está ao seu redor.",
+    shras: "mede sua disposição para reportar assédio — quanto maior, mais próxima do cuidado com você e com quem está ao seu redor.",
+  },
+};
+
+function normDim(k: string): string {
+  return k
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function labelFor(base: string, key: string): string {
+  const norm = normDim(key);
+  const fromMap = DIMENSION_LABELS[base]?.[norm];
+  if (fromMap) return fromMap;
+  return norm
+    .split("_")
+    .filter(Boolean)
+    .map((w) => (w.length > 3 ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+}
+
+function helpFor(base: string, key: string): string | null {
+  const norm = normDim(key);
+  return DIMENSION_HELP[base]?.[norm] ?? null;
+}
 
 const SEVERITY_TONE: Record<string, { label: string; color: string; bg: string }> = {
   minimal: { label: "leve", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
@@ -46,6 +184,29 @@ const SEVERITY_TONE: Record<string, { label: string; color: string; bg: string }
   moderately_severe: { label: "moderado a alto", color: "text-orange-700", bg: "bg-orange-50 border-orange-200" },
   severe: { label: "alto", color: "text-rose-700", bg: "bg-rose-50 border-rose-200" },
 };
+
+/** Frase humanizada sobre o que a severidade indica na vida do colaborador. */
+function severityMeaning(base: string, sev: string | undefined): string | null {
+  if (!sev) return null;
+  if (base === "phq9" || base === "phq9_retest") {
+    switch (sev) {
+      case "minimal": return "Você não relatou sinais expressivos de depressão agora. Isso é uma boa notícia — continue cuidando do que já funciona para você.";
+      case "mild": return "Alguns sinais leves aparecem no seu humor. Vale observar nas próximas semanas se eles diminuem, se mantêm ou se aumentam.";
+      case "moderate": return "Seus sinais indicam um humor que já tem pesado no seu cotidiano — sono, energia, prazer ou concentração podem estar afetados. É um bom momento para conversar com alguém de confiança e considerar apoio profissional.";
+      case "moderately_severe": return "Você descreveu sintomas que costumam atrapalhar bastante o dia a dia. Buscar acompanhamento profissional agora tende a fazer diferença — você não precisa esperar 'piorar mais'.";
+      case "severe": return "Os sinais que você indicou são intensos e merecem atenção imediata. Isso não define quem você é — mas mostra que o seu corpo e sua mente estão pedindo cuidado especializado agora.";
+    }
+  }
+  if (base === "gad7" || base === "gad7_retest") {
+    switch (sev) {
+      case "minimal": return "Sua ansiedade parece estar em um nível manejável no momento.";
+      case "mild": return "Você tem sentido alguma ansiedade — comum em fases de pressão. Estratégias de respiração, sono regular e limites com o trabalho ajudam.";
+      case "moderate": return "A ansiedade tem aparecido com frequência suficiente para te incomodar. Vale procurar um profissional para aprender ferramentas específicas.";
+      case "severe": return "Você descreve uma ansiedade que atrapalha o seu dia. Buscar apoio profissional agora é o passo mais cuidadoso com você.";
+    }
+  }
+  return null;
+}
 
 function fmtMs(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "—";
@@ -57,23 +218,40 @@ function fmtMs(ms: number): string {
   return `${m} min ${rs.toString().padStart(2, "0")} s`;
 }
 
-/** Simple horizontal bar chart, one row per dimension. Values 0-max scaled. */
-function DimensionBars({ scores, max = 100 }: { scores: Record<string, number>; max?: number }) {
+/** Barras humanizadas — traduz o nome da dimensão e adiciona 1 linha explicativa nas dimensões altas. */
+function DimensionBars({
+  base,
+  scores,
+  max = 100,
+}: {
+  base: string;
+  scores: Record<string, number>;
+  max?: number;
+}) {
   const entries = Object.entries(scores).filter(([, v]) => typeof v === "number");
   if (!entries.length) return null;
   const localMax = Math.max(max, ...entries.map(([, v]) => v as number), 1);
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {entries.map(([k, v]) => {
         const pct = Math.max(2, Math.min(100, ((v as number) / localMax) * 100));
-        const tone = v >= localMax * 0.7 ? "bg-rose-400" : v >= localMax * 0.4 ? "bg-amber-400" : "bg-emerald-400";
+        const isHigh = v >= localMax * 0.7;
+        const isMid = v >= localMax * 0.4;
+        const tone = isHigh ? "bg-rose-400" : isMid ? "bg-amber-400" : "bg-emerald-400";
+        const label = labelFor(base, k);
+        const help = helpFor(base, k);
         return (
-          <div key={k} className="flex items-center gap-2 text-[11px]">
-            <span className="w-32 truncate text-muted-foreground" title={k}>{k}</span>
-            <div className="flex-1 h-2.5 rounded bg-muted overflow-hidden">
-              <div className={`h-full ${tone}`} style={{ width: `${pct}%` }} />
+          <div key={k} className="space-y-0.5">
+            <div className="flex items-center gap-2 text-[11px]">
+              <span className="w-40 shrink-0 truncate text-foreground/80" title={label}>{label}</span>
+              <div className="flex-1 h-2.5 rounded bg-muted overflow-hidden">
+                <div className={`h-full ${tone}`} style={{ width: `${pct}%` }} />
+              </div>
+              <span className="w-10 text-right font-mono text-muted-foreground">{Math.round(v as number)}</span>
             </div>
-            <span className="w-10 text-right font-mono">{Math.round(v as number)}</span>
+            {isHigh && help && (
+              <p className="text-[11px] text-muted-foreground pl-2 leading-snug">↳ {help}</p>
+            )}
           </div>
         );
       })}
@@ -482,31 +660,74 @@ export default function MeuResultado() {
           const sev = r.metrics?.severity as string | undefined;
           const tone = sev ? SEVERITY_TONE[sev] : null;
           const dims = r.metrics?.scores as Record<string, number> | undefined;
+          const overview = WAVE_OVERVIEW[r.wave] || WAVE_OVERVIEW[base];
+          const meaning = severityMeaning(base, sev);
+
+          // "O que apareceu para você" — pega até 2 dimensões mais altas com help.
+          const topDims = dims
+            ? Object.entries(dims)
+                .filter(([, v]) => typeof v === "number")
+                .sort((a, b) => (b[1] as number) - (a[1] as number))
+                .slice(0, 2)
+                .map(([k, v]) => ({ label: labelFor(base, k), help: helpFor(base, k), value: v as number }))
+                .filter((d) => d.help)
+            : [];
+
           return (
             <Card key={r.wave + r.round_no} className="p-5 space-y-3">
               <div className="flex items-baseline justify-between flex-wrap gap-1">
                 <h3 className="font-display text-lg font-semibold">Sobre {WAVE_LABEL[r.wave] || WAVE_LABEL[base] || r.wave}</h3>
                 <span className="text-[11px] text-muted-foreground">Ciclo {r.round_no} · {new Date(r.completed_at).toLocaleDateString("pt-BR")}</span>
               </div>
+
+              {/* O que estamos observando aqui */}
+              {overview && (
+                <p className="text-sm leading-relaxed text-foreground/85">{overview}</p>
+              )}
+
               {tone && (
                 <div className={`inline-flex items-center gap-2 text-xs px-2.5 py-1 rounded-full border ${tone.bg} ${tone.color}`}>
                   Seu nível: <strong>{tone.label}</strong>
                   {typeof r.metrics?.score === "number" && <span className="opacity-70">· escore {r.metrics.score}</span>}
                 </div>
               )}
+
+              {/* Gráfico com nomes traduzidos */}
               {dims && Object.keys(dims).length > 0 && (
-                <div className="pt-1">
-                  <p className="text-xs text-muted-foreground mb-2">Como cada dimensão apareceu para você:</p>
-                  <DimensionBars scores={dims} />
+                <div className="pt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Como cada aspecto apareceu nas suas respostas — barras maiores e vermelhas indicam onde a experiência foi mais intensa.
+                  </p>
+                  <DimensionBars base={base} scores={dims} />
                 </div>
               )}
-              {r.sections.map((s, i) => (
-                <div key={i} className="space-y-1 border-t pt-3">
-                  {s.title && <p className="text-sm font-semibold">{s.title}</p>}
-                  <div className="space-y-1">{renderBody(s.body)}</div>
+
+              {/* O que isso quer dizer para você */}
+              {(meaning || topDims.length > 0) && (
+                <div className="border-t pt-3 space-y-2">
+                  <p className="text-sm font-semibold">O que isso quer dizer para você</p>
+                  {meaning && <p className="text-sm leading-relaxed">{meaning}</p>}
+                  {topDims.length > 0 && (
+                    <ul className="text-sm space-y-1.5 list-disc list-inside marker:text-primary/60">
+                      {topDims.map((d, i) => (
+                        <li key={i}>
+                          <strong>{d.label}:</strong> {d.help}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              ))}
-              
+              )}
+
+              {/* Nota específica de assédio sexual */}
+              {base === "assedio_sexual" && (
+                <div className="border-t pt-3 space-y-2 bg-rose-50/40 -mx-5 px-5 -mb-3 pb-3 rounded-b-lg">
+                  <p className="text-sm font-semibold text-rose-900">Se você presenciou ou sofreu</p>
+                  <p className="text-sm text-rose-950/90 leading-relaxed">
+                    Reconhecer é o primeiro passo. Situações de assédio sexual — vividas ou testemunhadas — costumam gerar culpa, medo ou dúvida ("será que foi tão grave assim?"). Se algo do que você respondeu remete a uma experiência real, você não precisa lidar sozinho(a): a Central de Atendimento à Mulher (<a className="underline" href="tel:180">180</a>) e o CVV (<a className="underline" href="tel:188">188</a>) atendem 24h, gratuito e sigiloso. Também é seu direito reportar internamente pelo canal de ética da sua empresa.
+                  </p>
+                </div>
+              )}
             </Card>
           );
         })}
