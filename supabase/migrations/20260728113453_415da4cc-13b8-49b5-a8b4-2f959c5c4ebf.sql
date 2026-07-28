@@ -1,0 +1,5 @@
+
+ALTER TABLE public.sales_prospects
+  ADD COLUMN IF NOT EXISTS contact_email TEXT,
+  ADD COLUMN IF NOT EXISTS last_emailed_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS emailed_count INT NOT NULL DEFAULT 0;
