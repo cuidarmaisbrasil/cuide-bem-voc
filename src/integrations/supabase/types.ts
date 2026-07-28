@@ -1142,15 +1142,18 @@ export type Database = {
           cnae_principal: string | null
           cnpj: string | null
           company_name: string
+          contact_email: string | null
           created_at: string
           created_by: string | null
           data_abertura: string | null
+          emailed_count: number
           employee_size: string | null
           enriched_at: string | null
           enrichment_source: string | null
           fit_rationale: string | null
           fit_score: number
           id: string
+          last_emailed_at: string | null
           municipio: string | null
           outreach_copy: string | null
           porte_receita: string | null
@@ -1174,15 +1177,18 @@ export type Database = {
           cnae_principal?: string | null
           cnpj?: string | null
           company_name: string
+          contact_email?: string | null
           created_at?: string
           created_by?: string | null
           data_abertura?: string | null
+          emailed_count?: number
           employee_size?: string | null
           enriched_at?: string | null
           enrichment_source?: string | null
           fit_rationale?: string | null
           fit_score?: number
           id?: string
+          last_emailed_at?: string | null
           municipio?: string | null
           outreach_copy?: string | null
           porte_receita?: string | null
@@ -1206,15 +1212,18 @@ export type Database = {
           cnae_principal?: string | null
           cnpj?: string | null
           company_name?: string
+          contact_email?: string | null
           created_at?: string
           created_by?: string | null
           data_abertura?: string | null
+          emailed_count?: number
           employee_size?: string | null
           enriched_at?: string | null
           enrichment_source?: string | null
           fit_rationale?: string | null
           fit_score?: number
           id?: string
+          last_emailed_at?: string | null
           municipio?: string | null
           outreach_copy?: string | null
           porte_receita?: string | null
