@@ -40,6 +40,9 @@ type Prospect = {
   data_abertura: string | null;
   enriched_at: string | null;
   enrichment_source: string | null;
+  contact_email: string | null;
+  last_emailed_at: string | null;
+  emailed_count: number | null;
 };
 
 const STATUSES = [
