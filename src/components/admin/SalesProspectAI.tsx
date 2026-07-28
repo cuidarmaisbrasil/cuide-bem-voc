@@ -443,6 +443,61 @@ export const SalesProspectAI = () => {
                         </ul>
                       </div>
                     )}
+                    <div className="rounded border border-border/60 bg-muted/30 p-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        <Label className="text-[11px] uppercase">E-mail comercial (de {COMMERCIAL_FROM})</Label>
+                      </div>
+                      <Input
+                        type="email"
+                        placeholder="destinatario@empresa.com.br"
+                        defaultValue={p.contact_email ?? ""}
+                        className="h-8 text-sm"
+                        onBlur={async (e) => {
+                          const v = e.target.value.trim() || null;
+                          if (v === (p.contact_email ?? null)) return;
+                          await supabase.from("sales_prospects").update({ contact_email: v }).eq("id", p.id);
+                          setProspects((list) => list.map((x) => x.id === p.id ? { ...x, contact_email: v } : x));
+                        }}
+                      />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          size="sm"
+                          variant="default"
+                          disabled={!p.contact_email}
+                          onClick={async () => {
+                            if (!p.contact_email) return;
+                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
+                            const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
+                            window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                            await supabase.from("sales_prospects").update({
+                              last_emailed_at: new Date().toISOString(),
+                              emailed_count: (p.emailed_count ?? 0) + 1,
+                              status: p.status === "novo" ? "contatado" : p.status,
+                            }).eq("id", p.id);
+                            setProspects((list) => list.map((x) => x.id === p.id ? {
+                              ...x,
+                              last_emailed_at: new Date().toISOString(),
+                              emailed_count: (x.emailed_count ?? 0) + 1,
+                              status: x.status === "novo" ? "contatado" : x.status,
+                            } : x));
+                            toast.success("E-mail aberto no seu cliente. Envie pela conta comercial@…");
+                          }}
+                        >
+                          <Mail className="h-3.5 w-3.5 mr-1" />
+                          Abrir no cliente de e-mail
+                        </Button>
+                        {p.last_emailed_at && (
+                          <span className="text-[11px] text-muted-foreground">
+                            enviado {p.emailed_count}× · último {new Date(p.last_emailed_at).toLocaleString("pt-BR")}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground leading-snug">
+                        Abre seu cliente já autenticado no Zoho ({COMMERCIAL_FROM}) com assunto e copy preenchidos. Depois que a app-password do Zoho for cadastrada, o envio passa a acontecer direto daqui.
+                      </p>
+                    </div>
+
                     <div>
                       <Label className="text-[11px] text-muted-foreground uppercase">Notas do vendedor</Label>
                       <Textarea
