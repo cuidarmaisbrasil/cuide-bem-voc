@@ -696,7 +696,7 @@ export default function MeuResultado() {
           const tone = sev ? SEVERITY_TONE[sev] : null;
           const dims = r.metrics?.scores as Record<string, number> | undefined;
           const overview = WAVE_OVERVIEW[r.wave] || WAVE_OVERVIEW[base];
-          const meaning = severityMeaning(base, sev);
+          const meaning = severityMeaning(base, sev) || contextMeaning(base, dims);
 
           // "O que apareceu para você" — pega até 2 dimensões mais altas com help.
           const topDims = dims
