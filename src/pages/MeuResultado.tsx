@@ -208,6 +208,41 @@ function severityMeaning(base: string, sev: string | undefined): string | null {
   return null;
 }
 
+/** Frase humanizada para ondas sem severidade clínica (copsoq/ecig/psicossocial/assedio_sexual),
+ *  baseada na intensidade geral das dimensões respondidas. */
+function contextMeaning(base: string, dims: Record<string, number> | undefined): string | null {
+  if (!dims) return null;
+  const values = Object.values(dims).filter((v) => typeof v === "number") as number[];
+  if (!values.length) return null;
+  const max = Math.max(...values, 1);
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const hiCount = values.filter((v) => v >= max * 0.7).length;
+  const level: "baixo" | "medio" | "alto" =
+    avg >= max * 0.6 || hiCount >= 2 ? "alto" : avg >= max * 0.4 ? "medio" : "baixo";
+
+  if (base === "copsoq") {
+    if (level === "alto") return "Suas respostas indicam que o trabalho, hoje, está pesando mais do que deveria — em volume, cobrança, apoio ou reconhecimento. Isso não é 'frescura': quando esses fatores se acumulam, o corpo e a mente começam a dar sinais (cansaço, irritação, sono ruim, desânimo). Vale conversar com sua liderança ou RH sobre o que dá para ajustar, e olhar com carinho para o seu descanso e rede de apoio.";
+    if (level === "medio") return "No geral, seu trabalho parece equilibrado em algumas áreas e desgastante em outras. Preste atenção aos pontos marcados em amarelo ou vermelho no gráfico — costumam ser os primeiros avisos de que algo precisa mudar antes de virar sofrimento.";
+    return "Suas respostas sugerem um ambiente de trabalho que, no momento, tem sustentado seu bem-estar. Continue observando: mudanças de liderança, de time ou de rotina podem alterar esse cenário rapidamente.";
+  }
+  if (base === "ecig") {
+    if (level === "alto") return "O clima do seu grupo aparece tensionado nas suas respostas — conflitos, falta de apoio ou pouco espaço para se expressar. Isso afeta diretamente sua energia no dia a dia. Se possível, identifique um(a) colega ou liderança de confiança para nomear o que está incomodando; ambientes assim raramente melhoram sozinhos.";
+    if (level === "medio") return "O convívio no seu grupo tem pontos bons e pontos que pesam. Observe se os desconfortos são pontuais (uma pessoa, um projeto) ou se estão virando padrão — essa distinção ajuda a decidir se é hora de conversar, ajustar limites ou buscar apoio.";
+    return "Você descreve um grupo em que se sente respeitado(a) e apoiado(a). Esse é um fator protetor importante da sua saúde mental — vale reconhecer e cuidar dessa rede.";
+  }
+  if (base === "psicossocial") {
+    if (level === "alto") return "Suas respostas mostram que você tem vivido situações no trabalho que ferem sua dignidade — hostilidade, isolamento, desprestígio. Isso não é 'implicância' nem falta de resiliência: são padrões reconhecidos de violência psicológica no trabalho. Registre datas e episódios, procure o canal de ética/ouvidoria da empresa e, se possível, acompanhamento psicológico. Você não precisa carregar isso sozinho(a).";
+    if (level === "medio") return "Alguns comportamentos do seu ambiente já te atingem de forma perceptível. Ainda não é um quadro grave, mas é o momento de nomear (para si mesmo(a) e, se possível, para alguém de confiança) o que está acontecendo, antes que se normalize.";
+    return "Você não relatou, agora, sinais expressivos de hostilidade ou desrespeito dirigidos a você. Continue atento(a): esses padrões costumam surgir de forma gradual.";
+  }
+  if (base === "assedio_sexual") {
+    if (level === "alto") return "Suas respostas trazem à tona situações e/ou justificativas ligadas a assédio sexual no trabalho. Independentemente de você ter vivido ou testemunhado, o incômodo é real e legítimo. Reconhecer é o começo de proteger você e outras pessoas. Os canais 180 e 188 acolhem em sigilo, 24h, e é seu direito acionar o canal interno da empresa.";
+    if (level === "medio") return "Aparecem sinais de que situações de assédio ou justificativas para não agir circulam no seu ambiente. Vale refletir: em quais momentos você se sentiu desconfortável? Do que preferiu não falar? Essa consciência é o primeiro passo para se posicionar com segurança.";
+    return "Você não sinalizou, agora, situações marcantes de assédio sexual no trabalho. Ainda assim, saber para onde recorrer (180, 188, canal interno) é uma forma de proteção sua e das pessoas ao seu redor.";
+  }
+  return null;
+}
+
 function fmtMs(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "—";
   if (ms < 1000) return `${ms} ms`;
@@ -661,7 +696,7 @@ export default function MeuResultado() {
           const tone = sev ? SEVERITY_TONE[sev] : null;
           const dims = r.metrics?.scores as Record<string, number> | undefined;
           const overview = WAVE_OVERVIEW[r.wave] || WAVE_OVERVIEW[base];
-          const meaning = severityMeaning(base, sev);
+          const meaning = severityMeaning(base, sev) || contextMeaning(base, dims);
 
           // "O que apareceu para você" — pega até 2 dimensões mais altas com help.
           const topDims = dims
