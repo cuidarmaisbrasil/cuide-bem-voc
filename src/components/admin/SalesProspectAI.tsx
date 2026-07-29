@@ -469,23 +469,37 @@ export const SalesProspectAI = () => {
                             if (!p.contact_email) return;
                             const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
                             const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
-                            window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                            await supabase.from("sales_prospects").update({
-                              last_emailed_at: new Date().toISOString(),
-                              emailed_count: (p.emailed_count ?? 0) + 1,
-                              status: p.status === "novo" ? "contatado" : p.status,
-                            }).eq("id", p.id);
+                            const { data, error } = await supabase.functions.invoke("send-commercial-email", {
+                              body: { to: p.contact_email, subject, body, prospect_id: p.id },
+                            });
+                            if (error || (data as any)?.error) {
+                              toast.error(`Falha no envio: ${(data as any)?.details || error?.message || "erro desconhecido"}`);
+                              return;
+                            }
                             setProspects((list) => list.map((x) => x.id === p.id ? {
                               ...x,
                               last_emailed_at: new Date().toISOString(),
                               emailed_count: (x.emailed_count ?? 0) + 1,
                               status: x.status === "novo" ? "contatado" : x.status,
                             } : x));
-                            toast.success("E-mail aberto no seu cliente. Envie pela conta comercial@…");
+                            toast.success(`E-mail enviado para ${p.contact_email}`);
                           }}
                         >
                           <Mail className="h-3.5 w-3.5 mr-1" />
-                          Abrir no cliente de e-mail
+                          Enviar agora
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={!p.contact_email}
+                          onClick={() => {
+                            if (!p.contact_email) return;
+                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
+                            const body = (p.outreach_copy || "") + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}`;
+                            window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                          }}
+                        >
+                          Abrir no cliente
                         </Button>
                         {p.last_emailed_at && (
                           <span className="text-[11px] text-muted-foreground">
@@ -494,7 +508,7 @@ export const SalesProspectAI = () => {
                         )}
                       </div>
                       <p className="text-[10px] text-muted-foreground leading-snug">
-                        Abre seu cliente já autenticado no Zoho ({COMMERCIAL_FROM}) com assunto e copy preenchidos. Depois que a app-password do Zoho for cadastrada, o envio passa a acontecer direto daqui.
+                        Envio direto via SMTP Zoho ({COMMERCIAL_FROM}). Confirme antes que MX/SPF/DKIM do Zoho estejam propagados, senão o e-mail cai em spam.
                       </p>
                     </div>
 
