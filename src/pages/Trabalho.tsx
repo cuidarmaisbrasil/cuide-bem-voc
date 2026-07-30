@@ -19,6 +19,8 @@ import { useEditableText } from "@/hooks/useEditableText";
 import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
 import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
+import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
+
 
 
 interface Company {
