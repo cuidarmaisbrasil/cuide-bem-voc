@@ -19,6 +19,8 @@ import { useEditableText } from "@/hooks/useEditableText";
 import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
 import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
+import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
+
 
 
 interface Company {
@@ -384,6 +386,9 @@ const Trabalho = () => {
             <a href="/trabalho/contato" className="text-muted-foreground hover:text-primary transition-smooth font-medium">
               Contato
             </a>
+            <a href="https://calendly.com/comercial-cuidarmaisbrasil" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-smooth">
+              Agendar reunião
+            </a>
           </nav>
         </div>
       </footer>
@@ -439,9 +444,11 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                     Como funciona
                   </Button>
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 flex flex-wrap items-center gap-3">
                   <SampleReportRequestDialog />
+                  <AgendarReuniaoDialog label="Agendar reunião" variant="outline" />
                 </div>
+
               </Reveal>
               <Reveal delay={320}>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground pt-2">

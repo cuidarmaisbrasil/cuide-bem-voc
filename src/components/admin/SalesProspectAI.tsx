@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2, Mail } from "lucide-react";
 
 const COMMERCIAL_FROM = "comercial@cuidarmaisbrasil.life";
+const BOOKING_URL = "https://calendly.com/comercial-cuidarmaisbrasil";
+const BOOKING_LINE = `\n\nSe preferir, escolha um horário direto na nossa agenda (15 min): ${BOOKING_URL}`;
+
 
 type Prospect = {
   id: string;
@@ -468,7 +471,7 @@ export const SalesProspectAI = () => {
                           onClick={async () => {
                             if (!p.contact_email) return;
                             const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
+                            const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
                             const { data, error } = await supabase.functions.invoke("send-commercial-email", {
                               body: { to: p.contact_email, subject, body, prospect_id: p.id },
                             });
@@ -495,7 +498,7 @@ export const SalesProspectAI = () => {
                           onClick={() => {
                             if (!p.contact_email) return;
                             const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || "") + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}`;
+                            const body = (p.outreach_copy || "") + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}`;
                             window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                           }}
                         >

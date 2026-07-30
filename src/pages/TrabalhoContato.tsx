@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, ArrowLeft, CheckCircle2, Send } from "lucide-react";
+import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
+
 
 const ContactSchema = z.object({
   name: z.string().trim().min(2, "Informe seu nome.").max(120),
@@ -88,6 +90,17 @@ const TrabalhoContato = () => {
           <p className="text-muted-foreground">
             Envie sua mensagem pelo formulário abaixo. Retornaremos por e-mail assim que possível.
           </p>
+
+          <Card className="p-5 md:p-6 border-border/60 bg-muted/30 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+            <div>
+              <h2 className="font-medium">Prefere conversar ao vivo?</h2>
+              <p className="text-sm text-muted-foreground">
+                Escolha um horário livre na nossa agenda — 15 minutos, por videochamada.
+              </p>
+            </div>
+            <AgendarReuniaoDialog label="Agendar reunião" className="shrink-0" />
+          </Card>
+
 
           <Card className="p-6 md:p-8 shadow-card border-border/60">
             {sent ? (
