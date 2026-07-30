@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, ArrowLeft, CheckCircle2, Send } from "lucide-react";
+import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
+
 
 const ContactSchema = z.object({
   name: z.string().trim().min(2, "Informe seu nome.").max(120),
