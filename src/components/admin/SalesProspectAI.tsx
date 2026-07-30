@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2, Mail } from "lucide-react";
 
 const COMMERCIAL_FROM = "comercial@cuidarmaisbrasil.life";
+const BOOKING_URL = "https://calendly.com/comercial-cuidarmaisbrasil";
+const BOOKING_LINE = `\n\nSe preferir, escolha um horário direto na nossa agenda (15 min): ${BOOKING_URL}`;
+
 
 type Prospect = {
   id: string;
