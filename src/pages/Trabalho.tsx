@@ -386,6 +386,9 @@ const Trabalho = () => {
             <a href="/trabalho/contato" className="text-muted-foreground hover:text-primary transition-smooth font-medium">
               Contato
             </a>
+            <a href="https://calendly.com/comercial-cuidarmaisbrasil" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-smooth">
+              Agendar reunião
+            </a>
           </nav>
         </div>
       </footer>
