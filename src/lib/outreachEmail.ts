@@ -27,7 +27,7 @@ function local(p: OutreachInput) {
 }
 
 export function outreachSubject(p: OutreachInput) {
-  return `${p.company_name}: primeiro ciclo NR-1 (riscos psicossociais) gratuito — e o relatório pronto`;
+  return `${p.company_name}: primeiro ciclo NR-1 (riscos psicossociais) sem custo`;
 }
 
 export function outreachText(p: OutreachInput) {
