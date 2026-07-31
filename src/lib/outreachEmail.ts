@@ -105,11 +105,11 @@ export function outreachHtml(p: OutreachInput) {
 
   const corpo = custom
     ? `<p style="${P}">${custom}</p>`
-    : `<p style="${P}">Aposto que, se eu perguntasse hoje ao <strong>${cargo}</strong> da <strong>${empresa}</strong> onde está o maior risco psicossocial da operação${setor}, viriam três respostas antes de qualquer dado: sobrecarga, clima em algumas equipes e aquele afastamento que “ninguém viu chegar”. Quase sempre acertamos essas três — e quase sempre falta exatamente a evidência documental que a NR-1 exige.</p>
-       <p style="${P}">É esse o ponto cego que a fiscalização enxerga primeiro: o inventário de riscos psicossociais existe no papel, mas sem medição periódica, sem série histórica e sem plano de ação rastreável.</p>
-       <p style="${P}">O <strong>Cuidar+ Trabalho</strong> resolve isso com uma arquitetura preventiva em 5 ondas, aplicada de forma anônima aos colaboradores${cidade}:</p>
+    : `<p style="${P}">Escrevo ao <strong>${cargo}</strong> da <strong>${empresa}</strong> sobre um ponto que costuma se repetir${setor}: quando perguntamos onde está o maior risco psicossocial da operação, as respostas quase sempre são as mesmas três — sobrecarga, clima em algumas equipes e um afastamento que ninguém viu chegar. O diagnóstico costuma estar certo; o que falta é a evidência documental que a NR-1 exige.</p>
+       <p style="${P}">É esse o ponto que a fiscalização verifica primeiro: o inventário de riscos psicossociais existe no papel, mas sem medição periódica, sem série histórica e sem plano de ação rastreável.</p>
+       <p style="${P}">O <strong>Cuidar+ Trabalho</strong> cobre exatamente essa lacuna, com uma arquitetura preventiva em 5 ondas, aplicada de forma anônima aos colaboradores${cidade}:</p>
        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:8px 0 16px;">${ondas}</table>
-       <p style="${P}">Ao fim do ciclo (3 meses) a empresa recebe um <strong>relatório consolidado</strong> com indicadores por área/setor, faixas de atenção e risco, plano de ação e a documentação de conformidade com a NR-1. Cada colaborador recebe, por código anônimo, uma devolutiva individual acolhedora.</p>`;
+       <p style="${P}">Ao fim do ciclo (3 meses), a empresa recebe um <strong>relatório consolidado</strong> com indicadores por área/setor, faixas de atenção e risco, plano de ação e a documentação de conformidade com a NR-1. Cada colaborador recebe, por código anônimo, uma devolutiva individual.</p>`;
 
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;padding:0;background:#f1f5f4;">
 <div style="max-width:600px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
