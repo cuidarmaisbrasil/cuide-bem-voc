@@ -120,7 +120,7 @@ export function outreachHtml(p: OutreachInput) {
     <div style="background:#0d3b34;border-radius:10px;padding:18px 20px;margin:20px 0;">
       <p style="margin:0 0 6px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#e8b4a4;">Convite selecionado</p>
       <p style="margin:0;font-size:16px;line-height:1.5;color:#ffffff;">
-        A <strong>${empresa}</strong> foi escolhida para receber o <strong>primeiro ciclo completo e o relatório final gratuitos</strong>, para até 100 colaboradores. Sem contrato, sem cartão.
+        A <strong>${empresa}</strong> está entre as empresas selecionadas para receber o <strong>primeiro ciclo completo e o relatório final sem custo</strong>, para até 100 colaboradores. Sem contrato e sem cartão.
       </p>
     </div>
 
