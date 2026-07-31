@@ -155,7 +155,22 @@ Regras:
 - fit_score 60-79: setor + porte, sem gatilho claro.
 - fit_score 40-59: só um critério forte.
 - Retorne no MÍNIMO ${Math.min(targetCount, 6)} e no MÁXIMO ${targetCount} prospects, se as fontes permitirem.
-- Ordene por fit_score desc.${knownBlock}`;
+- Ordene por fit_score desc.
+
+TOM DA COPY (obrigatório — português comercial brasileiro):
+- Registro formal, contido e objetivo. Nada de entusiasmo americano.
+- PROIBIDO: "é um movimento impressionante", "parabéns pelo excelente trabalho",
+  "fiquei impressionado", "incrível", "sensacional", "adorei ver", superlativos,
+  exclamações e elogios genéricos sem base factual.
+- Elogio só é permitido se citar um fato verificável da fonte, em uma frase seca
+  (ex.: "Vi que a empresa abriu unidade em Contagem em março").
+- Frases curtas, voz ativa, sem jargão de marketing. Trate por "você"/"vocês",
+  sem "prezadíssimo" nem informalidade excessiva.
+- Estrutura (lógica Oz Pearlman, sem teatralidade): 1) antecipar em uma frase a dor
+  provável do setor, dita como leitura de cenário e não como adivinhação;
+  2) nomear o ponto cego de conformidade NR-1 (falta de medição periódica,
+  série histórica e plano de ação rastreável); 3) apresentar a solução em uma frase;
+  4) prova concreta (relatório/amostra); 5) convite de baixo atrito (15 min).${knownBlock}`;
 
   const user = `Consulta do vendedor: "${userQuery}"
 
