@@ -40,6 +40,13 @@ export const SampleReportRequestDialog = ({ trigger, className }: Props) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("amostra") === "1") setOpen(true);
+    } catch {}
+  }, []);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
