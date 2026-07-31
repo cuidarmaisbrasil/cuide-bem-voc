@@ -505,8 +505,16 @@ export const SalesProspectAI = () => {
                           disabled={!p.contact_email}
                           onClick={() => {
                             if (!p.contact_email) return;
-                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || "") + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}`;
+                            const input = {
+                              company_name: p.company_name,
+                              sector: p.sector,
+                              city: p.city,
+                              state: p.state,
+                              target_role: p.target_role,
+                              custom_copy: p.outreach_copy,
+                            };
+                            const subject = outreachSubject(input);
+                            const body = outreachText(input);
                             window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                           }}
                         >
