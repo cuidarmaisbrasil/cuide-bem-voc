@@ -11,9 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2, Mail } from "lucide-react";
 
-const COMMERCIAL_FROM = "comercial@cuidarmaisbrasil.life";
-const BOOKING_URL = "https://calendly.com/comercial-cuidarmaisbrasil";
-const BOOKING_LINE = `\n\nSe preferir, escolha um horário direto na nossa agenda (15 min): ${BOOKING_URL}`;
+import { COMMERCIAL_FROM, BOOKING_URL, outreachHtml, outreachSubject, outreachText } from "@/lib/outreachEmail";
+
 
 
 type Prospect = {
@@ -470,10 +469,19 @@ export const SalesProspectAI = () => {
                           disabled={!p.contact_email}
                           onClick={async () => {
                             if (!p.contact_email) return;
-                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
+                            const input = {
+                              company_name: p.company_name,
+                              sector: p.sector,
+                              city: p.city,
+                              state: p.state,
+                              target_role: p.target_role,
+                              custom_copy: p.outreach_copy,
+                            };
+                            const subject = outreachSubject(input);
+                            const body = outreachText(input);
+                            const html = outreachHtml(input);
                             const { data, error } = await supabase.functions.invoke("send-commercial-email", {
-                              body: { to: p.contact_email, subject, body, prospect_id: p.id },
+                              body: { to: p.contact_email, subject, body, html, prospect_id: p.id },
                             });
                             if (error || (data as any)?.error) {
                               toast.error(`Falha no envio: ${(data as any)?.details || error?.message || "erro desconhecido"}`);
@@ -497,8 +505,16 @@ export const SalesProspectAI = () => {
                           disabled={!p.contact_email}
                           onClick={() => {
                             if (!p.contact_email) return;
-                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || "") + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}`;
+                            const input = {
+                              company_name: p.company_name,
+                              sector: p.sector,
+                              city: p.city,
+                              state: p.state,
+                              target_role: p.target_role,
+                              custom_copy: p.outreach_copy,
+                            };
+                            const subject = outreachSubject(input);
+                            const body = outreachText(input);
                             window.location.href = `mailto:${encodeURIComponent(p.contact_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                           }}
                         >
