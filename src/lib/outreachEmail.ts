@@ -135,7 +135,7 @@ export function outreachHtml(p: OutreachInput) {
       </tr>
     </table>
 
-    <p style="${P}font-size:13px;color:#475569;">Se a resposta for “ainda não é prioridade”, tudo bem — só peço que guarde este e-mail. Na próxima notificação de fiscalização ou afastamento por saúde mental, ele economiza meses.</p>
+    <p style="${P}font-size:13px;color:#475569;">Se o tema ainda não for prioridade, sem problema. Sugiro apenas guardar este e-mail: ele encurta o caminho na próxima notificação de fiscalização ou afastamento por saúde mental.</p>
 
     <hr style="border:0;border-top:1px solid #e2e8f0;margin:20px 0;" />
     <p style="margin:0;font-size:12px;color:#64748b;line-height:1.6;">
