@@ -38,7 +38,7 @@ export function outreachText(p: OutreachInput) {
   if (p.custom_copy && p.custom_copy.trim()) {
     return `${p.custom_copy.trim()}
 
-A ${p.company_name} foi selecionada para receber o primeiro ciclo completo e o relatório final gratuitos (até 100 colaboradores).
+A ${p.company_name} está entre as empresas selecionadas para receber o primeiro ciclo completo e o relatório final sem custo (até 100 colaboradores).
 
 Amostra de uma página do relatório final: ${SAMPLE_URL}
 Agenda de 15 min: ${BOOKING_URL}
@@ -51,25 +51,25 @@ ${SITE_URL}`;
 
   return `Olá,
 
-Aposto que, se eu perguntasse hoje ao ${cargo} da ${p.company_name} onde está o maior risco psicossocial da operação${setor}, viriam três respostas antes de qualquer dado: sobrecarga, clima em algumas equipes e aquele afastamento que "ninguém viu chegar". Quase sempre acertamos essas três — e quase sempre falta exatamente a evidência documental que a NR-1 exige.
+Escrevo ao ${cargo} da ${p.company_name} sobre um ponto que costuma se repetir${setor}: quando perguntamos onde está o maior risco psicossocial da operação, as respostas quase sempre são as mesmas três — sobrecarga, clima em algumas equipes e um afastamento que ninguém viu chegar. O diagnóstico costuma estar certo; o que falta é a evidência documental que a NR-1 exige.
 
-É esse o ponto cego que a fiscalização enxerga primeiro: o inventário de riscos psicossociais existe no papel, mas sem medição periódica, sem série histórica e sem plano de ação rastreável.
+É esse o ponto que a fiscalização verifica primeiro: o inventário de riscos psicossociais existe no papel, mas sem medição periódica, sem série histórica e sem plano de ação rastreável.
 
-O Cuidar+ Trabalho resolve isso com uma arquitetura preventiva em 5 ondas, aplicada de forma anônima aos colaboradores${cidade}:
+O Cuidar+ Trabalho cobre exatamente essa lacuna, com uma arquitetura preventiva em 5 ondas, aplicada de forma anônima aos colaboradores${cidade}:
 • Onda 1 — sinais de sofrimento e ansiedade (rastreio inicial)
 • Onda 2 — percepção do ambiente psicossocial
 • Onda 3 — clima e convivência no grupo de trabalho
 • Onda 4 — condutas hostis e reteste comparativo
 • Onda 5 — assédio: percepção, tolerância e disposição de reportar
 
-No fim do ciclo (3 meses) a empresa recebe um relatório consolidado com indicadores por área/setor, faixas de atenção e risco, plano de ação e a documentação de conformidade com a NR-1 — e cada colaborador recebe, por código anônimo, uma devolutiva individual acolhedora.
+Ao fim do ciclo (3 meses), a empresa recebe um relatório consolidado com indicadores por área/setor, faixas de atenção e risco, plano de ação e a documentação de conformidade com a NR-1. Cada colaborador recebe, por código anônimo, uma devolutiva individual.
 
-${p.company_name} foi selecionada para receber o primeiro ciclo completo e o relatório final gratuitos, para até 100 colaboradores. Sem contrato, sem cartão.
+A ${p.company_name} está entre as empresas selecionadas para receber o primeiro ciclo completo e o relatório final sem custo, para até 100 colaboradores. Sem contrato e sem cartão.
 
-Veja uma página real do relatório final aqui: ${SAMPLE_URL}
-Se preferir conversar antes, são 15 minutos na agenda: ${BOOKING_URL}
+Uma página real do relatório final: ${SAMPLE_URL}
+Se preferir conversar antes, são 15 minutos: ${BOOKING_URL}
 
-Se a resposta for "ainda não é prioridade", tudo bem — só peço que guarde este e-mail. Na próxima notificação de fiscalização ou afastamento por saúde mental, ele economiza meses.
+Se o tema ainda não for prioridade, sem problema. Sugiro apenas guardar este e-mail: ele encurta o caminho na próxima notificação de fiscalização ou afastamento por saúde mental.
 
 —
 Comercial Cuidar+ Trabalho
