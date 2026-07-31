@@ -469,10 +469,19 @@ export const SalesProspectAI = () => {
                           disabled={!p.contact_email}
                           onClick={async () => {
                             if (!p.contact_email) return;
-                            const subject = `Cuidar+ Trabalho — apoio à conformidade com a NR-1 para ${p.company_name}`;
-                            const body = (p.outreach_copy || `Olá,\n\nSou da Cuidar+ Trabalho. Gostaria de apresentar como podemos apoiar ${p.company_name} na conformidade com a NR-1 (riscos psicossociais), começando gratuitamente para até 100 colaboradores.\n\nPodemos conversar 15 min esta semana?\n\nAbraço,\nComercial Cuidar+`) + BOOKING_LINE + `\n\n—\nComercial Cuidar+ Trabalho\n${COMMERCIAL_FROM}\nhttps://cuidarmaisbrasil.life/trabalho`;
+                            const input = {
+                              company_name: p.company_name,
+                              sector: p.sector,
+                              city: p.city,
+                              state: p.state,
+                              target_role: p.target_role,
+                              custom_copy: p.outreach_copy,
+                            };
+                            const subject = outreachSubject(input);
+                            const body = outreachText(input);
+                            const html = outreachHtml(input);
                             const { data, error } = await supabase.functions.invoke("send-commercial-email", {
-                              body: { to: p.contact_email, subject, body, prospect_id: p.id },
+                              body: { to: p.contact_email, subject, body, html, prospect_id: p.id },
                             });
                             if (error || (data as any)?.error) {
                               toast.error(`Falha no envio: ${(data as any)?.details || error?.message || "erro desconhecido"}`);
