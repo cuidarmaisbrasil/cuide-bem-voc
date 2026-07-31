@@ -140,7 +140,7 @@ Retorne APENAS JSON válido no formato:
       "fit_score": 0-100,
       "fit_rationale": "2-4 bullets em texto único explicando por que é fit. Cite gatilho/dor específica se houver.",
       "target_role": "Cargo-alvo para abordagem (ex: Diretor(a) de RH, Gerente de SESMT, Head de DHO)",
-      "outreach_copy": "E-mail curto (máx 120 palavras) em PT-BR, personalizado, mencionando dor do setor e NR-1, com CTA claro para reunião de 20 min.",
+      "outreach_copy": "E-mail curto (máx 120 palavras) em PT-BR, personalizado, mencionando dor do setor e NR-1, com CTA claro para reunião de 15 min.",
       "source_urls": ["url1", "url2"]
     }
   ]
