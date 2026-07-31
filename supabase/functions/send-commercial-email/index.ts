@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", user.id);
     if (!roles?.some((r: any) => r.role === "admin")) return j({ error: "forbidden" }, 403);
 
-    const { to, subject, body, prospect_id } = await req.json();
+    const { to, subject, body, html, prospect_id } = await req.json();
     if (!to || !subject || !body) return j({ error: "missing_fields" }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return j({ error: "invalid_email" }, 400);
 
@@ -50,7 +50,9 @@ Deno.serve(async (req) => {
         replyTo: FROM_EMAIL,
         subject,
         content: body,
-        html: `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111;line-height:1.5;white-space:pre-wrap">${escapeHtml(body)}</div>`,
+        html: typeof html === "string" && html.trim()
+          ? html
+          : `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111;line-height:1.5;white-space:pre-wrap">${escapeHtml(body)}</div>`,
       });
     } finally {
       await client.close();
