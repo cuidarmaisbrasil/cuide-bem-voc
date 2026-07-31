@@ -2,6 +2,8 @@
 // Estrutura de persuasão em 5 tempos (antecipação → leitura do cenário →
 // solução → prova → convite de baixo atrito), com seleção exclusiva do
 // primeiro ciclo gratuito.
+// Tom: português comercial brasileiro — formal, contido, factual.
+// Sem superlativos, sem elogios genéricos, sem entusiasmo importado do inglês.
 
 export const COMMERCIAL_FROM = "comercial@cuidarmaisbrasil.life";
 export const BOOKING_URL = "https://calendly.com/comercial-cuidarmaisbrasil";
