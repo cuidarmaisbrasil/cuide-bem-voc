@@ -34,29 +34,31 @@ Deno.serve(async (req) => {
     if (!to || !subject || !body) return j({ error: "missing_fields" }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return j({ error: "invalid_email" }, 400);
 
-    const client = new SMTPClient({
-      connection: {
-        hostname: "smtp.zoho.com",
-        port: 465,
-        tls: true,
-        auth: { username: FROM_EMAIL, password: smtpPass },
-      },
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 465,
+      secure: true,
+      auth: { user: FROM_EMAIL, pass: smtpPass },
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+      socketTimeout: 30000,
     });
 
     try {
-      await client.send({
-        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      await transporter.sendMail({
+        from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
         to,
         replyTo: FROM_EMAIL,
         subject,
-        content: body,
+        text: body,
         html: typeof html === "string" && html.trim()
           ? html
           : `<div style="font-family:Arial,sans-serif;font-size:14px;color:#111;line-height:1.5;white-space:pre-wrap">${escapeHtml(body)}</div>`,
       });
     } finally {
-      await client.close();
+      try { transporter.close(); } catch { /* ignore */ }
     }
+
 
     if (prospect_id) {
       await admin.rpc; // no-op guard
