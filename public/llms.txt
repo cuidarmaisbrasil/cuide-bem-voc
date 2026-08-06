@@ -10,6 +10,15 @@ Cuidar+ Brasil oferece dois instrumentos validados cientificamente: o PHQ-9 para
 - [Cuidar+ Trabalho — COPSOQ II para empresas](/trabalho): Cadastro de empresas e painel para aplicar o questionário COPSOQ II de riscos psicossociais no trabalho (apoio à NR-1).
 - [Imprensa / Press Kit](/imprensa): Materiais para jornalistas, fatos rápidos, descrição dos instrumentos e contato.
 - [Blog RH — NR-1 e saúde mental no trabalho](/blog/rh-saude-mental-trabalho): O que o RH precisa medir em 2026 sobre saúde mental, NR-1 e COPSOQ II.
+- [Blog — índice](/blog): Artigos técnicos sobre NR-1, PGR, AEP da NR-17, COPSOQ II e gestão de riscos psicossociais.
+- [NR-1 passo a passo](/blog/nr-1-riscos-psicossociais-passo-a-passo): Roteiro em 7 etapas para cumprir a NR-1 em riscos psicossociais.
+- [NR-1 e fiscalização](/blog/nr-1-saude-mental-fiscalizacao): O que o Auditor Fiscal do Trabalho verifica sobre saúde mental.
+- [COPSOQ II](/blog/copsoq-ii-o-que-e-como-aplicar): Dimensões, versões, faixas de corte e aplicação anônima.
+- [Plano de ação psicossocial](/blog/plano-de-acao-riscos-psicossociais): Estrutura, hierarquia de controle e verificação de eficácia.
+- [PGR e NR-1](/blog/pgr-nr-1-o-que-mudou): O que mudou no PGR com os fatores psicossociais.
+- [Saúde mental no trabalho](/blog/saude-mental-no-trabalho-guia-empresas): Guia prático para empresas brasileiras.
+- [AEP da NR-17](/blog/aep-nr-17-fatores-psicossociais): O que precisa constar na avaliação ergonômica preliminar.
+- [Programa de parceiros](/trabalho/parceiros): Para consultorias de SST e clínicas de medicina ocupacional oferecerem a medição aos seus clientes.
 - [Política de Privacidade](/privacidade): Como tratamos dados anonimizados, LGPD e direitos do usuário.
 - [Termos de Uso](/termos): Condições de uso da plataforma e limitações da triagem.
 
