@@ -877,10 +877,15 @@ function TestModePanel({ companies }: { companies: Company[] }) {
           {allCompleted && currentRound && (
             <div className="rounded border border-emerald-300 bg-emerald-50 p-3 text-sm">
               ✅ Todas as ondas concluídas. Veja o relatório final:
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 <Button asChild size="sm">
                   <a href={`/admin/aep/${companyId}/${currentRound}`} target="_blank" rel="noopener noreferrer">
                     Abrir relatório AEP (Rodada #{currentRound})
+                  </a>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <a href={`/admin/nr1/${companyId}/${currentRound}`} target="_blank" rel="noopener noreferrer">
+                    Inventário de Riscos NR-1 / PGR
                   </a>
                 </Button>
               </div>
