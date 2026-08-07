@@ -18,6 +18,7 @@ import WellnessResponder from "./pages/WellnessResponder.tsx";
 import Imprensa from "./pages/Imprensa.tsx";
 import BlogRH from "./pages/BlogRH.tsx";
 import AepReport from "./pages/AepReport.tsx";
+import Nr1Report from "./pages/Nr1Report.tsx";
 import MeuResultado from "./pages/MeuResultado.tsx";
 import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
 import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/imprensa" element={<Imprensa />} />
             <Route path="/blog/rh-saude-mental-trabalho" element={<BlogRH />} />
             <Route path="/admin/aep/:companyId/:roundNo" element={<AepReport />} />
+            <Route path="/admin/nr1/:companyId/:roundNo" element={<Nr1Report />} />
             <Route path="/meu-resultado" element={<MeuResultado />} />
             <Route path="/trabalho/termos" element={<TrabalhoTermos />} />
             <Route path="/trabalho/faq" element={<TrabalhoFAQ />} />
