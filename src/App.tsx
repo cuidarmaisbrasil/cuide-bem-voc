@@ -18,6 +18,7 @@ import WellnessResponder from "./pages/WellnessResponder.tsx";
 import Imprensa from "./pages/Imprensa.tsx";
 import BlogRH from "./pages/BlogRH.tsx";
 import AepReport from "./pages/AepReport.tsx";
+import Nr1Report from "./pages/Nr1Report.tsx";
 import MeuResultado from "./pages/MeuResultado.tsx";
 import TrabalhoTermos from "./pages/TrabalhoTermos.tsx";
 import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
