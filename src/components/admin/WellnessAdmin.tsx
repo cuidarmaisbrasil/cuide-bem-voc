@@ -304,6 +304,11 @@ export const WellnessAdmin = () => {
                             Exportar AEP
                           </a>
                         </Button>
+                        <Button asChild size="sm" variant="outline">
+                          <a href={`/admin/nr1/${companyId}/${r.round_no}`} target="_blank" rel="noopener noreferrer">
+                            Inventário NR-1 / PGR
+                          </a>
+                        </Button>
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground">
