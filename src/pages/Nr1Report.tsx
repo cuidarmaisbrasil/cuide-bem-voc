@@ -702,7 +702,7 @@ const Nr1Report = () => {
                   <th style={{ width: "10%" }}>Prazo</th>
                   <th style={{ width: "14%" }}>Responsável</th>
                   <th style={{ width: "14%" }}>Forma de aferição da eficácia</th>
-                  <th style={{ width: "14%" }}>Status</th>
+                  <th style={{ width: "14%" }}>Situação</th>
                 </tr>
               </thead>
               <tbody>
