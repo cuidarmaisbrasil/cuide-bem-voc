@@ -545,7 +545,19 @@ const Nr1Report = () => {
           </button>
         </div>
 
+        {isSample && (
+          <div style={{ border: "2px solid #b45309", background: "#fffbeb", color: "#7c2d12" }}
+            className="rounded p-3 text-sm">
+            <strong>AMOSTRA DEMONSTRATIVA — dados sintéticos.</strong> Esta é uma empresa fictícia criada
+            apenas para demonstrar o formato do documento. Todos os números abaixo são{" "}
+            <strong>simulados</strong> e não representam nenhuma organização real. A estrutura, a matriz
+            severidade × probabilidade, o inventário e o plano de ação são gerados pelo mesmo mecanismo
+            de cálculo usado nos relatórios reais.
+          </div>
+        )}
+
         <header className="space-y-2">
+
           <p className="text-xs uppercase tracking-wide text-neutral-600">
             NR-1 · Programa de Gerenciamento de Riscos (PGR) — Inventário de Riscos Psicossociais · NR-17 · Avaliação Ergonômica Preliminar (AEP)
           </p>
