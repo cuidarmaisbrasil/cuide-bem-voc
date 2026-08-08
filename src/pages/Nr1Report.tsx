@@ -249,17 +249,112 @@ const MDISH_LABELS: Record<string, string> = {
   mdish_attribution_blame: "Culpabilização da vítima",
 };
 
+// --------------------------------------------------------------------------
+// Amostra demonstrativa (rota /admin/nr1/amostra/1). Dados SINTÉTICOS,
+// declarados como exemplo, processados pelo MESMO pipeline de classificação
+// usado em produção. Nunca exibidos sem o aviso da seção 0.
+// --------------------------------------------------------------------------
+const SAMPLE_COMPANY: Company = {
+  id: "amostra",
+  name: "Empresa Exemplo Ltda. (dados sintéticos)",
+  cnpj: "00.000.000/0001-00",
+  sector: "Call center / teleatendimento (CNAE 8220-2)",
+  size_range: "100–249 trabalhadores",
+};
+
+const SAMPLE_STATS: StatsResp = {
+  min_recorte: 5,
+  rounds: [
+    {
+      round_no: 1,
+      opened_at: "2025-09-01T00:00:00Z",
+      closed_at: "2025-11-30T00:00:00Z",
+      devolutiva_communicated_at: "2025-12-10T00:00:00Z",
+      devolutiva_notes: null,
+      status: "devolutiva_communicated",
+      waves: {
+        "1": { scheduled: 140, sent: 140, completed: 96 },
+        "2": { scheduled: 140, sent: 140, completed: 88 },
+        "3": { scheduled: 140, sent: 140, completed: 81 },
+        "4": { scheduled: 140, sent: 140, completed: 77 },
+        "5": { scheduled: 140, sent: 140, completed: 74 },
+      },
+      copsoq: {
+        n: 88, hidden: false,
+        scales: {
+          quantitative_demands: { mean: 62.4, n: 88 },
+          work_pace: { mean: 68.1, n: 88 },
+          emotional_demands: { mean: 59.7, n: 88 },
+          influence_at_work: { mean: 41.2, n: 88 },
+          predictability: { mean: 47.9, n: 88 },
+          role_clarity: { mean: 71.3, n: 88 },
+          quality_leadership: { mean: 44.6, n: 88 },
+          social_support_supervisor: { mean: 46.8, n: 88 },
+          recognition: { mean: 43.5, n: 88 },
+          job_insecurity: { mean: 55.2, n: 88 },
+          work_family_conflict: { mean: 51.0, n: 88 },
+          burnout: { mean: 57.9, n: 88 },
+          stress: { mean: 54.3, n: 88 },
+          sleeping_troubles: { mean: 49.6, n: 88 },
+          offensive_behaviours: { mean: 28.4, n: 88 },
+        },
+      },
+      phq9: {
+        n: 96, hidden: false,
+        severity_dist: { minimal: 31, mild: 33, moderate: 19, moderately_severe: 9, severe: 4 },
+      },
+      psicossocial: {
+        n: 77, hidden: false, IGAP: 0.71, NEAP: 12.4, flagged_pct: 14,
+        subscales: {
+          desprestigio: 0.86,
+          ampliacao_es: 0.62,
+          desacreditacao: 0.41,
+          comunicacao: 0.55,
+          contato_social: 0.33,
+          saude: 0.12,
+        },
+        flagged_departments: [],
+      },
+      assedio_sexual: {
+        n: 74, hidden: false, MDiSH_total: 1.9, SHRAS_total: 3.6, any_endorsed_pct: 22,
+        subscales: {
+          mdish_moral_justification: 1.4,
+          mdish_euphemistic_labeling: 2.3,
+          mdish_advantageous_comparison: 1.6,
+          mdish_displacement_responsibility: 1.8,
+          mdish_diffusion_responsibility: 1.7,
+          mdish_distortion_consequences: 2.1,
+          mdish_dehumanization: 1.2,
+          mdish_attribution_blame: 1.9,
+          shras: 3.6,
+        },
+      },
+    },
+  ],
+};
+
 const Nr1Report = () => {
   const { companyId, roundNo } = useParams<{ companyId: string; roundNo: string }>();
+  const isSample = companyId === "amostra";
   const [company, setCompany] = useState<Company | null>(null);
   const [stats, setStats] = useState<StatsResp | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { document.title = "Inventário de Riscos NR-1 + AEP NR-17 — Cuidar+ Trabalho"; }, []);
+  useEffect(() => {
+    document.title = isSample
+      ? "Amostra — Inventário de Riscos NR-1 + AEP NR-17 — Cuidar+ Trabalho"
+      : "Inventário de Riscos NR-1 + AEP NR-17 — Cuidar+ Trabalho";
+  }, [isSample]);
 
   useEffect(() => {
     (async () => {
       if (!companyId) return;
+      if (isSample) {
+        setCompany(SAMPLE_COMPANY);
+        setStats(SAMPLE_STATS);
+        setLoading(false);
+        return;
+      }
       const [{ data: co }, { data: { session } }] = await Promise.all([
         supabase.from("companies").select("id,name,cnpj,sector,size_range").eq("id", companyId).maybeSingle(),
         supabase.auth.getSession(),
@@ -272,10 +367,11 @@ const Nr1Report = () => {
       setStats(await res.json());
       setLoading(false);
     })();
-  }, [companyId]);
+  }, [companyId, isSample]);
 
   const target = stats?.rounds.find((r) => String(r.round_no) === String(roundNo)) || null;
   const prev = target ? stats?.rounds.find((r) => r.round_no === target.round_no - 1) || null : null;
+
 
   // ---- Construção do inventário a partir de dados reais -------------------
   const inventory = useMemo<InvRow[]>(() => {
@@ -449,7 +545,19 @@ const Nr1Report = () => {
           </button>
         </div>
 
+        {isSample && (
+          <div style={{ border: "2px solid #b45309", background: "#fffbeb", color: "#7c2d12" }}
+            className="rounded p-3 text-sm">
+            <strong>AMOSTRA DEMONSTRATIVA — dados sintéticos.</strong> Esta é uma empresa fictícia criada
+            apenas para demonstrar o formato do documento. Todos os números abaixo são{" "}
+            <strong>simulados</strong> e não representam nenhuma organização real. A estrutura, a matriz
+            severidade × probabilidade, o inventário e o plano de ação são gerados pelo mesmo mecanismo
+            de cálculo usado nos relatórios reais.
+          </div>
+        )}
+
         <header className="space-y-2">
+
           <p className="text-xs uppercase tracking-wide text-neutral-600">
             NR-1 · Programa de Gerenciamento de Riscos (PGR) — Inventário de Riscos Psicossociais · NR-17 · Avaliação Ergonômica Preliminar (AEP)
           </p>

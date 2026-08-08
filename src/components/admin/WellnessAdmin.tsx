@@ -263,10 +263,18 @@ export const WellnessAdmin = () => {
             <Card className="p-4 space-y-3">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <h3 className="font-semibold">Rodadas de rastreio</h3>
-                <Button size="sm" onClick={openNewRound} disabled={busy || !stats.can_open_new_round}
-                  title={stats.can_open_new_round ? "" : "Marque a devolutiva da rodada atual antes"}>
-                  Abrir nova rodada
-                </Button>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <a href="/admin/nr1/amostra/1" target="_blank" rel="noopener noreferrer">
+                      Ver amostra NR-1 / PGR
+                    </a>
+                  </Button>
+                  <Button size="sm" onClick={openNewRound} disabled={busy || !stats.can_open_new_round}
+                    title={stats.can_open_new_round ? "" : "Marque a devolutiva da rodada atual antes"}>
+                    Abrir nova rodada
+                  </Button>
+                </div>
+
               </div>
               {!stats.can_open_new_round && (
                 <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
