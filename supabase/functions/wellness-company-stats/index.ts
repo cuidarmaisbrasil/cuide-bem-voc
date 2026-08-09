@@ -37,10 +37,11 @@ Deno.serve(async (req) => {
     // Per-company min_recorte (privacy threshold), with global fallback
     const { data: cfgRow } = await admin
       .from("wellness_company_settings")
-      .select("min_recorte_company")
+      .select("min_recorte_company, min_recorte_department")
       .eq("company_id", company_id)
       .maybeSingle();
     const MIN_RECORTE = cfgRow?.min_recorte_company ?? DEFAULT_MIN_RECORTE;
+    const MIN_DEPT = cfgRow?.min_recorte_department ?? MIN_RECORTE;
 
 
 
