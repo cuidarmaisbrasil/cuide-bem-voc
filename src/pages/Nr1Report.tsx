@@ -843,12 +843,13 @@ const Nr1Report = () => {
               <thead>
                 <tr>
                   <th style={{ width: "4%" }}>#</th>
-                  <th style={{ width: "18%" }}>Risco priorizado</th>
-                  <th style={{ width: "26%" }}>Ação de prevenção</th>
-                  <th style={{ width: "10%" }}>Prazo</th>
-                  <th style={{ width: "14%" }}>Responsável</th>
-                  <th style={{ width: "14%" }}>Forma de aferição da eficácia</th>
-                  <th style={{ width: "14%" }}>Situação</th>
+                  <th style={{ width: "16%" }}>Risco priorizado</th>
+                  <th style={{ width: "14%" }}>Setor / função alvo (GHE)</th>
+                  <th style={{ width: "22%" }}>Ação de prevenção</th>
+                  <th style={{ width: "9%" }}>Prazo</th>
+                  <th style={{ width: "12%" }}>Responsável</th>
+                  <th style={{ width: "13%" }}>Forma de aferição da eficácia</th>
+                  <th style={{ width: "10%" }}>Situação</th>
                 </tr>
               </thead>
               <tbody>
@@ -856,6 +857,7 @@ const Nr1Report = () => {
                   <tr key={r.id}>
                     <td>{i + 1}</td>
                     <td>{r.fator} <span className="nr1-badge" style={{ backgroundColor: riskLevel(r.sev, r.prob).color }}>{riskLevel(r.sev, r.prob).label}</span></td>
+                    <td>{r.grupos}</td>
                     <td>{[r.eliminacao, r.organizacional, r.administrativa].filter((x) => x && x !== "—").join(" · ")}</td>
                     <td>{r.prazo}</td>
                     <td>_______________</td>
