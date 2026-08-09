@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
     // PHQ-9 severity distribution per round
     const { data: phqRows } = await admin
       .from("phq9_company_responses")
-      .select("round_no,severity")
+      .select("round_no,severity,department")
       .eq("company_id", company_id);
     const phqPerRound: Record<number, { n: number; dist: Record<string, number> }> = {};
     (phqRows ?? []).forEach((row: any) => {
@@ -178,7 +178,7 @@ Deno.serve(async (req) => {
     // Assédio sexual (MDiSH + SHRAS) per round — totals + subscale means
     const { data: asxRows } = await admin
       .from("assedio_sexual_responses")
-      .select("round_no,scores")
+      .select("round_no,scores,department")
       .eq("company_id", company_id);
     const asxPerRound: Record<number, {
       n: number;
