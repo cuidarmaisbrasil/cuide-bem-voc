@@ -93,6 +93,7 @@ interface InvRow {
   organizacional: string;
   administrativa: string;
   prazo: string;
+  grupos: string;              // grupos homogêneos expostos (setor / função)
 }
 
 // Catálogo de medidas por dimensão COPSOQ (hierarquia de prevenção)
