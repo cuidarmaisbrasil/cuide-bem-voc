@@ -37,10 +37,11 @@ Deno.serve(async (req) => {
     // Per-company min_recorte (privacy threshold), with global fallback
     const { data: cfgRow } = await admin
       .from("wellness_company_settings")
-      .select("min_recorte_company")
+      .select("min_recorte_company, min_recorte_department")
       .eq("company_id", company_id)
       .maybeSingle();
     const MIN_RECORTE = cfgRow?.min_recorte_company ?? DEFAULT_MIN_RECORTE;
+    const MIN_DEPT = cfgRow?.min_recorte_department ?? MIN_RECORTE;
 
 
 
@@ -127,7 +128,7 @@ Deno.serve(async (req) => {
     // PHQ-9 severity distribution per round
     const { data: phqRows } = await admin
       .from("phq9_company_responses")
-      .select("round_no,severity")
+      .select("round_no,severity,department")
       .eq("company_id", company_id);
     const phqPerRound: Record<number, { n: number; dist: Record<string, number> }> = {};
     (phqRows ?? []).forEach((row: any) => {
@@ -177,7 +178,7 @@ Deno.serve(async (req) => {
     // Assédio sexual (MDiSH + SHRAS) per round — totals + subscale means
     const { data: asxRows } = await admin
       .from("assedio_sexual_responses")
-      .select("round_no,scores")
+      .select("round_no,scores,department")
       .eq("company_id", company_id);
     const asxPerRound: Record<number, {
       n: number;
@@ -202,6 +203,52 @@ Deno.serve(async (req) => {
       }
     });
 
+    // ---------- GHE: agregados por setor / departamento (recorte com n mínimo próprio) ----------
+    type DeptAgg = {
+      n_copsoq: number; scales: Record<string, { sum: number; count: number }>;
+      n_phq: number; phq_dist: Record<string, number>;
+      n_lipt: number; igap_sum: number; lipt_flagged: number;
+      n_asx: number; mdish_sum: number; mdish_count: number; asx_endorsed: number;
+    };
+    const deptPerRound: Record<number, Record<string, DeptAgg>> = {};
+    const deptBucket = (rn: number, dept: string | null): DeptAgg => {
+      const key = (dept ?? "").trim() || "Não informado";
+      const byDept = deptPerRound[rn] = deptPerRound[rn] || {};
+      return byDept[key] = byDept[key] || {
+        n_copsoq: 0, scales: {},
+        n_phq: 0, phq_dist: {},
+        n_lipt: 0, igap_sum: 0, lipt_flagged: 0,
+        n_asx: 0, mdish_sum: 0, mdish_count: 0, asx_endorsed: 0,
+      };
+    };
+
+    (copsoqRows ?? []).forEach((row: any) => {
+      const b = deptBucket(row.round_no ?? 1, row.department);
+      b.n_copsoq++;
+      for (const [scaleId, mean] of Object.entries(row.scores || {})) {
+        if (typeof mean !== "number" || !isFinite(mean)) continue;
+        const acc = b.scales[scaleId] = b.scales[scaleId] || { sum: 0, count: 0 };
+        acc.sum += mean; acc.count++;
+      }
+    });
+    (phqRows ?? []).forEach((row: any) => {
+      const b = deptBucket(row.round_no ?? 1, row.department);
+      b.n_phq++;
+      const s = row.severity || "unknown";
+      b.phq_dist[s] = (b.phq_dist[s] || 0) + 1;
+    });
+    (psiRows ?? []).forEach((row: any) => {
+      const b = deptBucket(row.round_no ?? 1, row.department);
+      const s = row.scores || {};
+      b.n_lipt++;
+      if (typeof s.IGAP === "number") { b.igap_sum += s.IGAP; if (s.IGAP >= 0.5) b.lipt_flagged++; }
+    });
+    (asxRows ?? []).forEach((row: any) => {
+      const b = deptBucket(row.round_no ?? 1, row.department);
+      const s = row.scores || {};
+      b.n_asx++;
+      if (typeof s.MDiSH_total === "number") { b.mdish_sum += s.MDiSH_total; b.mdish_count++; if (s.MDiSH_total > 1) b.asx_endorsed++; }
+    });
 
 
     const roundsOut = roundList.map((r: any) => {
@@ -272,8 +319,32 @@ Deno.serve(async (req) => {
             subscales,
           };
         })(),
+        by_department: Object.entries(deptPerRound[rn] ?? {})
+          .map(([name, b]) => {
+            const maxN = Math.max(b.n_copsoq, b.n_phq, b.n_lipt, b.n_asx);
+            const hidden = maxN < MIN_DEPT;
+            const scales = hidden ? {} : Object.fromEntries(
+              Object.entries(b.scales).map(([k, v]) => [k, { mean: +(v.sum / v.count).toFixed(1), n: v.count }]),
+            );
+            return {
+              department: name,
+              n_copsoq: b.n_copsoq,
+              n_phq9: b.n_phq,
+              n_psicossocial: b.n_lipt,
+              n_assedio_sexual: b.n_asx,
+              hidden,
+              copsoq_scales: scales,
+              phq9_severity_dist: hidden ? {} : b.phq_dist,
+              lipt_igap: hidden || !b.n_lipt ? 0 : +(b.igap_sum / b.n_lipt).toFixed(2),
+              lipt_flagged_pct: hidden || !b.n_lipt ? 0 : Math.round((b.lipt_flagged / b.n_lipt) * 100),
+              mdish_total: hidden || !b.mdish_count ? 0 : +(b.mdish_sum / b.mdish_count).toFixed(2),
+              mdish_endorsed_pct: hidden || !b.n_asx ? 0 : Math.round((b.asx_endorsed / b.n_asx) * 100),
+            };
+          })
+          .sort((a, b) => b.n_copsoq + b.n_phq9 - (a.n_copsoq + a.n_phq9)),
       };
     });
+
 
     const canOpenNewRound =
       roundList.length === 0
@@ -285,6 +356,7 @@ Deno.serve(async (req) => {
       period,
       rounds: roundsOut,
       min_recorte: MIN_RECORTE,
+      min_recorte_department: MIN_DEPT,
       can_open_new_round: canOpenNewRound,
       current_round: roundList.length ? roundList[roundList.length - 1].round_no : null,
     });

@@ -9,6 +9,21 @@ import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 // por dados reais das rodadas de rastreio (wellness-company-stats).
 // ============================================================================
 
+interface DeptRow {
+  department: string;
+  n_copsoq: number;
+  n_phq9: number;
+  n_psicossocial: number;
+  n_assedio_sexual: number;
+  hidden: boolean;
+  copsoq_scales: Record<string, { mean: number; n: number }>;
+  phq9_severity_dist: Record<string, number>;
+  lipt_igap: number;
+  lipt_flagged_pct: number;
+  mdish_total: number;
+  mdish_endorsed_pct: number;
+}
+
 interface RoundData {
   round_no: number;
   opened_at: string;
@@ -30,8 +45,9 @@ interface RoundData {
     MDiSH_total: number; SHRAS_total: number; any_endorsed_pct: number;
     subscales: Record<string, number>;
   };
+  by_department?: DeptRow[];
 }
-interface StatsResp { rounds: RoundData[]; min_recorte: number }
+interface StatsResp { rounds: RoundData[]; min_recorte: number; min_recorte_department?: number }
 interface Company { id: string; name: string; cnpj?: string | null; sector?: string | null; size_range?: string | null }
 
 type Band = "Saudável" | "Atenção" | "Risco";
@@ -77,6 +93,7 @@ interface InvRow {
   organizacional: string;
   administrativa: string;
   prazo: string;
+  grupos: string;              // grupos homogêneos expostos (setor / função)
 }
 
 // Catálogo de medidas por dimensão COPSOQ (hierarquia de prevenção)
@@ -329,6 +346,56 @@ const SAMPLE_STATS: StatsResp = {
           shras: 3.6,
         },
       },
+      by_department: [
+        {
+          department: "Operação — Atendimento receptivo",
+          n_copsoq: 38, n_phq9: 41, n_psicossocial: 34, n_assedio_sexual: 33, hidden: false,
+          copsoq_scales: {
+            quantitative_demands: { mean: 71.2, n: 38 },
+            work_pace: { mean: 76.4, n: 38 },
+            emotional_demands: { mean: 68.9, n: 38 },
+            influence_at_work: { mean: 32.1, n: 38 },
+            quality_leadership: { mean: 39.7, n: 38 },
+            burnout: { mean: 66.3, n: 38 },
+          },
+          phq9_severity_dist: { minimal: 9, mild: 13, moderate: 11, moderately_severe: 6, severe: 2 },
+          lipt_igap: 0.94, lipt_flagged_pct: 21, mdish_total: 2.1, mdish_endorsed_pct: 28,
+        },
+        {
+          department: "Backoffice — Retaguarda e cobrança",
+          n_copsoq: 27, n_phq9: 29, n_psicossocial: 26, n_assedio_sexual: 25, hidden: false,
+          copsoq_scales: {
+            quantitative_demands: { mean: 58.4, n: 27 },
+            work_pace: { mean: 61.0, n: 27 },
+            emotional_demands: { mean: 49.2, n: 27 },
+            influence_at_work: { mean: 48.6, n: 27 },
+            quality_leadership: { mean: 52.3, n: 27 },
+            burnout: { mean: 51.1, n: 27 },
+          },
+          phq9_severity_dist: { minimal: 12, mild: 11, moderate: 5, moderately_severe: 1, severe: 0 },
+          lipt_igap: 0.48, lipt_flagged_pct: 8, mdish_total: 1.7, mdish_endorsed_pct: 16,
+        },
+        {
+          department: "Administrativo / RH",
+          n_copsoq: 18, n_phq9: 21, n_psicossocial: 14, n_assedio_sexual: 13, hidden: false,
+          copsoq_scales: {
+            quantitative_demands: { mean: 51.8, n: 18 },
+            work_pace: { mean: 55.2, n: 18 },
+            emotional_demands: { mean: 44.1, n: 18 },
+            influence_at_work: { mean: 61.4, n: 18 },
+            quality_leadership: { mean: 58.9, n: 18 },
+            burnout: { mean: 43.7, n: 18 },
+          },
+          phq9_severity_dist: { minimal: 11, mild: 7, moderate: 2, moderately_severe: 1, severe: 0 },
+          lipt_igap: 0.31, lipt_flagged_pct: 5, mdish_total: 1.4, mdish_endorsed_pct: 11,
+        },
+        {
+          department: "Liderança de operação (supervisão)",
+          n_copsoq: 5, n_phq9: 5, n_psicossocial: 3, n_assedio_sexual: 3, hidden: true,
+          copsoq_scales: {}, phq9_severity_dist: {},
+          lipt_igap: 0, lipt_flagged_pct: 0, mdish_total: 0, mdish_endorsed_pct: 0,
+        },
+      ],
     },
   ],
 };
@@ -378,6 +445,44 @@ const Nr1Report = () => {
     if (!target) return [];
     const rows: InvRow[] = [];
 
+    // Grupos homogêneos de exposição (GHE) — recortes por setor/função com n suficiente
+    const depts = (target.by_department ?? []).filter((d) => !d.hidden);
+    const TODOS = "Todos os trabalhadores abrangidos pelo ciclo";
+    const semRecorte = `${TODOS} (sem recorte por setor com n suficiente)`;
+    const gruposCopsoq = (id: string, type: CopsoqScaleType) => {
+      const hits = depts
+        .filter((d) => {
+          const s = d.copsoq_scales[id];
+          return s && copsoqBand(type, s.mean) !== "Saudável";
+        })
+        .map((d) => `${d.department} (n=${d.copsoq_scales[id].n}; média ${d.copsoq_scales[id].mean.toFixed(0)})`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposLipt = () => {
+      const hits = depts.filter((d) => d.n_psicossocial > 0 && d.lipt_flagged_pct > 0)
+        .map((d) => `${d.department} (n=${d.n_psicossocial}; ${d.lipt_flagged_pct}% com indicativo)`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposAsx = () => {
+      const hits = depts.filter((d) => d.n_assedio_sexual > 0 && d.mdish_total > 1.5)
+        .map((d) => `${d.department} (n=${d.n_assedio_sexual}; MDiSH ${d.mdish_total.toFixed(2)})`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposPhq = () => {
+      const hits = depts.filter((d) => {
+        if (!d.n_phq9) return false;
+        const dd = d.phq9_severity_dist;
+        const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+        return Math.round((grave / d.n_phq9) * 100) >= 20;
+      }).map((d) => {
+        const dd = d.phq9_severity_dist;
+        const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+        return `${d.department} (n=${d.n_phq9}; ${Math.round((grave / d.n_phq9) * 100)}% moderado+)`;
+      });
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+
+
     // COPSOQ II
     if (!target.copsoq.hidden) {
       for (const [id, v] of Object.entries(target.copsoq.scales)) {
@@ -405,6 +510,7 @@ const Nr1Report = () => {
           organizacional: m?.org ?? "Rever organização do trabalho na dimensão avaliada.",
           administrativa: m?.adm ?? "Monitoramento no próximo ciclo de rastreio.",
           prazo: band === "Risco" ? "Imediato / 90 dias" : "180 dias",
+          grupos: gruposCopsoq(id, type),
         });
       }
     }
@@ -415,6 +521,7 @@ const Nr1Report = () => {
         const band = liptBand(mean);
         if (band === "Saudável") continue;
         rows.push({
+          grupos: gruposLipt(),
           id: `lipt-${k}`,
           fator: `Assédio moral — ${LIPT_LABELS[k] ?? k}`,
           origem: "Conduta de gestão e/ou de pares; ausência de apuração efetiva.",
@@ -439,6 +546,7 @@ const Nr1Report = () => {
         const band = mdishBand(mean);
         if (band === "Saudável") continue;
         rows.push({
+          grupos: gruposAsx(),
           id: `mdish-${k}`,
           fator: `Cultura permissiva a assédio sexual — ${MDISH_LABELS[k] ?? k}`,
           origem: "Normas informais do grupo; ausência de código de conduta aplicado.",
@@ -459,6 +567,7 @@ const Nr1Report = () => {
         const band = shrasBand(shras);
         if (band !== "Saudável") {
           rows.push({
+            grupos: TODOS,
             id: "shras",
             fator: "Baixa confiança no canal de denúncia (atitudes de reporte)",
             origem: "Medo de retaliação; histórico de denúncias sem desfecho.",
@@ -484,6 +593,7 @@ const Nr1Report = () => {
       const pct = Math.round((grave / target.phq9.n) * 100);
       if (pct >= 20) {
         rows.push({
+          grupos: gruposPhq(),
           id: "phq9",
           fator: "Indicador de agravo — sintomas depressivos moderados ou superiores",
           origem: "Resultante da exposição aos fatores psicossociais inventariados.",
@@ -587,6 +697,9 @@ const Nr1Report = () => {
               <tr><th style={{ width: "26%" }}>Organização avaliada</th><td>{company.name}{company.cnpj ? ` — CNPJ ${company.cnpj}` : ""}</td></tr>
               <tr><th>Setor econômico / porte</th><td>{company.sector || "A informar"} · {company.size_range || "A informar"}</td></tr>
               <tr><th>Abrangência</th><td>Todos os trabalhadores convidados ao ciclo #{target.round_no}, independentemente de vínculo, incluindo regimes presencial, híbrido e teletrabalho.</td></tr>
+              <tr><th>Grupos homogêneos de exposição (GHE)</th><td>{(target.by_department ?? []).length > 0
+                ? <>{(target.by_department ?? []).length} setor(es)/área(s) identificados no ciclo: {(target.by_department ?? []).map((d) => d.department).join("; ")}. Caracterização completa na seção 3.1.</>
+                : <>Setor, área e função não informados no cadastro de participantes deste ciclo — inventário elaborado para grupo único. Registrar setor/função antes do próximo ciclo (seção 3.1).</>}</td></tr>
               <tr><th>Responsável técnico pela avaliação</th><td>_________________________________ (nome, formação e registro profissional)</td></tr>
               <tr><th>Responsável pelo PGR na organização</th><td>_________________________________</td></tr>
               <tr><th>Participação dos trabalhadores</th><td>Assegurada por meio de resposta anônima aos instrumentos e devolutiva coletiva (NR-1, item 1.5.3.3). CIPA/representação consultada na análise dos resultados.</td></tr>
@@ -647,15 +760,16 @@ const Nr1Report = () => {
               <table className="nr1-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "13%" }}>Perigo / fator de risco</th>
-                    <th style={{ width: "14%" }}>Fonte geradora / circunstância</th>
-                    <th style={{ width: "12%" }}>Evidência (instrumento e resultado)</th>
-                    <th style={{ width: "13%" }}>Possíveis lesões ou agravos</th>
+                    <th style={{ width: "12%" }}>Perigo / fator de risco</th>
+                    <th style={{ width: "12%" }}>Grupos expostos (setor / função — GHE)</th>
+                    <th style={{ width: "12%" }}>Fonte geradora / circunstância</th>
+                    <th style={{ width: "11%" }}>Evidência (instrumento e resultado)</th>
+                    <th style={{ width: "12%" }}>Possíveis lesões ou agravos</th>
                     <th>Sev.</th>
                     <th>Prob.</th>
                     <th>Nível</th>
-                    <th style={{ width: "13%" }}>Medidas existentes</th>
-                    <th style={{ width: "18%" }}>Medidas necessárias (hierarquia NR-1 1.4.1 “g”)</th>
+                    <th style={{ width: "11%" }}>Medidas existentes</th>
+                    <th style={{ width: "16%" }}>Medidas necessárias (hierarquia NR-1 1.4.1 “g”)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -664,6 +778,7 @@ const Nr1Report = () => {
                     return (
                       <tr key={r.id}>
                         <td><strong>{r.fator}</strong></td>
+                        <td>{r.grupos}</td>
                         <td>{r.origem}</td>
                         <td>{r.instrumento}<br />{r.indicador}<br />
                           <span className="nr1-badge" style={{ backgroundColor: bandColor(r.band) }}>{r.band}</span>
@@ -687,6 +802,90 @@ const Nr1Report = () => {
           )}
         </section>
 
+        {/* 3.1 GHE — caracterização por setor / função (NR-1 1.5.4.4.2 "b") */}
+        <section className="page-break">
+          <h2 className="text-lg font-semibold mb-2">
+            3.1 Grupos homogêneos de exposição (GHE) — setores, áreas e funções
+          </h2>
+          <p className="text-sm mb-2">
+            Caracterização dos grupos de trabalhadores expostos, conforme exige o inventário de riscos
+            (NR-1, item 1.5.4.4.2) e a descrição das situações de trabalho da AEP (NR-17). O recorte por
+            setor/função só é publicado quando o grupo tem pelo menos{" "}
+            <strong>{stats.min_recorte_department ?? stats.min_recorte}</strong> respondentes; abaixo disso os
+            resultados permanecem agregados para impedir reidentificação.
+          </p>
+          {(target.by_department ?? []).length === 0 ? (
+            <p className="text-sm text-neutral-700">
+              Este ciclo não possui setor/função informado nos cadastros de participantes. Para atender
+              plenamente ao inventário, registrar setor, área e função no cadastro de colaboradores antes
+              do próximo ciclo — sem esse dado o inventário fica restrito ao grupo único “todos os
+              trabalhadores”.
+            </p>
+          ) : (
+            <table className="nr1-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "18%" }}>Setor / área / função (GHE)</th>
+                  <th>Respondentes por instrumento</th>
+                  <th>Fatores COPSOQ em Atenção/Risco</th>
+                  <th>Assédio moral (LIPT-60)</th>
+                  <th>Assédio sexual (MDiSH)</th>
+                  <th>PHQ-9 moderado ou superior</th>
+                  <th>Prioridade do grupo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(target.by_department ?? []).map((d) => {
+                  const emRisco = Object.entries(d.copsoq_scales)
+                    .map(([id, v]) => {
+                      const meta = copsoqScales[id];
+                      const type = (meta?.type ?? "negative") as CopsoqScaleType;
+                      return { name: meta?.name ?? id, band: copsoqBand(type, v.mean), mean: v.mean };
+                    })
+                    .filter((x) => x.band !== "Saudável")
+                    .sort((a, b) => (a.band === "Risco" ? -1 : 1) - (b.band === "Risco" ? -1 : 1));
+                  const nRisco = emRisco.filter((x) => x.band === "Risco").length;
+                  const dd = d.phq9_severity_dist;
+                  const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+                  const phqPct = d.n_phq9 ? Math.round((grave / d.n_phq9) * 100) : 0;
+                  const prioridade =
+                    d.hidden ? { label: "Sem recorte", color: "#52525b" }
+                      : nRisco >= 3 || d.lipt_flagged_pct >= 15 || phqPct >= 35
+                        ? { label: "Alta", color: "#b91c1c" }
+                        : emRisco.length > 0 || phqPct >= 20
+                          ? { label: "Média", color: "#d97706" }
+                          : { label: "Baixa", color: "#0d7a5f" };
+                  return (
+                    <tr key={d.department}>
+                      <td><strong>{d.department}</strong></td>
+                      <td>
+                        COPSOQ {d.n_copsoq} · PHQ-9 {d.n_phq9} · LIPT-60 {d.n_psicossocial} · MDiSH/SHRAS {d.n_assedio_sexual}
+                      </td>
+                      <td>
+                        {d.hidden
+                          ? <em>Oculto — n abaixo do mínimo do recorte</em>
+                          : emRisco.length === 0
+                            ? "Nenhum"
+                            : emRisco.map((x) => `${x.name} (${x.mean.toFixed(0)} — ${x.band})`).join("; ")}
+                      </td>
+                      <td>{d.hidden ? "—" : `IGAP ${d.lipt_igap} · ${d.lipt_flagged_pct}% com indicativo`}</td>
+                      <td>{d.hidden ? "—" : `MDiSH ${d.mdish_total} · ${d.mdish_endorsed_pct}% endossam ≥1 item`}</td>
+                      <td>{d.hidden || !d.n_phq9 ? "—" : `${phqPct}%`}</td>
+                      <td><span className="nr1-badge" style={{ backgroundColor: prioridade.color }}>{prioridade.label}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          <p className="text-xs text-neutral-600 mt-2">
+            A coluna “Grupos expostos” do inventário (seção 3) e o plano de ação (seção 4) usam estes mesmos
+            recortes. Funções e postos individuais devem ser detalhados pelo responsável técnico a partir da
+            descrição de cargos vigente, vinculando cada GHE aos respectivos códigos CBO.
+          </p>
+        </section>
+
+
         {/* 4. Plano de ação — obrigatório NR-1 1.5.5.2 */}
         <section className="page-break">
           <h2 className="text-lg font-semibold mb-2">4. Plano de ação (NR-1, item 1.5.5.2)</h2>
@@ -697,12 +896,13 @@ const Nr1Report = () => {
               <thead>
                 <tr>
                   <th style={{ width: "4%" }}>#</th>
-                  <th style={{ width: "18%" }}>Risco priorizado</th>
-                  <th style={{ width: "26%" }}>Ação de prevenção</th>
-                  <th style={{ width: "10%" }}>Prazo</th>
-                  <th style={{ width: "14%" }}>Responsável</th>
-                  <th style={{ width: "14%" }}>Forma de aferição da eficácia</th>
-                  <th style={{ width: "14%" }}>Situação</th>
+                  <th style={{ width: "16%" }}>Risco priorizado</th>
+                  <th style={{ width: "14%" }}>Setor / função alvo (GHE)</th>
+                  <th style={{ width: "22%" }}>Ação de prevenção</th>
+                  <th style={{ width: "9%" }}>Prazo</th>
+                  <th style={{ width: "12%" }}>Responsável</th>
+                  <th style={{ width: "13%" }}>Forma de aferição da eficácia</th>
+                  <th style={{ width: "10%" }}>Situação</th>
                 </tr>
               </thead>
               <tbody>
@@ -710,6 +910,7 @@ const Nr1Report = () => {
                   <tr key={r.id}>
                     <td>{i + 1}</td>
                     <td>{r.fator} <span className="nr1-badge" style={{ backgroundColor: riskLevel(r.sev, r.prob).color }}>{riskLevel(r.sev, r.prob).label}</span></td>
+                    <td>{r.grupos}</td>
                     <td>{[r.eliminacao, r.organizacional, r.administrativa].filter((x) => x && x !== "—").join(" · ")}</td>
                     <td>{r.prazo}</td>
                     <td>_______________</td>
@@ -732,7 +933,7 @@ const Nr1Report = () => {
           <h2 className="text-lg font-semibold mb-2">5. Avaliação Ergonômica Preliminar (NR-17) — seção psicossocial e cognitiva</h2>
           <table className="nr1-table">
             <tbody>
-              <tr><th style={{ width: "26%" }}>5.1 Situações de trabalho analisadas</th><td>Postos e funções abrangidos pelo ciclo #{target.round_no}, em regimes presencial, híbrido e teletrabalho. Detalhamento por função a ser complementado pelo responsável técnico com base na descrição de cargos vigente.</td></tr>
+              <tr><th style={{ width: "26%" }}>5.1 Situações de trabalho analisadas</th><td>Postos e funções abrangidos pelo ciclo #{target.round_no}, em regimes presencial, híbrido e teletrabalho, organizados por grupos homogêneos de exposição: {(target.by_department ?? []).length > 0 ? (target.by_department ?? []).map((d) => `${d.department} (n=${Math.max(d.n_copsoq, d.n_phq9, d.n_psicossocial, d.n_assedio_sexual)})`).join("; ") : "grupo único — setor/função não informados no cadastro"}. Descrição detalhada de cada posto e código CBO a ser complementada pelo responsável técnico com base na descrição de cargos vigente (seção 3.1).</td></tr>
               <tr><th>5.2 Fatores cognitivos</th><td>Demanda de atenção sustentada, interrupções, multitarefa e complexidade de decisão avaliadas pelas dimensões de exigências quantitativas, ritmo e previsibilidade do COPSOQ II — resultados na seção 3.</td></tr>
               <tr><th>5.3 Fatores psicossociais</th><td>Exigências, influência, apoio social, clareza e conflito de papel, reconhecimento, justiça, conflito trabalho–família e comportamentos ofensivos — inventariados na seção 3 com faixa e nível de risco.</td></tr>
               <tr><th>5.4 Método e evidências</th><td>Instrumentos validados, período de coleta {fmtDate(target.opened_at)} a {fmtDate(target.closed_at)}, adesão de {adesao}%, n mínimo por recorte de {stats.min_recorte}, anonimato assegurado.</td></tr>
