@@ -647,6 +647,9 @@ const Nr1Report = () => {
               <tr><th style={{ width: "26%" }}>Organização avaliada</th><td>{company.name}{company.cnpj ? ` — CNPJ ${company.cnpj}` : ""}</td></tr>
               <tr><th>Setor econômico / porte</th><td>{company.sector || "A informar"} · {company.size_range || "A informar"}</td></tr>
               <tr><th>Abrangência</th><td>Todos os trabalhadores convidados ao ciclo #{target.round_no}, independentemente de vínculo, incluindo regimes presencial, híbrido e teletrabalho.</td></tr>
+              <tr><th>Grupos homogêneos de exposição (GHE)</th><td>{(target.by_department ?? []).length > 0
+                ? <>{(target.by_department ?? []).length} setor(es)/área(s) identificados no ciclo: {(target.by_department ?? []).map((d) => d.department).join("; ")}. Caracterização completa na seção 3.1.</>
+                : <>Setor, área e função não informados no cadastro de participantes deste ciclo — inventário elaborado para grupo único. Registrar setor/função antes do próximo ciclo (seção 3.1).</>}</td></tr>
               <tr><th>Responsável técnico pela avaliação</th><td>_________________________________ (nome, formação e registro profissional)</td></tr>
               <tr><th>Responsável pelo PGR na organização</th><td>_________________________________</td></tr>
               <tr><th>Participação dos trabalhadores</th><td>Assegurada por meio de resposta anônima aos instrumentos e devolutiva coletiva (NR-1, item 1.5.3.3). CIPA/representação consultada na análise dos resultados.</td></tr>
