@@ -707,15 +707,16 @@ const Nr1Report = () => {
               <table className="nr1-table">
                 <thead>
                   <tr>
-                    <th style={{ width: "13%" }}>Perigo / fator de risco</th>
-                    <th style={{ width: "14%" }}>Fonte geradora / circunstância</th>
-                    <th style={{ width: "12%" }}>Evidência (instrumento e resultado)</th>
-                    <th style={{ width: "13%" }}>Possíveis lesões ou agravos</th>
+                    <th style={{ width: "12%" }}>Perigo / fator de risco</th>
+                    <th style={{ width: "12%" }}>Grupos expostos (setor / função — GHE)</th>
+                    <th style={{ width: "12%" }}>Fonte geradora / circunstância</th>
+                    <th style={{ width: "11%" }}>Evidência (instrumento e resultado)</th>
+                    <th style={{ width: "12%" }}>Possíveis lesões ou agravos</th>
                     <th>Sev.</th>
                     <th>Prob.</th>
                     <th>Nível</th>
-                    <th style={{ width: "13%" }}>Medidas existentes</th>
-                    <th style={{ width: "18%" }}>Medidas necessárias (hierarquia NR-1 1.4.1 “g”)</th>
+                    <th style={{ width: "11%" }}>Medidas existentes</th>
+                    <th style={{ width: "16%" }}>Medidas necessárias (hierarquia NR-1 1.4.1 “g”)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -724,6 +725,7 @@ const Nr1Report = () => {
                     return (
                       <tr key={r.id}>
                         <td><strong>{r.fator}</strong></td>
+                        <td>{r.grupos}</td>
                         <td>{r.origem}</td>
                         <td>{r.instrumento}<br />{r.indicador}<br />
                           <span className="nr1-badge" style={{ backgroundColor: bandColor(r.band) }}>{r.band}</span>
@@ -746,6 +748,90 @@ const Nr1Report = () => {
             </>
           )}
         </section>
+
+        {/* 3.1 GHE — caracterização por setor / função (NR-1 1.5.4.4.2 "b") */}
+        <section className="page-break">
+          <h2 className="text-lg font-semibold mb-2">
+            3.1 Grupos homogêneos de exposição (GHE) — setores, áreas e funções
+          </h2>
+          <p className="text-sm mb-2">
+            Caracterização dos grupos de trabalhadores expostos, conforme exige o inventário de riscos
+            (NR-1, item 1.5.4.4.2) e a descrição das situações de trabalho da AEP (NR-17). O recorte por
+            setor/função só é publicado quando o grupo tem pelo menos{" "}
+            <strong>{stats.min_recorte_department ?? stats.min_recorte}</strong> respondentes; abaixo disso os
+            resultados permanecem agregados para impedir reidentificação.
+          </p>
+          {(target.by_department ?? []).length === 0 ? (
+            <p className="text-sm text-neutral-700">
+              Este ciclo não possui setor/função informado nos cadastros de participantes. Para atender
+              plenamente ao inventário, registrar setor, área e função no cadastro de colaboradores antes
+              do próximo ciclo — sem esse dado o inventário fica restrito ao grupo único “todos os
+              trabalhadores”.
+            </p>
+          ) : (
+            <table className="nr1-table">
+              <thead>
+                <tr>
+                  <th style={{ width: "18%" }}>Setor / área / função (GHE)</th>
+                  <th>Respondentes por instrumento</th>
+                  <th>Fatores COPSOQ em Atenção/Risco</th>
+                  <th>Assédio moral (LIPT-60)</th>
+                  <th>Assédio sexual (MDiSH)</th>
+                  <th>PHQ-9 moderado ou superior</th>
+                  <th>Prioridade do grupo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(target.by_department ?? []).map((d) => {
+                  const emRisco = Object.entries(d.copsoq_scales)
+                    .map(([id, v]) => {
+                      const meta = copsoqScales[id];
+                      const type = (meta?.type ?? "negative") as CopsoqScaleType;
+                      return { name: meta?.name ?? id, band: copsoqBand(type, v.mean), mean: v.mean };
+                    })
+                    .filter((x) => x.band !== "Saudável")
+                    .sort((a, b) => (a.band === "Risco" ? -1 : 1) - (b.band === "Risco" ? -1 : 1));
+                  const nRisco = emRisco.filter((x) => x.band === "Risco").length;
+                  const dd = d.phq9_severity_dist;
+                  const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+                  const phqPct = d.n_phq9 ? Math.round((grave / d.n_phq9) * 100) : 0;
+                  const prioridade =
+                    d.hidden ? { label: "Sem recorte", color: "#52525b" }
+                      : nRisco >= 3 || d.lipt_flagged_pct >= 15 || phqPct >= 35
+                        ? { label: "Alta", color: "#b91c1c" }
+                        : emRisco.length > 0 || phqPct >= 20
+                          ? { label: "Média", color: "#d97706" }
+                          : { label: "Baixa", color: "#0d7a5f" };
+                  return (
+                    <tr key={d.department}>
+                      <td><strong>{d.department}</strong></td>
+                      <td>
+                        COPSOQ {d.n_copsoq} · PHQ-9 {d.n_phq9} · LIPT-60 {d.n_psicossocial} · MDiSH/SHRAS {d.n_assedio_sexual}
+                      </td>
+                      <td>
+                        {d.hidden
+                          ? <em>Oculto — n abaixo do mínimo do recorte</em>
+                          : emRisco.length === 0
+                            ? "Nenhum"
+                            : emRisco.map((x) => `${x.name} (${x.mean.toFixed(0)} — ${x.band})`).join("; ")}
+                      </td>
+                      <td>{d.hidden ? "—" : `IGAP ${d.lipt_igap} · ${d.lipt_flagged_pct}% com indicativo`}</td>
+                      <td>{d.hidden ? "—" : `MDiSH ${d.mdish_total} · ${d.mdish_endorsed_pct}% endossam ≥1 item`}</td>
+                      <td>{d.hidden || !d.n_phq9 ? "—" : `${phqPct}%`}</td>
+                      <td><span className="nr1-badge" style={{ backgroundColor: prioridade.color }}>{prioridade.label}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          <p className="text-xs text-neutral-600 mt-2">
+            A coluna “Grupos expostos” do inventário (seção 3) e o plano de ação (seção 4) usam estes mesmos
+            recortes. Funções e postos individuais devem ser detalhados pelo responsável técnico a partir da
+            descrição de cargos vigente, vinculando cada GHE aos respectivos códigos CBO.
+          </p>
+        </section>
+
 
         {/* 4. Plano de ação — obrigatório NR-1 1.5.5.2 */}
         <section className="page-break">
