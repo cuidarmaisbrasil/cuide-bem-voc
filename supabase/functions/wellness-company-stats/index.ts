@@ -356,6 +356,7 @@ Deno.serve(async (req) => {
       period,
       rounds: roundsOut,
       min_recorte: MIN_RECORTE,
+      min_recorte_department: MIN_DEPT,
       can_open_new_round: canOpenNewRound,
       current_round: roundList.length ? roundList[roundList.length - 1].round_no : null,
     });
