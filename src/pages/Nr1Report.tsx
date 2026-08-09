@@ -395,6 +395,44 @@ const Nr1Report = () => {
     if (!target) return [];
     const rows: InvRow[] = [];
 
+    // Grupos homogêneos de exposição (GHE) — recortes por setor/função com n suficiente
+    const depts = (target.by_department ?? []).filter((d) => !d.hidden);
+    const TODOS = "Todos os trabalhadores abrangidos pelo ciclo";
+    const semRecorte = `${TODOS} (sem recorte por setor com n suficiente)`;
+    const gruposCopsoq = (id: string, type: CopsoqScaleType) => {
+      const hits = depts
+        .filter((d) => {
+          const s = d.copsoq_scales[id];
+          return s && copsoqBand(type, s.mean) !== "Saudável";
+        })
+        .map((d) => `${d.department} (n=${d.copsoq_scales[id].n}; média ${d.copsoq_scales[id].mean.toFixed(0)})`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposLipt = () => {
+      const hits = depts.filter((d) => d.n_psicossocial > 0 && d.lipt_flagged_pct > 0)
+        .map((d) => `${d.department} (n=${d.n_psicossocial}; ${d.lipt_flagged_pct}% com indicativo)`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposAsx = () => {
+      const hits = depts.filter((d) => d.n_assedio_sexual > 0 && d.mdish_total > 1.5)
+        .map((d) => `${d.department} (n=${d.n_assedio_sexual}; MDiSH ${d.mdish_total.toFixed(2)})`);
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+    const gruposPhq = () => {
+      const hits = depts.filter((d) => {
+        if (!d.n_phq9) return false;
+        const dd = d.phq9_severity_dist;
+        const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+        return Math.round((grave / d.n_phq9) * 100) >= 20;
+      }).map((d) => {
+        const dd = d.phq9_severity_dist;
+        const grave = (dd.moderate || 0) + (dd.moderately_severe || 0) + (dd.severe || 0);
+        return `${d.department} (n=${d.n_phq9}; ${Math.round((grave / d.n_phq9) * 100)}% moderado+)`;
+      });
+      return hits.length ? hits.join(" · ") : semRecorte;
+    };
+
+
     // COPSOQ II
     if (!target.copsoq.hidden) {
       for (const [id, v] of Object.entries(target.copsoq.scales)) {
@@ -422,6 +460,7 @@ const Nr1Report = () => {
           organizacional: m?.org ?? "Rever organização do trabalho na dimensão avaliada.",
           administrativa: m?.adm ?? "Monitoramento no próximo ciclo de rastreio.",
           prazo: band === "Risco" ? "Imediato / 90 dias" : "180 dias",
+          grupos: gruposCopsoq(id, type),
         });
       }
     }
@@ -456,6 +495,7 @@ const Nr1Report = () => {
         const band = mdishBand(mean);
         if (band === "Saudável") continue;
         rows.push({
+          grupos: gruposAsx(),
           id: `mdish-${k}`,
           fator: `Cultura permissiva a assédio sexual — ${MDISH_LABELS[k] ?? k}`,
           origem: "Normas informais do grupo; ausência de código de conduta aplicado.",
@@ -476,6 +516,7 @@ const Nr1Report = () => {
         const band = shrasBand(shras);
         if (band !== "Saudável") {
           rows.push({
+            grupos: TODOS,
             id: "shras",
             fator: "Baixa confiança no canal de denúncia (atitudes de reporte)",
             origem: "Medo de retaliação; histórico de denúncias sem desfecho.",
@@ -501,6 +542,7 @@ const Nr1Report = () => {
       const pct = Math.round((grave / target.phq9.n) * 100);
       if (pct >= 20) {
         rows.push({
+          grupos: gruposPhq(),
           id: "phq9",
           fator: "Indicador de agravo — sintomas depressivos moderados ou superiores",
           origem: "Resultante da exposição aos fatores psicossociais inventariados.",
