@@ -9,6 +9,21 @@ import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 // por dados reais das rodadas de rastreio (wellness-company-stats).
 // ============================================================================
 
+interface DeptRow {
+  department: string;
+  n_copsoq: number;
+  n_phq9: number;
+  n_psicossocial: number;
+  n_assedio_sexual: number;
+  hidden: boolean;
+  copsoq_scales: Record<string, { mean: number; n: number }>;
+  phq9_severity_dist: Record<string, number>;
+  lipt_igap: number;
+  lipt_flagged_pct: number;
+  mdish_total: number;
+  mdish_endorsed_pct: number;
+}
+
 interface RoundData {
   round_no: number;
   opened_at: string;
@@ -30,8 +45,9 @@ interface RoundData {
     MDiSH_total: number; SHRAS_total: number; any_endorsed_pct: number;
     subscales: Record<string, number>;
   };
+  by_department?: DeptRow[];
 }
-interface StatsResp { rounds: RoundData[]; min_recorte: number }
+interface StatsResp { rounds: RoundData[]; min_recorte: number; min_recorte_department?: number }
 interface Company { id: string; name: string; cnpj?: string | null; sector?: string | null; size_range?: string | null }
 
 type Band = "Saudável" | "Atenção" | "Risco";
