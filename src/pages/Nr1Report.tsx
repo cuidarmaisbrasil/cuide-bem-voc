@@ -471,6 +471,7 @@ const Nr1Report = () => {
         const band = liptBand(mean);
         if (band === "Saudável") continue;
         rows.push({
+          grupos: gruposLipt(),
           id: `lipt-${k}`,
           fator: `Assédio moral — ${LIPT_LABELS[k] ?? k}`,
           origem: "Conduta de gestão e/ou de pares; ausência de apuração efetiva.",
