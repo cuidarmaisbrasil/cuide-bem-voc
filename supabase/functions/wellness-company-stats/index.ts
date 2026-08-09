@@ -319,8 +319,32 @@ Deno.serve(async (req) => {
             subscales,
           };
         })(),
+        by_department: Object.entries(deptPerRound[rn] ?? {})
+          .map(([name, b]) => {
+            const maxN = Math.max(b.n_copsoq, b.n_phq, b.n_lipt, b.n_asx);
+            const hidden = maxN < MIN_DEPT;
+            const scales = hidden ? {} : Object.fromEntries(
+              Object.entries(b.scales).map(([k, v]) => [k, { mean: +(v.sum / v.count).toFixed(1), n: v.count }]),
+            );
+            return {
+              department: name,
+              n_copsoq: b.n_copsoq,
+              n_phq9: b.n_phq,
+              n_psicossocial: b.n_lipt,
+              n_assedio_sexual: b.n_asx,
+              hidden,
+              copsoq_scales: scales,
+              phq9_severity_dist: hidden ? {} : b.phq_dist,
+              lipt_igap: hidden || !b.n_lipt ? 0 : +(b.igap_sum / b.n_lipt).toFixed(2),
+              lipt_flagged_pct: hidden || !b.n_lipt ? 0 : Math.round((b.lipt_flagged / b.n_lipt) * 100),
+              mdish_total: hidden || !b.mdish_count ? 0 : +(b.mdish_sum / b.mdish_count).toFixed(2),
+              mdish_endorsed_pct: hidden || !b.n_asx ? 0 : Math.round((b.asx_endorsed / b.n_asx) * 100),
+            };
+          })
+          .sort((a, b) => b.n_copsoq + b.n_phq9 - (a.n_copsoq + a.n_phq9)),
       };
     });
+
 
     const canOpenNewRound =
       roundList.length === 0
