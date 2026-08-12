@@ -32,7 +32,7 @@ Cuidar+ Trabalho — versão ${CONTRACT_VERSION}
 
 PARTES
 
-CONTRATADA: Cuidar+ Brasil, responsável pela plataforma Cuidar+ Trabalho, doravante CONTRATADA.
+CONTRATADA: GAMA SOLUTIONS, inscrita no CNPJ sob o nº 52.115.028/0001-78, que atua sob o nome fantasia CUIDAR+ TRABALHO, responsável pela plataforma Cuidar+ Trabalho, doravante CONTRATADA.
 
 CONTRATANTE: ${company.name}, inscrita no CNPJ sob o nº ${cnpj}, porte declarado: ${porte}, doravante CONTRATANTE.
 

@@ -56,6 +56,7 @@ const Trabalho = () => {
   const [companyName, setCompanyName] = useState(""); const [contactName, setContactName] = useState("");
   const [contactRole, setContactRole] = useState("");
   const [phone, setPhone] = useState(""); const [cnpj, setCnpj] = useState("");
+  const [sizeRange, setSizeRange] = useState("");
   const [wmName, setWmName] = useState(""); const [wmEmail, setWmEmail] = useState("");
   const [wmRole, setWmRole] = useState(""); const [wmWhatsapp, setWmWhatsapp] = useState("");
 
@@ -197,6 +198,23 @@ const Trabalho = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>CNPJ *</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} required /></div>
                     <div><Label>Telefone *</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} required /></div>
+                  </div>
+                  <div>
+                    <Label>Porte (nº de trabalhadores) *</Label>
+                    <Select value={sizeRange} onValueChange={setSizeRange}>
+                      <SelectTrigger><SelectValue placeholder="Selecione a faixa" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1–20 trabalhadores">1 a 20 trabalhadores</SelectItem>
+                        <SelectItem value="21–50 trabalhadores">21 a 50 trabalhadores</SelectItem>
+                        <SelectItem value="51–99 trabalhadores">51 a 99 trabalhadores</SelectItem>
+                        <SelectItem value="100–249 trabalhadores">100 a 249 trabalhadores</SelectItem>
+                        <SelectItem value="250–499 trabalhadores">250 a 499 trabalhadores</SelectItem>
+                        <SelectItem value="500+ trabalhadores">500 ou mais trabalhadores</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Acima de 50 trabalhadores, o contrato de prestação de serviços é obrigatório antes de iniciar o ciclo.
+                    </p>
                   </div>
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
