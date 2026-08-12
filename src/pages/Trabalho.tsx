@@ -87,8 +87,8 @@ const Trabalho = () => {
     e.preventDefault(); setSubmitting(true);
     try {
       if (authMode === "signup") {
-        if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim()) {
-          toast.error("Preencha empresa, responsável, cargo, CNPJ e telefone."); return;
+        if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim() || !sizeRange) {
+          toast.error("Preencha empresa, responsável, cargo, CNPJ, telefone e porte."); return;
         }
         if (!wmName.trim() || !wmEmail.trim() || !wmRole.trim() || !wmWhatsapp.trim()) {
           toast.error("Preencha todos os dados do gestor de ondas."); return;
@@ -106,7 +106,7 @@ const Trabalho = () => {
           const { error: cErr } = await supabase.from("companies").insert({
             owner_user_id: data.user.id, name: companyName, contact_name: contactName,
             contact_role: contactRole,
-            contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, slug,
+            contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, size_range: sizeRange, slug,
             wave_manager_name: wmName.trim(),
             wave_manager_email: wmEmail.trim().toLowerCase(),
             wave_manager_role: wmRole.trim(),
