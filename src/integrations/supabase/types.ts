@@ -95,13 +95,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "assedio_sexual_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       care_platforms: {
@@ -221,6 +214,44 @@ export type Database = {
         }
         Relationships: []
       }
+      companies_public: {
+        Row: {
+          allowed_versions: string[] | null
+          default_version: string | null
+          id: string
+          name: string | null
+          slug: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_versions?: string[] | null
+          default_version?: string | null
+          id: string
+          name?: string | null
+          slug?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_versions?: string[] | null
+          default_version?: string | null
+          id?: string
+          name?: string | null
+          slug?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_public_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_wave_managers: {
         Row: {
           company_id: string
@@ -246,13 +277,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "company_wave_managers_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -282,13 +306,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: true
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "copsoq_company_notes_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: true
-            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -416,13 +433,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "copsoq_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       ecig_responses: {
@@ -477,13 +487,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ecig_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -701,13 +704,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "gad7_company_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       individual_report_templates: {
@@ -918,13 +914,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "phq9_company_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1703,13 +1692,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tat_responses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "tat_responses_image_id_fkey"
             columns: ["image_id"]
             isOneToOne: false
@@ -2046,13 +2028,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "wellness_company_rounds_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       wellness_company_settings: {
@@ -2167,13 +2142,6 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wellness_individual_questions_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2300,13 +2268,6 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "wellness_participants_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
       wellness_psychometrics_runs: {
@@ -2363,46 +2324,25 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "wellness_psychometrics_runs_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies_public"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Views: {
-      companies_public: {
-        Row: {
-          allowed_versions: string[] | null
-          default_version: string | null
-          id: string | null
-          name: string | null
-          slug: string | null
-          status: string | null
-        }
-        Insert: {
-          allowed_versions?: string[] | null
-          default_version?: string | null
-          id?: string | null
-          name?: string | null
-          slug?: string | null
-          status?: string | null
-        }
-        Update: {
-          allowed_versions?: string[] | null
-          default_version?: string | null
-          id?: string | null
-          name?: string | null
-          slug?: string | null
-          status?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      company_protected_fields_unchanged: {
+        Args: {
+          _allowed_versions: string[]
+          _approved_at: string
+          _default_version: string
+          _id: string
+          _slug: string
+          _status: string
+          _wave_manager_user_id: string
+        }
+        Returns: boolean
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
