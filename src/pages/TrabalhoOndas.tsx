@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Trash2, Plus, Upload, ArrowLeft } from "lucide-react";
+import { ContractSignCard } from "@/components/ContractSignCard";
 
 interface Participant {
   id: string;
@@ -27,6 +28,8 @@ interface Company {
   name: string;
   status: string;
   owner_user_id: string;
+  cnpj: string | null;
+  size_range: string | null;
 }
 
 interface Round {
@@ -66,7 +69,7 @@ export default function TrabalhoOndas() {
       let companyId: string | null = null;
       const { data: owned } = await supabase
         .from("companies")
-        .select("id,name,status,owner_user_id")
+        .select("id,name,status,owner_user_id,cnpj,size_range")
         .eq("owner_user_id", user.id)
         .maybeSingle();
       if (owned) {
@@ -75,7 +78,7 @@ export default function TrabalhoOndas() {
       } else if (waveManagerCompanyIds.length > 0) {
         const { data: c } = await supabase
           .from("companies")
-          .select("id,name,status,owner_user_id")
+          .select("id,name,status,owner_user_id,cnpj,size_range")
           .eq("id", waveManagerCompanyIds[0])
           .maybeSingle();
         if (c) {
@@ -292,6 +295,8 @@ export default function TrabalhoOndas() {
             Revise, edite e organize os colaboradores por área, setor e departamento antes de aprovar o envio da 1ª onda.
           </p>
         </div>
+
+        <ContractSignCard companyId={company.id} companyName={company.name} cnpj={company.cnpj} sizeRange={company.size_range} />
 
         {/* Approval card */}
         {!round1?.first_wave_approved_at ? (

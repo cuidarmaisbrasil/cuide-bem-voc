@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
     // Authorize: admin OR wave manager of company OR owner
     const { data: co } = await admin
       .from("companies")
-      .select("id,owner_user_id,status")
+      .select("id,owner_user_id,status,size_range")
       .eq("id", company_id)
       .maybeSingle();
     if (!co) return j({ error: "company_not_found" }, 404);
@@ -47,6 +47,21 @@ Deno.serve(async (req) => {
 
     if (!isAdmin && co.owner_user_id !== u.user.id && !wmLink) {
       return j({ error: "forbidden" }, 403);
+    }
+
+    // Gate contratual: >50 trabalhadores (porte cadastrado) exige contrato aceito.
+    const nums = ((co.size_range ?? "").match(/\d+/g) || []).map(Number).filter((n: number) => Number.isFinite(n));
+    const headcount = nums.length ? Math.max(...nums) : null;
+    if (headcount !== null && headcount > 50) {
+      const { data: contract } = await admin
+        .from("company_contracts").select("id")
+        .eq("company_id", company_id).eq("status", "accepted").limit(1).maybeSingle();
+      if (!contract) {
+        return j({
+          error: "contract_required",
+          message: "Empresa com mais de 50 trabalhadores: o contrato de prestação de serviços precisa ser aceito antes de iniciar o ciclo de envio dos testes.",
+        }, 409);
+      }
     }
 
     // Find or create round 1
