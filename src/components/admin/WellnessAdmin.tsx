@@ -20,6 +20,7 @@ import { CycleReportPreview } from "@/components/admin/CycleReportPreview";
 import { PsychometricsReport } from "@/components/admin/PsychometricsReport";
 import { SampleValidityReport } from "@/components/admin/SampleValidityReport";
 import { useEditableText } from "@/hooks/useEditableText";
+import { ContractSignCard } from "@/components/ContractSignCard";
 
 interface RoundData {
   round_no: number;
@@ -41,7 +42,7 @@ function deltaIsImprovement(type: CopsoqScaleType, delta: number) {
   return type === "positive" ? delta > 0 : delta < 0;
 }
 
-interface Company { id: string; name: string; status: string }
+interface Company { id: string; name: string; status: string; cnpj: string | null; size_range: string | null }
 interface Item { id: string; instrument: string; n: number; text: string; scale: string | null; reverse: boolean; response_set: string | null; active: boolean }
 
 
@@ -64,7 +65,7 @@ export const WellnessAdmin = () => {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    supabase.from("companies").select("id,name,status").eq("status", "approved").order("name")
+    supabase.from("companies").select("id,name,status,cnpj,size_range").eq("status", "approved").order("name")
       .then(({ data }) => setCompanies((data as any) || []));
   }, []);
 
@@ -258,6 +259,13 @@ export const WellnessAdmin = () => {
               </div>
             </Card>
           )}
+
+          {companyId && (() => {
+            const c = companies.find((x) => x.id === companyId);
+            return c ? (
+              <ContractSignCard companyId={c.id} companyName={c.name} cnpj={c.cnpj} sizeRange={c.size_range} readOnly />
+            ) : null;
+          })()}
 
           {stats?.rounds && (
             <Card className="p-4 space-y-3">

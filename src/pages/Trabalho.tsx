@@ -20,6 +20,7 @@ import promoVideo from "@/assets/cuidar-mais-promo.mp4.asset.json";
 import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
+import { ContractSignCard } from "@/components/ContractSignCard";
 
 
 
@@ -27,6 +28,7 @@ interface Company {
   id: string; name: string; slug: string; status: string;
   default_version: string; allowed_versions: string[];
   contact_email: string; contact_name: string;
+  cnpj: string | null; size_range: string | null;
   created_at: string; approved_at: string | null;
 }
 
@@ -269,6 +271,8 @@ const Trabalho = () => {
 
             {company.status === "approved" && (
               <>
+                <ContractSignCard companyId={company.id} companyName={company.name} cnpj={company.cnpj} sizeRange={company.size_range} />
+
                 <Card className="p-6 space-y-3">
                   <h2 className="font-display text-lg font-semibold">Link público para colaboradores</h2>
                   <p className="text-sm text-muted-foreground">Compartilhe este link. As respostas são anônimas. Você verá apenas dados agregados.</p>
