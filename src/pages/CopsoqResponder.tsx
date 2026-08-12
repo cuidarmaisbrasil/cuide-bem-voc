@@ -57,7 +57,7 @@ const CopsoqResponder = () => {
 
   useEffect(() => {
     if (!slug) return;
-    supabase.from("companies").select("id, name, allowed_versions, status").eq("slug", slug).maybeSingle()
+    supabase.from("companies_public").select("id, name, allowed_versions, status").eq("slug", slug).maybeSingle()
       .then(({ data }) => { setCompany(data && data.status === "approved" ? data as any : null); setLoading(false); });
   }, [slug]);
 
