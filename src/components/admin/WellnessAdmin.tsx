@@ -260,6 +260,13 @@ export const WellnessAdmin = () => {
             </Card>
           )}
 
+          {companyId && (() => {
+            const c = companies.find((x) => x.id === companyId);
+            return c ? (
+              <ContractSignCard companyId={c.id} companyName={c.name} cnpj={c.cnpj} sizeRange={c.size_range} readOnly />
+            ) : null;
+          })()}
+
           {stats?.rounds && (
             <Card className="p-4 space-y-3">
               <div className="flex items-center justify-between gap-2 flex-wrap">
