@@ -56,6 +56,7 @@ const Trabalho = () => {
   const [companyName, setCompanyName] = useState(""); const [contactName, setContactName] = useState("");
   const [contactRole, setContactRole] = useState("");
   const [phone, setPhone] = useState(""); const [cnpj, setCnpj] = useState("");
+  const [sizeRange, setSizeRange] = useState("");
   const [wmName, setWmName] = useState(""); const [wmEmail, setWmEmail] = useState("");
   const [wmRole, setWmRole] = useState(""); const [wmWhatsapp, setWmWhatsapp] = useState("");
 
@@ -86,8 +87,8 @@ const Trabalho = () => {
     e.preventDefault(); setSubmitting(true);
     try {
       if (authMode === "signup") {
-        if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim()) {
-          toast.error("Preencha empresa, responsável, cargo, CNPJ e telefone."); return;
+        if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim() || !sizeRange) {
+          toast.error("Preencha empresa, responsável, cargo, CNPJ, telefone e porte."); return;
         }
         if (!wmName.trim() || !wmEmail.trim() || !wmRole.trim() || !wmWhatsapp.trim()) {
           toast.error("Preencha todos os dados do gestor de ondas."); return;
@@ -105,7 +106,7 @@ const Trabalho = () => {
           const { error: cErr } = await supabase.from("companies").insert({
             owner_user_id: data.user.id, name: companyName, contact_name: contactName,
             contact_role: contactRole,
-            contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, slug,
+            contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, size_range: sizeRange, slug,
             wave_manager_name: wmName.trim(),
             wave_manager_email: wmEmail.trim().toLowerCase(),
             wave_manager_role: wmRole.trim(),
@@ -197,6 +198,23 @@ const Trabalho = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div><Label>CNPJ *</Label><Input value={cnpj} onChange={(e) => setCnpj(e.target.value)} required /></div>
                     <div><Label>Telefone *</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} required /></div>
+                  </div>
+                  <div>
+                    <Label>Porte (nº de trabalhadores) *</Label>
+                    <Select value={sizeRange} onValueChange={setSizeRange}>
+                      <SelectTrigger><SelectValue placeholder="Selecione a faixa" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1–20 trabalhadores">1 a 20 trabalhadores</SelectItem>
+                        <SelectItem value="21–50 trabalhadores">21 a 50 trabalhadores</SelectItem>
+                        <SelectItem value="51–99 trabalhadores">51 a 99 trabalhadores</SelectItem>
+                        <SelectItem value="100–249 trabalhadores">100 a 249 trabalhadores</SelectItem>
+                        <SelectItem value="250–499 trabalhadores">250 a 499 trabalhadores</SelectItem>
+                        <SelectItem value="500+ trabalhadores">500 ou mais trabalhadores</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Acima de 50 trabalhadores, o contrato de prestação de serviços é obrigatório antes de iniciar o ciclo.
+                    </p>
                   </div>
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
