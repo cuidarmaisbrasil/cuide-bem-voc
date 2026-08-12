@@ -28,9 +28,31 @@ Deno.serve(async (req) => {
     const { company_id } = body as { company_id: string };
     if (!company_id) return j({ error: "bad_request" }, 400);
 
+    const { data: co } = await admin
+      .from("companies").select("owner_user_id,status,size_range,name").eq("id", company_id).maybeSingle();
     if (!isAdmin) {
-      const { data: co } = await admin.from("companies").select("owner_user_id,status").eq("id", company_id).maybeSingle();
       if (!co || co.owner_user_id !== user.id || co.status !== "approved") return j({ error: "forbidden" }, 403);
+    }
+
+    // Gate contratual: empresas com mais de 50 trabalhadores (porte cadastrado)
+    // precisam de contrato aceito antes de iniciar o ciclo de envio.
+    const nums = ((co?.size_range ?? "").match(/\d+/g) || []).map(Number).filter((n) => Number.isFinite(n));
+    const headcount = nums.length ? Math.max(...nums) : null;
+    if (headcount !== null && headcount > 50) {
+      const { data: contract } = await admin
+        .from("company_contracts")
+        .select("id")
+        .eq("company_id", company_id)
+        .eq("status", "accepted")
+        .limit(1)
+        .maybeSingle();
+      if (!contract) {
+        return j({
+          error: "contract_required",
+          message:
+            "Empresa com mais de 50 trabalhadores: o contrato de prestação de serviços precisa ser aceito antes de iniciar o ciclo de envio dos testes.",
+        }, 409);
+      }
     }
 
     const { data: latest } = await admin
