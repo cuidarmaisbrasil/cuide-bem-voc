@@ -2331,6 +2331,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      company_protected_fields_unchanged: {
+        Args: {
+          _allowed_versions: string[]
+          _approved_at: string
+          _default_version: string
+          _id: string
+          _slug: string
+          _status: string
+          _wave_manager_user_id: string
+        }
+        Returns: boolean
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
