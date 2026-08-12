@@ -252,6 +252,74 @@ export type Database = {
           },
         ]
       }
+      company_contracts: {
+        Row: {
+          accepted_at: string
+          company_id: string
+          contract_hash: string
+          created_at: string
+          headcount_declared: number | null
+          id: string
+          ip_hash: string | null
+          signed_file_path: string | null
+          signed_file_uploaded_at: string | null
+          signer_cpf: string
+          signer_email: string
+          signer_name: string
+          signer_role: string
+          status: string
+          updated_at: string
+          user_agent: string | null
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          company_id: string
+          contract_hash: string
+          created_at?: string
+          headcount_declared?: number | null
+          id?: string
+          ip_hash?: string | null
+          signed_file_path?: string | null
+          signed_file_uploaded_at?: string | null
+          signer_cpf: string
+          signer_email: string
+          signer_name: string
+          signer_role: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          version?: string
+        }
+        Update: {
+          accepted_at?: string
+          company_id?: string
+          contract_hash?: string
+          created_at?: string
+          headcount_declared?: number | null
+          id?: string
+          ip_hash?: string | null
+          signed_file_path?: string | null
+          signed_file_uploaded_at?: string | null
+          signer_cpf?: string
+          signer_email?: string
+          signer_name?: string
+          signer_role?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_contracts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_wave_managers: {
         Row: {
           company_id: string
