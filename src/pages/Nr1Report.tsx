@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { copsoqScales, type CopsoqScaleType } from "@/data/copsoq";
 
 // ============================================================================
-// Relatório NR-1 (Inventário de Riscos do PGR) + AEP / NR-17
+// Relatório NR-1 — módulo psicossocial do Inventário de Riscos do PGR.
+// NÃO é Avaliação Ergonômica Preliminar (NR-17): os instrumentos do ciclo não
+// coletam dados físicos, ambientais nem biomecânicos exigidos pela AEP.
 // Documento estruturado nas seções obrigatórias, alimentado exclusivamente
 // por dados reais das rodadas de rastreio (wellness-company-stats).
 // ============================================================================
