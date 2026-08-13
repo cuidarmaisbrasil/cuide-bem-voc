@@ -639,14 +639,27 @@ const Nr1Report = () => {
           .no-print { display: none !important; }
           body { background: #fff !important; }
           .page-break { page-break-before: always; }
+          .nr1-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
+        .nr1-doc { font-size: 11px; line-height: 1.45; color: #0f172a; }
+        .nr1-head { background: #0f172a; color: #fff; border-radius: 6px; padding: 16px 18px; }
+        .nr1-head .k { opacity: .55; font-weight: 600; }
+        .nr1-h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                  color: #334155; border-left: 4px solid #0f172a; padding-left: 8px; margin-bottom: 10px; }
         .nr1-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        .nr1-table th, .nr1-table td { border: 1px solid #d4d4d8; padding: 5px 6px; text-align: left; vertical-align: top; }
-        .nr1-table th { background: #f5f5f4; font-weight: 600; }
+        .nr1-table th, .nr1-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; vertical-align: top; }
+        .nr1-table thead th { background: #f1f5f9; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: .04em; color: #334155; }
+        .nr1-table tbody th { background: #f8fafc; font-weight: 600; }
+        .nr1-table tbody tr:nth-child(even) td { background: #fcfdfe; }
         .nr1-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
+        .nr1-chip { display: inline-block; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px;
+                    padding: 2px 7px; font-size: 9px; font-weight: 600; color: #334155; }
+        .nr1-note { font-size: 9.5px; color: #64748b; font-style: italic; }
       `}</style>
 
-      <div className="container max-w-6xl py-8 space-y-8">
+
+      <div className="nr1-doc container max-w-6xl py-8 space-y-7">
         <div className="no-print flex justify-between items-center gap-2 border-b pb-3">
           <p className="text-xs text-neutral-500">
             Documento em formato de inventário (paisagem). Use o botão para gerar o PDF pela impressão do navegador.
@@ -668,35 +681,51 @@ const Nr1Report = () => {
           </div>
         )}
 
-        <header className="space-y-2">
+        <header className="nr1-head">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-base font-bold uppercase tracking-tight">
+                Inventário de Riscos Psicossociais e Plano de Ação
+              </h1>
+              <p className="text-[10px] opacity-80 mt-0.5">
+                NR-1 · Programa de Gerenciamento de Riscos (PGR) — módulo psicossocial
+              </p>
+            </div>
+            <span className="rounded bg-blue-600 px-2 py-0.5 text-[9px] font-bold uppercase whitespace-nowrap">
+              Ciclo #{target.round_no}
+            </span>
+          </div>
 
-          <p className="text-xs uppercase tracking-wide text-neutral-600">
-            NR-1 · Programa de Gerenciamento de Riscos (PGR) — Módulo psicossocial do Inventário de Riscos
-          </p>
-          <h1 className="text-2xl font-bold">Inventário de Riscos Psicossociais e Plano de Ação</h1>
-          <p className="text-sm">
-            Organização: <strong>{company.name}</strong>
-            {company.cnpj ? <> · CNPJ {company.cnpj}</> : null}
-            {company.sector ? <> · CNAE/Setor: {company.sector}</> : null}
-            {company.size_range ? <> · Porte: {company.size_range}</> : null}
-          </p>
-          <p className="text-sm">
-            Ciclo de avaliação: <strong>#{target.round_no}</strong> · Início {fmtDate(target.opened_at)} ·
-            Encerramento {fmtDate(target.closed_at)} · Devolutiva aos trabalhadores {fmtDate(target.devolutiva_communicated_at)} ·
-            Adesão {adesao}% ({totalCompleted}/{totalScheduled})
-          </p>
-          <p className="text-xs text-neutral-600">
+          <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-1 text-[11px]">
+            <div><span className="k">Organização:</span> {company.name}</div>
+            <div><span className="k">CNPJ:</span> {company.cnpj || "—"}</div>
+            <div><span className="k">CNAE/Setor:</span> {company.sector || "—"}</div>
+            <div><span className="k">Porte:</span> {company.size_range || "—"}</div>
+            <div><span className="k">Período:</span> {fmtDate(target.opened_at)} a {fmtDate(target.closed_at)}</div>
+            <div><span className="k">Devolutiva:</span> {fmtDate(target.devolutiva_communicated_at)}</div>
+            <div><span className="k">Adesão:</span> {adesao}% ({totalCompleted}/{totalScheduled})</div>
+            <div><span className="k">n mínimo de recorte:</span> {stats.min_recorte}</div>
+            <div><span className="k">Emissão:</span> {new Date().toLocaleDateString("pt-BR")}</div>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-1">
+            {["PHQ-9", "GAD-7", "COPSOQ II", "ECIG", "LIPT-60", "MDiSH", "SHRAS"].map((i) => (
+              <span key={i} className="nr1-chip">{i}</span>
+            ))}
+          </div>
+
+          <p className="mt-3 border-t border-white/15 pt-2 text-[9.5px] leading-snug opacity-80">
             Documento válido como <strong>componente psicossocial</strong> do inventário de riscos do PGR (NR-1, itens
             1.5.4.4 e 1.5.5). Cobre exclusivamente perigos de natureza psicossocial e organizacional identificados por
-            instrumentos autoaplicados. <strong>Não constitui Avaliação Ergonômica Preliminar (NR-17) nem Análise
-            Ergonômica do Trabalho (AET)</strong>, e não substitui o levantamento de riscos físicos, químicos, biológicos,
-            de acidentes e ergonômico-biomecânicos, que devem compor o PGR por outras fontes. Escopo e lacunas na seção 5.
+            instrumentos autoaplicados. Não substitui o levantamento de riscos físicos, químicos, biológicos e de
+            acidentes, que devem compor o PGR por outras fontes. Escopo e lacunas na seção 5.
           </p>
         </header>
 
+
         {/* 1. Identificação e escopo — obrigatório PGR */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">1. Identificação, escopo e responsabilidades</h2>
+          <h2 className="nr1-h2">1. Identificação, escopo e responsabilidades</h2>
           <table className="nr1-table">
             <tbody>
               <tr><th style={{ width: "26%" }}>Organização avaliada</th><td>{company.name}{company.cnpj ? ` — CNPJ ${company.cnpj}` : ""}</td></tr>
@@ -715,7 +744,7 @@ const Nr1Report = () => {
 
         {/* 2. Metodologia — obrigatório PGR/AEP */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">2. Metodologia de identificação e avaliação</h2>
+          <h2 className="nr1-h2">2. Metodologia de identificação e avaliação</h2>
           <p className="text-sm leading-relaxed">
             A identificação de perigos combinou <strong>instrumento estruturado validado</strong>, <strong>dados de adesão e
             participação</strong> e <strong>indicadores de agravo à saúde</strong>. Instrumentos aplicados por link anônimo,
@@ -748,7 +777,7 @@ const Nr1Report = () => {
 
         {/* 3. Inventário de riscos — núcleo do PGR */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">3. Inventário de riscos psicossociais</h2>
+          <h2 className="nr1-h2">3. Inventário de riscos psicossociais</h2>
           {inventory.length === 0 ? (
             <p className="text-sm text-neutral-700">
               Nenhum fator psicossocial classificado em Atenção ou Risco com os dados disponíveis deste ciclo
@@ -809,7 +838,7 @@ const Nr1Report = () => {
 
         {/* 3.1 GHE — caracterização por setor / função (NR-1 1.5.4.4.2 "b") */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">
+          <h2 className="nr1-h2">
             3.1 Grupos homogêneos de exposição (GHE) — setores, áreas e funções
           </h2>
           <p className="text-sm mb-2">
@@ -893,7 +922,7 @@ const Nr1Report = () => {
 
         {/* 4. Plano de ação — obrigatório NR-1 1.5.5.2 */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">4. Plano de ação (NR-1, item 1.5.5.2)</h2>
+          <h2 className="nr1-h2">4. Plano de ação (NR-1, item 1.5.5.2)</h2>
           {inventory.length === 0 ? (
             <p className="text-sm text-neutral-700">Sem itens priorizados neste ciclo.</p>
           ) : (
@@ -935,7 +964,7 @@ const Nr1Report = () => {
 
         {/* 5. Escopo coberto x lacunas do PGR */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">5. Escopo coberto por este documento e lacunas do PGR</h2>
+          <h2 className="nr1-h2">5. Escopo coberto por este documento e lacunas do PGR</h2>
           <p className="text-sm mb-2">
             Declaração de transparência metodológica: o quadro abaixo separa o que é efetivamente
             evidenciado pelos instrumentos aplicados no ciclo do que <strong>não</strong> é coletado por eles e
@@ -969,7 +998,7 @@ const Nr1Report = () => {
         {/* 6. Evolução entre ciclos */}
         {prev && !prev.copsoq.hidden && !target.copsoq.hidden && (
           <section>
-            <h2 className="text-lg font-semibold mb-2">6. Acompanhamento da eficácia (comparação com o ciclo #{prev.round_no})</h2>
+            <h2 className="nr1-h2">6. Acompanhamento da eficácia (comparação com o ciclo #{prev.round_no})</h2>
             <table className="nr1-table">
               <thead><tr><th>Dimensão</th><th>Ciclo #{prev.round_no}</th><th>Ciclo #{target.round_no}</th><th>Variação</th><th>Faixa atual</th></tr></thead>
               <tbody>
@@ -999,7 +1028,7 @@ const Nr1Report = () => {
 
         {/* 7. Devolutiva e registro */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">7. Comunicação aos trabalhadores e registro documental</h2>
+          <h2 className="nr1-h2">7. Comunicação aos trabalhadores e registro documental</h2>
           <p className="text-sm">
             Devolutiva coletiva comunicada em <strong>{fmtDate(target.devolutiva_communicated_at)}</strong>, em cumprimento ao
             dever de informação da NR-1 (item 1.4.1 “c”).
