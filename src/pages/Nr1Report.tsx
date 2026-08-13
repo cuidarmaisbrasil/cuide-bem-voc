@@ -686,8 +686,11 @@ const Nr1Report = () => {
             Adesão {adesao}% ({totalCompleted}/{totalScheduled})
           </p>
           <p className="text-xs text-neutral-600">
-            Documento válido como componente do PGR (NR-1, itens 1.5.4.4 e 1.5.5) e como seção psicossocial e cognitiva da
-            AEP (NR-17, item 17.3). Não substitui a Análise Ergonômica do Trabalho (AET) quando esta for indicada.
+            Documento válido como <strong>componente psicossocial</strong> do inventário de riscos do PGR (NR-1, itens
+            1.5.4.4 e 1.5.5). Cobre exclusivamente perigos de natureza psicossocial e organizacional identificados por
+            instrumentos autoaplicados. <strong>Não constitui Avaliação Ergonômica Preliminar (NR-17) nem Análise
+            Ergonômica do Trabalho (AET)</strong>, e não substitui o levantamento de riscos físicos, químicos, biológicos,
+            de acidentes e ergonômico-biomecânicos, que devem compor o PGR por outras fontes. Escopo e lacunas na seção 5.
           </p>
         </header>
 
