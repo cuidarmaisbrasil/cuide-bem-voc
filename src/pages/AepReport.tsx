@@ -147,7 +147,7 @@ const AepReport = () => {
         </div>
 
         <header className="space-y-2">
-          <p className="text-xs uppercase tracking-wide text-neutral-600">Anexo à AEP — NR-17 / Inventário de Riscos NR-1</p>
+          <p className="text-xs uppercase tracking-wide text-neutral-600">Anexo psicossocial ao Inventário de Riscos do PGR — NR-1</p>
           <h1 className="text-2xl font-bold">Relatório de Avaliação de Fatores Psicossociais</h1>
           <p className="text-sm">Empresa: <strong>{company.name}</strong>
             {company.cnpj ? <> · CNPJ {company.cnpj}</> : null}
