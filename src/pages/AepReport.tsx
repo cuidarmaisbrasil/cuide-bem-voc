@@ -164,8 +164,9 @@ const AepReport = () => {
         <section>
           <h2 className="text-lg font-semibold mb-2">1. Metodologia</h2>
           <p className="text-sm leading-relaxed">
-            Esta avaliação atende à <strong>NR-1 (Portaria MTE nº 1.419/2024)</strong> e à <strong>NR-17</strong> quanto
-            aos fatores de risco psicossociais relacionados ao trabalho. Foi aplicado o instrumento
+            Esta avaliação atende à <strong>NR-1 (Portaria MTE nº 1.419/2024)</strong> quanto aos fatores de risco
+            psicossociais relacionados ao trabalho. Não abrange os aspectos ergonômicos físicos e ambientais da NR-17,
+            que exigem observação de posto e medição, e portanto não constitui AEP. Foi aplicado o instrumento
             <strong> COPSOQ II</strong> (Copenhagen Psychosocial Questionnaire — Pejtersen et al., 2010; adaptação
             portuguesa de Silva et al., 2011), em link anônimo único por empresa, sem identificação nominal dos
             respondentes. Resultados publicados respeitam o n mínimo por recorte de <strong>{stats.min_recorte}</strong>
