@@ -671,7 +671,7 @@ const Nr1Report = () => {
         <header className="space-y-2">
 
           <p className="text-xs uppercase tracking-wide text-neutral-600">
-            NR-1 · Programa de Gerenciamento de Riscos (PGR) — Inventário de Riscos Psicossociais · NR-17 · Avaliação Ergonômica Preliminar (AEP)
+            NR-1 · Programa de Gerenciamento de Riscos (PGR) — Módulo psicossocial do Inventário de Riscos
           </p>
           <h1 className="text-2xl font-bold">Inventário de Riscos Psicossociais e Plano de Ação</h1>
           <p className="text-sm">
