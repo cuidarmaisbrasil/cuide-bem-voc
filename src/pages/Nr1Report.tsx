@@ -933,26 +933,37 @@ const Nr1Report = () => {
           </p>
         </section>
 
-        {/* 5. AEP NR-17 */}
+        {/* 5. Escopo coberto x lacunas do PGR */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">5. Avaliação Ergonômica Preliminar (NR-17) — seção psicossocial e cognitiva</h2>
+          <h2 className="text-lg font-semibold mb-2">5. Escopo coberto por este documento e lacunas do PGR</h2>
+          <p className="text-sm mb-2">
+            Declaração de transparência metodológica: o quadro abaixo separa o que é efetivamente
+            evidenciado pelos instrumentos aplicados no ciclo do que <strong>não</strong> é coletado por eles e
+            precisa ser levantado por outras fontes para completar o PGR.
+          </p>
           <table className="nr1-table">
+            <thead>
+              <tr><th style={{ width: "34%" }}>Exigência do inventário de riscos (NR-1)</th><th style={{ width: "16%" }}>Coberto aqui</th><th>Fonte / observação</th></tr>
+            </thead>
             <tbody>
-              <tr><th style={{ width: "26%" }}>5.1 Situações de trabalho analisadas</th><td>Postos e funções abrangidos pelo ciclo #{target.round_no}, em regimes presencial, híbrido e teletrabalho, organizados por grupos homogêneos de exposição: {(target.by_department ?? []).length > 0 ? (target.by_department ?? []).map((d) => `${d.department} (n=${Math.max(d.n_copsoq, d.n_phq9, d.n_psicossocial, d.n_assedio_sexual)})`).join("; ") : "grupo único — setor/função não informados no cadastro"}. Descrição detalhada de cada posto e código CBO a ser complementada pelo responsável técnico com base na descrição de cargos vigente (seção 3.1).</td></tr>
-              <tr><th>5.2 Fatores cognitivos</th><td>Demanda de atenção sustentada, interrupções, multitarefa e complexidade de decisão avaliadas pelas dimensões de exigências quantitativas, ritmo e previsibilidade do COPSOQ II — resultados na seção 3.</td></tr>
-              <tr><th>5.3 Fatores psicossociais</th><td>Exigências, influência, apoio social, clareza e conflito de papel, reconhecimento, justiça, conflito trabalho–família e comportamentos ofensivos — inventariados na seção 3 com faixa e nível de risco.</td></tr>
-              <tr><th>5.4 Método e evidências</th><td>Instrumentos validados, período de coleta {fmtDate(target.opened_at)} a {fmtDate(target.closed_at)}, adesão de {adesao}%, n mínimo por recorte de {stats.min_recorte}, anonimato assegurado.</td></tr>
-              <tr><th>5.5 Resultados por dimensão</th><td>Vide seção 3 (escore, faixa e nível de risco por dimensão).</td></tr>
-              <tr><th>5.6 Conclusão e encaminhamentos</th><td>
-                {altos.length > 0
-                  ? <>Há {altos.length} fator(es) em nível Alto que exigem ação imediata e <strong>indicam a realização de Análise Ergonômica do Trabalho (AET)</strong> nos setores envolvidos, por não serem plenamente explicáveis pela descrição do posto: {altos.slice(0, 5).map((a) => a.fator).join("; ")}.</>
-                  : moderados.length > 0
-                    ? <>Não há fatores em nível Alto. Os {moderados.length} fator(es) em nível Moderado são tratáveis por medidas organizacionais previstas na seção 4, com reavaliação no próximo ciclo.</>
-                    : <>Não foram identificados fatores em nível Alto ou Moderado neste ciclo. Manter monitoramento periódico.</>}
-              </td></tr>
-              <tr><th>5.7 Necessidade de AET</th><td>{altos.length > 0 ? "Indicada" : "Não indicada com base nos achados deste ciclo"} — decisão registrada pelo responsável técnico.</td></tr>
+              <tr><td>Perigos psicossociais e organizacionais</td><td><strong>Sim</strong></td><td>COPSOQ II, LIPT-60, MDiSH/SHRAS — seção 3.</td></tr>
+              <tr><td>Indicadores de agravo à saúde mental</td><td><strong>Sim</strong></td><td>PHQ-9 e GAD-7 agregados — seção 3.</td></tr>
+              <tr><td>Grupos homogêneos de exposição (setor/área/função)</td><td><strong>Parcial</strong></td><td>Depende do cadastro de setor/função dos participantes — seção 3.1.</td></tr>
+              <tr><td>Avaliação de nível de risco (severidade × probabilidade)</td><td><strong>Sim</strong></td><td>Matriz da seção 2 aplicada aos fatores psicossociais.</td></tr>
+              <tr><td>Plano de ação com hierarquia de medidas e prazos</td><td><strong>Parcial</strong></td><td>Ações sugeridas na seção 4; responsáveis, prazos e controles existentes preenchidos pela organização.</td></tr>
+              <tr><td>Riscos físicos, químicos, biológicos e de acidentes</td><td><strong>Não</strong></td><td>Fora do escopo destes instrumentos. Levantar por inspeção e avaliações quantitativas (LTCAT/PGR complementar).</td></tr>
+              <tr><td>Riscos ergonômicos biomecânicos (posturas, carga, repetitividade, mobiliário, iluminação, ruído, conforto térmico)</td><td><strong>Não</strong></td><td>Exige observação de posto e medição ambiental. Não coletamos esses dados.</td></tr>
+              <tr><td>Avaliação Ergonômica Preliminar (NR-17) e AET</td><td><strong>Não</strong></td><td>Requer análise de situações reais de trabalho por profissional habilitado. Este relatório pode ser <em>anexado</em> como evidência psicossocial, mas não a substitui.</td></tr>
+              <tr><td>Descrição de postos, CBO e organização do trabalho</td><td><strong>Não</strong></td><td>Deve vir da descrição de cargos e do responsável técnico da organização.</td></tr>
             </tbody>
           </table>
+          <p className="text-sm mt-2">
+            {altos.length > 0
+              ? <>Há {altos.length} fator(es) em nível Alto. Recomenda-se que o responsável técnico avalie a pertinência de aprofundamento por análise das situações reais de trabalho nos setores envolvidos: {altos.slice(0, 5).map((a) => a.fator).join("; ")}.</>
+              : moderados.length > 0
+                ? <>Não há fatores em nível Alto. Os {moderados.length} fator(es) em nível Moderado são tratáveis por medidas organizacionais previstas na seção 4, com reavaliação no próximo ciclo.</>
+                : <>Não foram identificados fatores em nível Alto ou Moderado neste ciclo. Manter monitoramento periódico.</>}
+          </p>
         </section>
 
         {/* 6. Evolução entre ciclos */}
