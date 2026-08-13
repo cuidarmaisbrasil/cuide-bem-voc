@@ -37,7 +37,7 @@ CONTRATADA: GAMA SOLUTIONS, inscrita no CNPJ sob o nº 52.115.028/0001-78, que a
 CONTRATANTE: ${company.name}, inscrita no CNPJ sob o nº ${cnpj}, porte declarado: ${porte}, doravante CONTRATANTE.
 
 CLÁUSULA 1 — OBJETO
-1.1. A CONTRATADA disponibiliza à CONTRATANTE a aplicação de instrumentos psicométricos para identificação e avaliação de fatores de risco psicossociais relacionados ao trabalho, em ciclos compostos por 5 (cinco) ondas de aplicação, com geração de relatórios agregados para composição do inventário de riscos do PGR (NR-1) e da Avaliação Ergonômica Preliminar (NR-17).
+1.1. A CONTRATADA disponibiliza à CONTRATANTE a aplicação de instrumentos psicométricos para identificação e avaliação de fatores de risco psicossociais relacionados ao trabalho, em ciclos compostos por 5 (cinco) ondas de aplicação, com geração de relatórios agregados para composição do módulo psicossocial do inventário de riscos do PGR (NR-1). Os serviços não abrangem a Avaliação Ergonômica Preliminar (NR-17) nem a Análise Ergonômica do Trabalho, que dependem de observação das situações reais de trabalho e de medições ambientais não realizadas pela CONTRATADA.
 1.2. Os instrumentos aplicados no ciclo são: PHQ-9, GAD-7, COPSOQ II, ECIG, LIPT-60, MDiSH e SHRAS, nas versões em língua portuguesa adotadas pela plataforma.
 1.3. Os serviços não constituem diagnóstico clínico individual nem substituem atendimento em saúde, assistência médica ocupacional ou perícia.
 
