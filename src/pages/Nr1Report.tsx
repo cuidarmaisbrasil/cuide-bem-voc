@@ -725,7 +725,7 @@ const Nr1Report = () => {
 
         {/* 1. Identificação e escopo — obrigatório PGR */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">1. Identificação, escopo e responsabilidades</h2>
+          <h2 className="nr1-h2">1. Identificação, escopo e responsabilidades</h2>
           <table className="nr1-table">
             <tbody>
               <tr><th style={{ width: "26%" }}>Organização avaliada</th><td>{company.name}{company.cnpj ? ` — CNPJ ${company.cnpj}` : ""}</td></tr>
@@ -744,7 +744,7 @@ const Nr1Report = () => {
 
         {/* 2. Metodologia — obrigatório PGR/AEP */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">2. Metodologia de identificação e avaliação</h2>
+          <h2 className="nr1-h2">2. Metodologia de identificação e avaliação</h2>
           <p className="text-sm leading-relaxed">
             A identificação de perigos combinou <strong>instrumento estruturado validado</strong>, <strong>dados de adesão e
             participação</strong> e <strong>indicadores de agravo à saúde</strong>. Instrumentos aplicados por link anônimo,
@@ -777,7 +777,7 @@ const Nr1Report = () => {
 
         {/* 3. Inventário de riscos — núcleo do PGR */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">3. Inventário de riscos psicossociais</h2>
+          <h2 className="nr1-h2">3. Inventário de riscos psicossociais</h2>
           {inventory.length === 0 ? (
             <p className="text-sm text-neutral-700">
               Nenhum fator psicossocial classificado em Atenção ou Risco com os dados disponíveis deste ciclo
@@ -838,7 +838,7 @@ const Nr1Report = () => {
 
         {/* 3.1 GHE — caracterização por setor / função (NR-1 1.5.4.4.2 "b") */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">
+          <h2 className="nr1-h2">
             3.1 Grupos homogêneos de exposição (GHE) — setores, áreas e funções
           </h2>
           <p className="text-sm mb-2">
@@ -922,7 +922,7 @@ const Nr1Report = () => {
 
         {/* 4. Plano de ação — obrigatório NR-1 1.5.5.2 */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">4. Plano de ação (NR-1, item 1.5.5.2)</h2>
+          <h2 className="nr1-h2">4. Plano de ação (NR-1, item 1.5.5.2)</h2>
           {inventory.length === 0 ? (
             <p className="text-sm text-neutral-700">Sem itens priorizados neste ciclo.</p>
           ) : (
@@ -964,7 +964,7 @@ const Nr1Report = () => {
 
         {/* 5. Escopo coberto x lacunas do PGR */}
         <section className="page-break">
-          <h2 className="text-lg font-semibold mb-2">5. Escopo coberto por este documento e lacunas do PGR</h2>
+          <h2 className="nr1-h2">5. Escopo coberto por este documento e lacunas do PGR</h2>
           <p className="text-sm mb-2">
             Declaração de transparência metodológica: o quadro abaixo separa o que é efetivamente
             evidenciado pelos instrumentos aplicados no ciclo do que <strong>não</strong> é coletado por eles e
@@ -998,7 +998,7 @@ const Nr1Report = () => {
         {/* 6. Evolução entre ciclos */}
         {prev && !prev.copsoq.hidden && !target.copsoq.hidden && (
           <section>
-            <h2 className="text-lg font-semibold mb-2">6. Acompanhamento da eficácia (comparação com o ciclo #{prev.round_no})</h2>
+            <h2 className="nr1-h2">6. Acompanhamento da eficácia (comparação com o ciclo #{prev.round_no})</h2>
             <table className="nr1-table">
               <thead><tr><th>Dimensão</th><th>Ciclo #{prev.round_no}</th><th>Ciclo #{target.round_no}</th><th>Variação</th><th>Faixa atual</th></tr></thead>
               <tbody>
@@ -1028,7 +1028,7 @@ const Nr1Report = () => {
 
         {/* 7. Devolutiva e registro */}
         <section>
-          <h2 className="text-lg font-semibold mb-2">7. Comunicação aos trabalhadores e registro documental</h2>
+          <h2 className="nr1-h2">7. Comunicação aos trabalhadores e registro documental</h2>
           <p className="text-sm">
             Devolutiva coletiva comunicada em <strong>{fmtDate(target.devolutiva_communicated_at)}</strong>, em cumprimento ao
             dever de informação da NR-1 (item 1.4.1 “c”).
