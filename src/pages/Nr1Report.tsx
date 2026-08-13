@@ -639,12 +639,25 @@ const Nr1Report = () => {
           .no-print { display: none !important; }
           body { background: #fff !important; }
           .page-break { page-break-before: always; }
+          .nr1-head { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
+        .nr1-doc { font-size: 11px; line-height: 1.45; color: #0f172a; }
+        .nr1-head { background: #0f172a; color: #fff; border-radius: 6px; padding: 16px 18px; }
+        .nr1-head .k { opacity: .55; font-weight: 600; }
+        .nr1-h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                  color: #334155; border-left: 4px solid #0f172a; padding-left: 8px; margin-bottom: 10px; }
         .nr1-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-        .nr1-table th, .nr1-table td { border: 1px solid #d4d4d8; padding: 5px 6px; text-align: left; vertical-align: top; }
-        .nr1-table th { background: #f5f5f4; font-weight: 600; }
+        .nr1-table th, .nr1-table td { border: 1px solid #e2e8f0; padding: 6px 7px; text-align: left; vertical-align: top; }
+        .nr1-table thead th { background: #f1f5f9; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: .04em; color: #334155; }
+        .nr1-table tbody th { background: #f8fafc; font-weight: 600; }
+        .nr1-table tbody tr:nth-child(even) td { background: #fcfdfe; }
         .nr1-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
+        .nr1-chip { display: inline-block; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px;
+                    padding: 2px 7px; font-size: 9px; font-weight: 600; color: #334155; }
+        .nr1-note { font-size: 9.5px; color: #64748b; font-style: italic; }
       `}</style>
+
 
       <div className="container max-w-6xl py-8 space-y-8">
         <div className="no-print flex justify-between items-center gap-2 border-b pb-3">
