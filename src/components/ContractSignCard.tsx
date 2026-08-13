@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { FileSignature, ShieldCheck, Printer, Upload } from "lucide-react";
+import { FileSignature, ShieldCheck, Printer, Upload, Download } from "lucide-react";
 import {
   CONTRACT_VERSION,
   buildContractText,
@@ -145,8 +145,20 @@ export const ContractSignCard = ({ companyId, companyName, cnpj, sizeRange, read
     w.print();
   }
 
+  function downloadContract() {
+    const signedBlock = contract
+      ? `\n\n---\nACEITE ELETRÔNICO REGISTRADO\nSignatário: ${contract.signer_name} — ${contract.signer_role}\nCPF: ${contract.signer_cpf}\nE-mail: ${contract.signer_email}\nData/hora: ${new Date(contract.accepted_at).toLocaleString("pt-BR")}\nHash SHA-256 do texto aceito: ${contract.contract_hash}`
+      : "";
+    const blob = new Blob([text + signedBlock], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `contrato-cuidar-mais-trabalho-${CONTRACT_VERSION}-${companyName.replace(/[^\w-]+/g, "_")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (loading) return null;
-  if (!required && !contract) return null;
 
   return (
     <Card className="p-6 space-y-4">
@@ -177,6 +189,9 @@ export const ContractSignCard = ({ companyId, companyName, cnpj, sizeRange, read
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="outline" onClick={printContract}>
           <Printer className="h-4 w-4" /> Baixar / imprimir PDF
+        </Button>
+        <Button size="sm" variant="outline" onClick={downloadContract}>
+          <Download className="h-4 w-4" /> Baixar contrato (.txt)
         </Button>
         {contract && !readOnly && (
           <label className="inline-flex">
