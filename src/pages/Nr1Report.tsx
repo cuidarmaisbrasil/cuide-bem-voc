@@ -411,8 +411,8 @@ const Nr1Report = () => {
 
   useEffect(() => {
     document.title = isSample
-      ? "Amostra — Inventário de Riscos NR-1 + AEP NR-17 — Cuidar+ Trabalho"
-      : "Inventário de Riscos NR-1 + AEP NR-17 — Cuidar+ Trabalho";
+      ? "Amostra — Inventário de Riscos Psicossociais (NR-1 / PGR) — Cuidar+ Trabalho"
+      : "Inventário de Riscos Psicossociais (NR-1 / PGR) — Cuidar+ Trabalho";
   }, [isSample]);
 
   useEffect(() => {
