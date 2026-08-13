@@ -814,7 +814,7 @@ const Nr1Report = () => {
           </h2>
           <p className="text-sm mb-2">
             Caracterização dos grupos de trabalhadores expostos, conforme exige o inventário de riscos
-            (NR-1, item 1.5.4.4.2) e a descrição das situações de trabalho da AEP (NR-17). O recorte por
+            (NR-1, item 1.5.4.4.2), limitada aos perigos psicossociais avaliados. O recorte por
             setor/função só é publicado quando o grupo tem pelo menos{" "}
             <strong>{stats.min_recorte_department ?? stats.min_recorte}</strong> respondentes; abaixo disso os
             resultados permanecem agregados para impedir reidentificação.
