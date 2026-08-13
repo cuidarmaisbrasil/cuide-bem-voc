@@ -659,7 +659,7 @@ const Nr1Report = () => {
       `}</style>
 
 
-      <div className="container max-w-6xl py-8 space-y-8">
+      <div className="nr1-doc container max-w-6xl py-8 space-y-7">
         <div className="no-print flex justify-between items-center gap-2 border-b pb-3">
           <p className="text-xs text-neutral-500">
             Documento em formato de inventário (paisagem). Use o botão para gerar o PDF pela impressão do navegador.
@@ -681,31 +681,47 @@ const Nr1Report = () => {
           </div>
         )}
 
-        <header className="space-y-2">
+        <header className="nr1-head">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-base font-bold uppercase tracking-tight">
+                Inventário de Riscos Psicossociais e Plano de Ação
+              </h1>
+              <p className="text-[10px] opacity-80 mt-0.5">
+                NR-1 · Programa de Gerenciamento de Riscos (PGR) — módulo psicossocial
+              </p>
+            </div>
+            <span className="rounded bg-blue-600 px-2 py-0.5 text-[9px] font-bold uppercase whitespace-nowrap">
+              Ciclo #{target.round_no}
+            </span>
+          </div>
 
-          <p className="text-xs uppercase tracking-wide text-neutral-600">
-            NR-1 · Programa de Gerenciamento de Riscos (PGR) — Módulo psicossocial do Inventário de Riscos
-          </p>
-          <h1 className="text-2xl font-bold">Inventário de Riscos Psicossociais e Plano de Ação</h1>
-          <p className="text-sm">
-            Organização: <strong>{company.name}</strong>
-            {company.cnpj ? <> · CNPJ {company.cnpj}</> : null}
-            {company.sector ? <> · CNAE/Setor: {company.sector}</> : null}
-            {company.size_range ? <> · Porte: {company.size_range}</> : null}
-          </p>
-          <p className="text-sm">
-            Ciclo de avaliação: <strong>#{target.round_no}</strong> · Início {fmtDate(target.opened_at)} ·
-            Encerramento {fmtDate(target.closed_at)} · Devolutiva aos trabalhadores {fmtDate(target.devolutiva_communicated_at)} ·
-            Adesão {adesao}% ({totalCompleted}/{totalScheduled})
-          </p>
-          <p className="text-xs text-neutral-600">
+          <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-1 text-[11px]">
+            <div><span className="k">Organização:</span> {company.name}</div>
+            <div><span className="k">CNPJ:</span> {company.cnpj || "—"}</div>
+            <div><span className="k">CNAE/Setor:</span> {company.sector || "—"}</div>
+            <div><span className="k">Porte:</span> {company.size_range || "—"}</div>
+            <div><span className="k">Período:</span> {fmtDate(target.opened_at)} a {fmtDate(target.closed_at)}</div>
+            <div><span className="k">Devolutiva:</span> {fmtDate(target.devolutiva_communicated_at)}</div>
+            <div><span className="k">Adesão:</span> {adesao}% ({totalCompleted}/{totalScheduled})</div>
+            <div><span className="k">n mínimo de recorte:</span> {stats.min_recorte}</div>
+            <div><span className="k">Emissão:</span> {new Date().toLocaleDateString("pt-BR")}</div>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-1">
+            {["PHQ-9", "GAD-7", "COPSOQ II", "ECIG", "LIPT-60", "MDiSH", "SHRAS"].map((i) => (
+              <span key={i} className="nr1-chip">{i}</span>
+            ))}
+          </div>
+
+          <p className="mt-3 border-t border-white/15 pt-2 text-[9.5px] leading-snug opacity-80">
             Documento válido como <strong>componente psicossocial</strong> do inventário de riscos do PGR (NR-1, itens
             1.5.4.4 e 1.5.5). Cobre exclusivamente perigos de natureza psicossocial e organizacional identificados por
-            instrumentos autoaplicados. <strong>Não constitui Avaliação Ergonômica Preliminar (NR-17) nem Análise
-            Ergonômica do Trabalho (AET)</strong>, e não substitui o levantamento de riscos físicos, químicos, biológicos,
-            de acidentes e ergonômico-biomecânicos, que devem compor o PGR por outras fontes. Escopo e lacunas na seção 5.
+            instrumentos autoaplicados. Não substitui o levantamento de riscos físicos, químicos, biológicos e de
+            acidentes, que devem compor o PGR por outras fontes. Escopo e lacunas na seção 5.
           </p>
         </header>
+
 
         {/* 1. Identificação e escopo — obrigatório PGR */}
         <section>
