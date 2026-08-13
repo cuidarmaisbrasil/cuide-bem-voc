@@ -317,7 +317,7 @@ export const WellnessAdmin = () => {
                         )}
                         <Button asChild size="sm" variant="outline">
                           <a href={`/admin/aep/${companyId}/${r.round_no}`} target="_blank" rel="noopener noreferrer">
-                            Exportar AEP
+                            Exportar relatório psicossocial
                           </a>
                         </Button>
                         <Button asChild size="sm" variant="outline">
@@ -896,7 +896,7 @@ function TestModePanel({ companies }: { companies: Company[] }) {
               <div className="mt-2 flex flex-wrap gap-2">
                 <Button asChild size="sm">
                   <a href={`/admin/aep/${companyId}/${currentRound}`} target="_blank" rel="noopener noreferrer">
-                    Abrir relatório AEP (Rodada #{currentRound})
+                    Abrir relatório psicossocial (Rodada #{currentRound})
                   </a>
                 </Button>
                 <Button asChild size="sm" variant="outline">

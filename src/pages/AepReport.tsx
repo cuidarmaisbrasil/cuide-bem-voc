@@ -78,7 +78,7 @@ const AepReport = () => {
   const [stats, setStats] = useState<StatsResp | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { document.title = "Relatório AEP — Cuidar+ Trabalho"; }, []);
+  useEffect(() => { document.title = "Relatório psicossocial (NR-1) — Cuidar+ Trabalho"; }, []);
 
   useEffect(() => {
     (async () => {
