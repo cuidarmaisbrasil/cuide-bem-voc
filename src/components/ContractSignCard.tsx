@@ -190,6 +190,9 @@ export const ContractSignCard = ({ companyId, companyName, cnpj, sizeRange, read
         <Button size="sm" variant="outline" onClick={printContract}>
           <Printer className="h-4 w-4" /> Baixar / imprimir PDF
         </Button>
+        <Button size="sm" variant="outline" onClick={downloadContract}>
+          <Download className="h-4 w-4" /> Baixar contrato (.txt)
+        </Button>
         {contract && !readOnly && (
           <label className="inline-flex">
             <input
