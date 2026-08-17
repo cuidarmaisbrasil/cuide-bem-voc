@@ -596,7 +596,9 @@ const Admin = () => {
       <header className="border-b bg-background sticky top-0 z-40">
         <div className="container flex items-center justify-between h-14 gap-2 px-3 sm:px-4">
           <h1 className="font-display font-semibold text-sm sm:text-base truncate flex items-center gap-2">
-            <span className="hidden sm:inline">Cuidar+ — Painel Admin</span>
+            <span className="hidden sm:inline">
+              {area === "brasil" ? "Cuidar+ Brasil — Painel Admin" : area === "trabalho" ? "Cuidar+ Trabalho — Painel Admin" : "Cuidar+ — Painel Admin"}
+            </span>
             <span className="sm:hidden">Cuidar+ Admin</span>
             {readOnly && (
               <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">somente leitura</Badge>
@@ -604,8 +606,15 @@ const Admin = () => {
           </h1>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted-foreground hidden md:block truncate max-w-[180px]">{user?.email}</span>
+            {area && (
+              <Button size="sm" variant="outline" onClick={() => setArea(null)}>
+                <LayoutGrid className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Trocar painel</span>
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
           </div>
+
         </div>
       </header>
 
