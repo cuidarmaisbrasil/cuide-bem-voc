@@ -83,6 +83,18 @@ const Admin = () => {
   const { user, isAdmin, isViewer, canView, loading, signOut } = useAuth();
   const readOnly = !isAdmin;
 
+  type AdminArea = "brasil" | "trabalho";
+  const [area, setAreaState] = useState<AdminArea | null>(() => {
+    const saved = localStorage.getItem("admin-area");
+    return saved === "brasil" || saved === "trabalho" ? saved : null;
+  });
+  const setArea = (a: AdminArea | null) => {
+    setAreaState(a);
+    if (a) localStorage.setItem("admin-area", a);
+    else localStorage.removeItem("admin-area");
+  };
+
+
   const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
   const [bySeverity, setBySeverity] = useState<any[]>([]);
