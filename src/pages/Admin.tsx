@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertTriangle, Download, LogOut, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Building2, Download, HeartPulse, LayoutGrid, LogOut, Plus, Trash2 } from "lucide-react";
 import { tenSymptoms } from "@/data/symptoms";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis,
@@ -82,6 +82,18 @@ const Admin = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isViewer, canView, loading, signOut } = useAuth();
   const readOnly = !isAdmin;
+
+  type AdminArea = "brasil" | "trabalho";
+  const [area, setAreaState] = useState<AdminArea | null>(() => {
+    const saved = localStorage.getItem("admin-area");
+    return saved === "brasil" || saved === "trabalho" ? saved : null;
+  });
+  const setArea = (a: AdminArea | null) => {
+    setAreaState(a);
+    if (a) localStorage.setItem("admin-area", a);
+    else localStorage.removeItem("admin-area");
+  };
+
 
   const [stats, setStats] = useState<any>({ totalTests: 0, totalClicks: 0, uniqueIps: 0, excludedAdmin: 0 });
   const [byDay, setByDay] = useState<any[]>([]);
@@ -596,7 +608,9 @@ const Admin = () => {
       <header className="border-b bg-background sticky top-0 z-40">
         <div className="container flex items-center justify-between h-14 gap-2 px-3 sm:px-4">
           <h1 className="font-display font-semibold text-sm sm:text-base truncate flex items-center gap-2">
-            <span className="hidden sm:inline">Cuidar+ — Painel Admin</span>
+            <span className="hidden sm:inline">
+              {area === "brasil" ? "Cuidar+ Brasil — Painel Admin" : area === "trabalho" ? "Cuidar+ Trabalho — Painel Admin" : "Cuidar+ — Painel Admin"}
+            </span>
             <span className="sm:hidden">Cuidar+ Admin</span>
             {readOnly && (
               <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">somente leitura</Badge>
@@ -604,8 +618,15 @@ const Admin = () => {
           </h1>
           <div className="flex items-center gap-2 shrink-0">
             <span className="text-xs text-muted-foreground hidden md:block truncate max-w-[180px]">{user?.email}</span>
+            {area && (
+              <Button size="sm" variant="outline" onClick={() => setArea(null)}>
+                <LayoutGrid className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Trocar painel</span>
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={signOut}><LogOut className="h-4 w-4" /></Button>
           </div>
+
         </div>
       </header>
 
@@ -626,27 +647,64 @@ const Admin = () => {
         </div>
       )}
 
+      {!area ? (
+        <div className="container py-10 px-3 sm:px-4">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl font-semibold">Escolha o painel</h2>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Os dados estão separados por produto. Você pode trocar de painel a qualquer momento.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 max-w-3xl mx-auto">
+            <button type="button" onClick={() => setArea("brasil")} className="text-left">
+              <Card className="p-6 h-full hover:border-primary hover:shadow-md transition-all">
+                <HeartPulse className="h-8 w-8 text-primary mb-3" />
+                <h3 className="font-display font-semibold text-lg">Cuidar+ Brasil</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Rastreio público (PHQ-9), analytics do site, links, feedback, profissionais, plataformas, artigos, campanhas e solicitações TAT.
+                </p>
+              </Card>
+            </button>
+            <button type="button" onClick={() => setArea("trabalho")} className="text-left">
+              <Card className="p-6 h-full hover:border-primary hover:shadow-md transition-all">
+                <Building2 className="h-8 w-8 text-primary mb-3" />
+                <h3 className="font-display font-semibold text-lg">Cuidar+ Trabalho</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Empresas, ciclos do programa preventivo, relatórios NR-1, leads de amostra, telemetria e prospecção comercial.
+                </p>
+              </Card>
+            </button>
+          </div>
+          {isAdmin && (
+            <p className="text-xs text-muted-foreground text-center mt-6">
+              Acessos e IPs administrativos ficam no painel Cuidar+ Brasil.
+            </p>
+          )}
+        </div>
+      ) : (
       <div className="container py-6 px-3 sm:px-4">
-        <Tabs defaultValue="analytics">
+        <Tabs defaultValue={area === "brasil" ? "analytics" : "companies"} key={area}>
           <div className="-mx-3 sm:mx-0 overflow-x-auto pb-1">
             <TabsList className="inline-flex w-max min-w-full justify-start px-3 sm:px-0">
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="links">Links</TabsTrigger>
-              <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
-              {!readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="tat-requests">TAT (solicitações)</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="sample-leads">Amostras (leads)</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="telemetry">Telemetria</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="analytics">Analytics</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="links">Links</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="tat-requests">TAT (solicitações)</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="sample-leads">Amostras (leads)</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="telemetry">Telemetria</TabsTrigger>}
             </TabsList>
           </div>
+
+
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1555,6 +1613,8 @@ const Admin = () => {
 
         </Tabs>
       </div>
+      )}
+
     </main>
   );
 };
