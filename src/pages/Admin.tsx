@@ -692,7 +692,7 @@ const Admin = () => {
             </TabsList>
           </div>
 
-          </div>
+
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
