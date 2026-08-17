@@ -635,26 +635,63 @@ const Admin = () => {
         </div>
       )}
 
+      {!area ? (
+        <div className="container py-10 px-3 sm:px-4">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl font-semibold">Escolha o painel</h2>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Os dados estão separados por produto. Você pode trocar de painel a qualquer momento.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 max-w-3xl mx-auto">
+            <button type="button" onClick={() => setArea("brasil")} className="text-left">
+              <Card className="p-6 h-full hover:border-primary hover:shadow-md transition-all">
+                <HeartPulse className="h-8 w-8 text-primary mb-3" />
+                <h3 className="font-display font-semibold text-lg">Cuidar+ Brasil</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Rastreio público (PHQ-9), analytics do site, links, feedback, profissionais, plataformas, artigos, campanhas e solicitações TAT.
+                </p>
+              </Card>
+            </button>
+            <button type="button" onClick={() => setArea("trabalho")} className="text-left">
+              <Card className="p-6 h-full hover:border-primary hover:shadow-md transition-all">
+                <Building2 className="h-8 w-8 text-primary mb-3" />
+                <h3 className="font-display font-semibold text-lg">Cuidar+ Trabalho</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Empresas, ciclos do programa preventivo, relatórios NR-1, leads de amostra, telemetria e prospecção comercial.
+                </p>
+              </Card>
+            </button>
+          </div>
+          {isAdmin && (
+            <p className="text-xs text-muted-foreground text-center mt-6">
+              Acessos e IPs administrativos ficam no painel Cuidar+ Brasil.
+            </p>
+          )}
+        </div>
+      ) : (
       <div className="container py-6 px-3 sm:px-4">
-        <Tabs defaultValue="analytics">
+        <Tabs defaultValue={area === "brasil" ? "analytics" : "companies"} key={area}>
           <div className="-mx-3 sm:mx-0 overflow-x-auto pb-1">
             <TabsList className="inline-flex w-max min-w-full justify-start px-3 sm:px-0">
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="links">Links</TabsTrigger>
-              <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>
-              {!readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="tat-requests">TAT (solicitações)</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="sample-leads">Amostras (leads)</TabsTrigger>}
-              {!readOnly && <TabsTrigger value="telemetry">Telemetria</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="analytics">Analytics</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="links">Links</TabsTrigger>}
+              {area === "brasil" && <TabsTrigger value="feedback">Feedback ({feedback.length})</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="professionals">Profissionais</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="platforms">Plataformas</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="admin-ips">IPs admin ({adminIps.length})</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="articles">Artigos</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="campaign">Campanha</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="access">Acessos</TabsTrigger>}
+              {area === "brasil" && !readOnly && <TabsTrigger value="tat-requests">TAT (solicitações)</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="companies">Empresas</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="trabalho">Cuidar+ Trabalho</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="wellness">Programa Preventivo</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="sample-leads">Amostras (leads)</TabsTrigger>}
+              {area === "trabalho" && !readOnly && <TabsTrigger value="telemetry">Telemetria</TabsTrigger>}
             </TabsList>
+          </div>
+
           </div>
 
           <TabsContent value="analytics" className="space-y-4 pt-4">
