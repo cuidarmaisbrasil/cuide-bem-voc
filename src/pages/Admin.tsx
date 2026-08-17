@@ -1601,6 +1601,8 @@ const Admin = () => {
 
         </Tabs>
       </div>
+      )}
+
     </main>
   );
 };
