@@ -68,6 +68,8 @@ const App = () => (
             <Route path="/trabalho/contato" element={<TrabalhoContato />} />
             <Route path="/trabalho/amostra-relatorio" element={<TrabalhoAmostraRelatorio />} />
             <Route path="/trabalho/ondas" element={<TrabalhoOndas />} />
+            <Route path="/trabalho/painel" element={<TrabalhoPainel />} />
+            <Route path="/trabalho/comparativo" element={<TrabalhoComparativo />} />
             <Route path="/trabalho/parceiros" element={<TrabalhoParceiros />} />
             <Route path="/blog" element={<BlogIndex />} />
             <Route path="/blog/nr-1-riscos-psicossociais-passo-a-passo" element={<NR1Passos />} />
