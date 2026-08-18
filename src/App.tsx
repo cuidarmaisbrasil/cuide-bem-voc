@@ -25,6 +25,8 @@ import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
 import TrabalhoContato from "./pages/TrabalhoContato.tsx";
 import TrabalhoAmostraRelatorio from "./pages/TrabalhoAmostraRelatorio.tsx";
 import TrabalhoOndas from "./pages/TrabalhoOndas.tsx";
+import TrabalhoPainel from "./pages/TrabalhoPainel.tsx";
+import TrabalhoComparativo from "./pages/TrabalhoComparativo.tsx";
 import TrabalhoParceiros from "./pages/TrabalhoParceiros.tsx";
 import BlogIndex from "./pages/BlogIndex.tsx";
 import NR1Passos from "./pages/blog/NR1Passos.tsx";
