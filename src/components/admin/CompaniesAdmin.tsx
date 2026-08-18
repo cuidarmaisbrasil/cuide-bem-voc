@@ -172,6 +172,14 @@ export function CompaniesAdmin() {
           </Table>
         </div>
       )}
+      {invoiceFor && (
+        <CompanyInvoicesAdmin
+          companyId={invoiceFor.id}
+          companyName={invoiceFor.name}
+          open={!!invoiceFor}
+          onOpenChange={(v) => !v && setInvoiceFor(null)}
+        />
+      )}
     </Card>
   );
 }
