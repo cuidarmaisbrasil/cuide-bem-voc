@@ -30,6 +30,7 @@ export function CompaniesAdmin() {
   const [items, setItems] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [invoiceFor, setInvoiceFor] = useState<{ id: string; name: string } | null>(null);
 
   async function load() {
     setLoading(true);
