@@ -159,6 +159,9 @@ export function CompaniesAdmin() {
                       {c.status === "approved" && c.wave_manager_email && (
                         <Button size="sm" variant="secondary" onClick={() => resendWmInvite(c.id)}>Reenviar convite gestor</Button>
                       )}
+                      <Button size="sm" variant="outline" onClick={() => setInvoiceFor({ id: c.id, name: c.name })}>
+                        Notas fiscais
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
