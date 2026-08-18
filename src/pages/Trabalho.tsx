@@ -267,7 +267,10 @@ const Trabalho = () => {
                   <h1 className="font-display text-xl font-semibold">{company.name}</h1>
                   <p className="text-xs text-muted-foreground">Cadastrado em {new Date(company.created_at).toLocaleDateString("pt-BR")}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button size="sm" onClick={() => navigate("/trabalho/painel")}>
+                    Painel da empresa
+                  </Button>
                   {company.status === "approved" && (
                     <Button size="sm" variant="outline" onClick={() => navigate("/trabalho/ondas")}>
                       Gerenciar ondas

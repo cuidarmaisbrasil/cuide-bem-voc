@@ -25,6 +25,8 @@ import TrabalhoFAQ from "./pages/TrabalhoFAQ.tsx";
 import TrabalhoContato from "./pages/TrabalhoContato.tsx";
 import TrabalhoAmostraRelatorio from "./pages/TrabalhoAmostraRelatorio.tsx";
 import TrabalhoOndas from "./pages/TrabalhoOndas.tsx";
+import TrabalhoPainel from "./pages/TrabalhoPainel.tsx";
+import TrabalhoComparativo from "./pages/TrabalhoComparativo.tsx";
 import TrabalhoParceiros from "./pages/TrabalhoParceiros.tsx";
 import BlogIndex from "./pages/BlogIndex.tsx";
 import NR1Passos from "./pages/blog/NR1Passos.tsx";
@@ -66,6 +68,8 @@ const App = () => (
             <Route path="/trabalho/contato" element={<TrabalhoContato />} />
             <Route path="/trabalho/amostra-relatorio" element={<TrabalhoAmostraRelatorio />} />
             <Route path="/trabalho/ondas" element={<TrabalhoOndas />} />
+            <Route path="/trabalho/painel" element={<TrabalhoPainel />} />
+            <Route path="/trabalho/comparativo" element={<TrabalhoComparativo />} />
             <Route path="/trabalho/parceiros" element={<TrabalhoParceiros />} />
             <Route path="/blog" element={<BlogIndex />} />
             <Route path="/blog/nr-1-riscos-psicossociais-passo-a-passo" element={<NR1Passos />} />

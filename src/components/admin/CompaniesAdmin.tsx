@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
+import { CompanyInvoicesAdmin } from "@/components/admin/CompanyInvoicesAdmin";
 
 interface Company {
   id: string;
@@ -29,6 +30,7 @@ export function CompaniesAdmin() {
   const [items, setItems] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [invoiceFor, setInvoiceFor] = useState<{ id: string; name: string } | null>(null);
 
   async function load() {
     setLoading(true);
@@ -159,6 +161,9 @@ export function CompaniesAdmin() {
                       {c.status === "approved" && c.wave_manager_email && (
                         <Button size="sm" variant="secondary" onClick={() => resendWmInvite(c.id)}>Reenviar convite gestor</Button>
                       )}
+                      <Button size="sm" variant="outline" onClick={() => setInvoiceFor({ id: c.id, name: c.name })}>
+                        Notas fiscais
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -166,6 +171,14 @@ export function CompaniesAdmin() {
             </TableBody>
           </Table>
         </div>
+      )}
+      {invoiceFor && (
+        <CompanyInvoicesAdmin
+          companyId={invoiceFor.id}
+          companyName={invoiceFor.name}
+          open={!!invoiceFor}
+          onOpenChange={(v) => !v && setInvoiceFor(null)}
+        />
       )}
     </Card>
   );

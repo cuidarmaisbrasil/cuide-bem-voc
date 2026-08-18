@@ -320,6 +320,68 @@ export type Database = {
           },
         ]
       }
+      company_invoices: {
+        Row: {
+          amount_cents: number
+          company_id: string
+          competencia: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          due_date: string | null
+          file_path: string | null
+          id: string
+          invoice_number: string | null
+          issued_at: string | null
+          notes: string | null
+          paid_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          company_id: string
+          competencia?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          due_date?: string | null
+          file_path?: string | null
+          id?: string
+          invoice_number?: string | null
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          company_id?: string
+          competencia?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          due_date?: string | null
+          file_path?: string | null
+          id?: string
+          invoice_number?: string | null
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_invoices_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_wave_managers: {
         Row: {
           company_id: string
