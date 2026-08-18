@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
+import { CompanyInvoicesAdmin } from "@/components/admin/CompanyInvoicesAdmin";
 
 interface Company {
   id: string;
