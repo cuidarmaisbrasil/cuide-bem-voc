@@ -487,6 +487,8 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                   <img
                     src={heroPhoto}
                     alt="Equipe diversa em reunião colaborativa em escritório moderno e acolhedor"
+                    decoding="async"
+                    fetchPriority="high"
                     width={1024}
                     height={1280}
                     className="w-full h-full object-cover"
@@ -736,6 +738,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <img
                 src={loungePhoto}
                 alt="Colegas de trabalho conversando em ambiente acolhedor"
+                decoding="async"
                 width={1024}
                 height={640}
                 loading="lazy"

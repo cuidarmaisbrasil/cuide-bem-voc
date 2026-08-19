@@ -185,7 +185,6 @@ export default function TrabalhoPainel() {
     <main className="min-h-screen bg-background">
       <SiteHeader variant="trabalho" onSignOut={signOut} />
 
-      </header>
 
       <div className="container max-w-5xl py-8 space-y-6">
         <div className="flex items-start justify-between flex-wrap gap-3">
