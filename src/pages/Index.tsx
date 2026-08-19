@@ -126,19 +126,8 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-14">
-          <button onClick={handleRestart} className="flex items-center gap-2 font-display font-semibold text-lg">
-            <span className="h-7 w-7 rounded-lg bg-gradient-hero flex items-center justify-center text-primary-foreground text-sm">
-              ❤
-            </span>
-            Cuidar+
-          </button>
-          <a href="tel:188" className="text-sm font-medium text-destructive hover:underline">
-            Emergência: 188
-          </a>
-        </div>
-      </header>
+      <SiteHeader variant="brasil" onBrandClick={handleRestart} />
+
 
       {stage === "intro" && (
         <>
