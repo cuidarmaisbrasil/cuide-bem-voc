@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { FileText } from "lucide-react";
+import { SiteHeader } from "@/components/SiteHeader";
 
 const Termos = () => {
   useEffect(() => {
@@ -10,18 +11,7 @@ const Termos = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60">
-        <div className="container flex items-center justify-between h-14">
-          <Link to="/" className="flex items-center gap-2 font-display font-semibold text-lg">
-            <span className="h-7 w-7 rounded-lg bg-gradient-hero flex items-center justify-center text-primary-foreground text-sm">❤</span>
-            Cuidar+
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/" className="text-primary hover:underline">Home</Link>
-            <Link to="/trabalho" className="text-primary hover:underline">Trabalho</Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader variant="brasil" />
 
       <section className="container py-10 md:py-14">
         <div className="max-w-3xl mx-auto space-y-6">

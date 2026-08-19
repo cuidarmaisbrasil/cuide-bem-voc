@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SiteHeader } from "@/components/SiteHeader";
 
 const POSTS = [
   {
@@ -67,14 +68,7 @@ const BlogIndex = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60">
-        <div className="container py-4 flex items-center justify-between">
-          <Link to="/" className="font-display font-semibold">Cuidar+ Brasil</Link>
-          <Link to="/trabalho" className="text-sm text-muted-foreground hover:text-foreground">
-            Cuidar+ Trabalho →
-          </Link>
-        </div>
-      </header>
+      <SiteHeader variant="brasil" />
 
       <section className="container max-w-3xl py-10 space-y-8">
         <div className="space-y-3">
