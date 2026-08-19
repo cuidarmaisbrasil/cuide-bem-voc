@@ -183,21 +183,8 @@ export default function TrabalhoPainel() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-14 gap-2">
-          <button
-            onClick={() => navigate("/trabalho")}
-            className="flex items-center gap-2 font-display font-semibold text-sm"
-          >
-            <span className="h-7 w-7 rounded-lg bg-secondary flex items-center justify-center">
-              <Briefcase className="h-4 w-4 text-primary" />
-            </span>
-            Cuidar+ Trabalho
-          </button>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            Sair
-          </Button>
-        </div>
+      <SiteHeader variant="trabalho" onSignOut={signOut} />
+
       </header>
 
       <div className="container max-w-5xl py-8 space-y-6">
