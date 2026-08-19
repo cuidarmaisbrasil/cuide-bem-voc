@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { interpretPhq9 } from "@/data/symptoms";
 import { track } from "@/lib/tracking";
+import { SiteHeader } from "@/components/SiteHeader";
 
 type Stage = "intro" | "test" | "result";
 

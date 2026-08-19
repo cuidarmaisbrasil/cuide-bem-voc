@@ -21,6 +21,7 @@ import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { ContractSignCard } from "@/components/ContractSignCard";
+import { SiteHeader } from "@/components/SiteHeader";
 
 
 
