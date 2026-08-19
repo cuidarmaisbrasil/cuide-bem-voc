@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SiteHeader } from "@/components/SiteHeader";
 
 const PRESS_EMAIL = "imprensa@cuidarmaisbrasil.life";
 const URL = "https://cuidarmaisbrasil.life/imprensa";
@@ -46,12 +47,7 @@ const Imprensa = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60">
-        <div className="container py-4 flex items-center justify-between">
-          <Link to="/" className="font-display font-semibold">Cuidar+ Brasil</Link>
-          <Link to="/trabalho" className="text-sm text-muted-foreground hover:text-foreground">Cuidar+ Trabalho →</Link>
-        </div>
-      </header>
+      <SiteHeader variant="brasil" />
 
       <article className="container max-w-3xl py-10 space-y-8">
         <header className="space-y-3">

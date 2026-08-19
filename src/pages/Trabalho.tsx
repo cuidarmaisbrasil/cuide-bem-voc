@@ -21,6 +21,7 @@ import promoPoster from "@/assets/cuidar-mais-promo-poster.jpg.asset.json";
 import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialog";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { ContractSignCard } from "@/components/ContractSignCard";
+import { SiteHeader } from "@/components/SiteHeader";
 
 
 
@@ -161,15 +162,8 @@ const Trabalho = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur sticky top-0 z-40">
-        <div className="container flex items-center justify-between h-14">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 font-display font-semibold">
-            <span className="h-7 w-7 rounded-lg bg-secondary flex items-center justify-center"><Briefcase className="h-4 w-4 text-destructive" /></span>
-            Cuidar+ Trabalho
-          </button>
-          {user && <Button variant="ghost" size="sm" onClick={signOut}>Sair</Button>}
-        </div>
-      </header>
+      <SiteHeader variant="trabalho" onSignOut={user ? signOut : undefined} />
+
 
       {!user && <PublicLanding onCadastrar={() => { setAuthMode("signup"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("signup-company")?.focus(), 600); }} onEntrar={() => { setAuthMode("login"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" }); }} />}
 
@@ -493,6 +487,8 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                   <img
                     src={heroPhoto}
                     alt="Equipe diversa em reunião colaborativa em escritório moderno e acolhedor"
+                    decoding="async"
+                    fetchPriority="high"
                     width={1024}
                     height={1280}
                     className="w-full h-full object-cover"
@@ -742,6 +738,7 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
               <img
                 src={loungePhoto}
                 alt="Colegas de trabalho conversando em ambiente acolhedor"
+                decoding="async"
                 width={1024}
                 height={640}
                 loading="lazy"
