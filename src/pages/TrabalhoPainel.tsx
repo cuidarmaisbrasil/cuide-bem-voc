@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { ContractSignCard } from "@/components/ContractSignCard";
+import { SiteHeader } from "@/components/SiteHeader";
 import {
   ArrowLeft,
   Briefcase,
