@@ -644,7 +644,13 @@ const Nr1Report = () => {
         .nr1-table th, .nr1-table td { border: 1px solid #d4d4d8; padding: 5px 6px; text-align: left; vertical-align: top; }
         .nr1-table th { background: #f5f5f4; font-weight: 600; }
         .nr1-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
+        @media screen and (max-width: 767px) {
+          .nr1-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+          .nr1-table th, .nr1-table td { min-width: 120px; }
+          .nr1-table th[style], .nr1-table td[style] { min-width: 120px; }
+        }
       `}</style>
+
 
       <div className="container max-w-6xl py-8 space-y-8">
         <div className="no-print flex justify-between items-center gap-2 border-b pb-3">
