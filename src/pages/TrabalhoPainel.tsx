@@ -239,21 +239,48 @@ export default function TrabalhoPainel() {
             </Card>
 
             <Card className="p-5 space-y-4">
-              <h2 className="font-display text-lg font-semibold">Gestor de ciclos</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Field label="Nome" value={company.wave_manager_name} />
-                <Field label="Cargo" value={company.wave_manager_role} />
-                <Field label="E-mail" value={company.wave_manager_email} />
-                <Field label="WhatsApp" value={company.wave_manager_whatsapp} />
+              <div>
+                <h2 className="font-display text-lg font-semibold">Gestor de ciclos</h2>
+                <p className="text-xs text-muted-foreground">
+                  Pessoa responsável por revisar a lista de e-mails dos colaboradores e aprovar o envio do 1º ciclo.
+                  Recebe notificações dos ciclos seguintes e <strong>não</strong> tem acesso a respostas individuais.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Nome</Label>
+                  <Input value={wm.name} onChange={(e) => setWm({ ...wm, name: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Cargo</Label>
+                  <Input value={wm.role} onChange={(e) => setWm({ ...wm, role: e.target.value })} placeholder="Ex.: Coord. de RH" />
+                </div>
+                <div>
+                  <Label>E-mail</Label>
+                  <Input type="email" value={wm.email} onChange={(e) => setWm({ ...wm, email: e.target.value })} />
+                </div>
+                <div>
+                  <Label>WhatsApp</Label>
+                  <Input value={wm.whatsapp} onChange={(e) => setWm({ ...wm, whatsapp: e.target.value })} placeholder="(11) 90000-0000" />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={saveWaveManager} disabled={savingWm}>
+                  {savingWm ? "Salvando…" : "Salvar gestor de ciclos"}
+                </Button>
+                <Button variant="outline" onClick={sendWmInvite} disabled={sendingWm || !company.wave_manager_email}>
+                  {sendingWm ? "Enviando…" : "Enviar convite ao gestor"}
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Para alterar dados cadastrais, fale com o suporte em{" "}
+                Para alterar outros dados cadastrais, fale com o suporte em{" "}
                 <a href="/trabalho/contato" className="underline">
                   /trabalho/contato
                 </a>
                 .
               </p>
             </Card>
+
           </TabsContent>
 
           <TabsContent value="contrato" className="mt-4">
