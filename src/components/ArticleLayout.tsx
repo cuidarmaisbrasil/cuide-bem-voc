@@ -85,7 +85,10 @@ export const ArticleLayout = ({
                      [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1
                      [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-2
                      [&_table]:w-full [&_table]:text-sm [&_th]:text-left [&_th]:py-2 [&_td]:py-2
+                     [&_table]:block [&_table]:overflow-x-auto sm:[&_table]:table
+                     [&_th]:min-w-[130px] [&_td]:min-w-[130px] sm:[&_th]:min-w-0 sm:[&_td]:min-w-0
                      [&_td]:border-t [&_td]:border-border/60
+
                      [&_strong]:text-foreground"
         >
           {children}
