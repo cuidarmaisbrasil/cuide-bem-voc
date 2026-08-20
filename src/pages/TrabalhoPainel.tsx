@@ -83,6 +83,45 @@ export default function TrabalhoPainel() {
   const [rounds, setRounds] = useState<RoundStat[]>([]);
   const [participants, setParticipants] = useState(0);
   const [busy, setBusy] = useState(true);
+  const [wm, setWm] = useState({ name: "", role: "", email: "", whatsapp: "" });
+  const [savingWm, setSavingWm] = useState(false);
+  const [sendingWm, setSendingWm] = useState(false);
+
+  async function saveWaveManager() {
+    if (!company) return;
+    const email = wm.email.trim().toLowerCase();
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      toast.error("E-mail do gestor inválido.");
+      return;
+    }
+    setSavingWm(true);
+    const patch = {
+      wave_manager_name: wm.name.trim() || null,
+      wave_manager_role: wm.role.trim() || null,
+      wave_manager_email: email || null,
+      wave_manager_whatsapp: wm.whatsapp.trim() || null,
+    };
+    const { error } = await supabase.from("companies").update(patch).eq("id", company.id);
+    setSavingWm(false);
+    if (error) return toast.error(error.message);
+    setCompany({ ...company, ...patch } as any);
+    toast.success("Gestor de ciclos atualizado.");
+  }
+
+  async function sendWmInvite() {
+    if (!company) return;
+    setSendingWm(true);
+    const { data, error } = await supabase.functions.invoke("wave-manager-invite", {
+      body: { company_id: company.id },
+    });
+    setSendingWm(false);
+    if (error || (data as any)?.error) {
+      return toast.error((data as any)?.error ?? error?.message ?? "Falha ao enviar convite.");
+    }
+    toast.success("Convite enviado ao gestor de ciclos.");
+  }
+
+
 
   useEffect(() => {
     document.title = "Painel da empresa — Cuidar+ Trabalho";
