@@ -89,7 +89,7 @@ const Trabalho = () => {
         if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim() || !sizeRange) {
           toast.error("Preencha empresa, responsável, cargo, CNPJ, telefone e porte."); return;
         }
-        }
+
 
         const { data, error } = await supabase.auth.signUp({
           email, password,
