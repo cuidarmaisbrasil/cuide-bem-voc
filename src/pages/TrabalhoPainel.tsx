@@ -143,6 +143,13 @@ export default function TrabalhoPainel() {
         return;
       }
       setCompany(co as any);
+      setWm({
+        name: (co as any).wave_manager_name ?? "",
+        role: (co as any).wave_manager_role ?? "",
+        email: (co as any).wave_manager_email ?? "",
+        whatsapp: (co as any).wave_manager_whatsapp ?? "",
+      });
+
 
       const [invRes, pRes, { data: sess }] = await Promise.all([
         supabase
