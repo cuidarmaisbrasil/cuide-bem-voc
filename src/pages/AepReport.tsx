@@ -135,7 +135,12 @@ const AepReport = () => {
         .aep-table th, .aep-table td { border: 1px solid #d4d4d8; padding: 6px 8px; text-align: left; vertical-align: top; }
         .aep-table th { background: #f5f5f4; font-weight: 600; }
         .aep-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; color: #fff; }
+        @media screen and (max-width: 767px) {
+          .aep-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+          .aep-table th, .aep-table td { min-width: 130px; }
+        }
       `}</style>
+
 
       <div className="container max-w-4xl py-8 space-y-8">
         <div className="no-print flex justify-between items-center gap-2 border-b pb-3 mb-4">
