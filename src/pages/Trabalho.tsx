@@ -58,8 +58,6 @@ const Trabalho = () => {
   const [contactRole, setContactRole] = useState("");
   const [phone, setPhone] = useState(""); const [cnpj, setCnpj] = useState("");
   const [sizeRange, setSizeRange] = useState("");
-  const [wmName, setWmName] = useState(""); const [wmEmail, setWmEmail] = useState("");
-  const [wmRole, setWmRole] = useState(""); const [wmWhatsapp, setWmWhatsapp] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [company, setCompany] = useState<Company | null>(null);
@@ -91,12 +89,8 @@ const Trabalho = () => {
         if (!companyName.trim() || !contactName.trim() || !contactRole.trim() || !cnpj.trim() || !phone.trim() || !sizeRange) {
           toast.error("Preencha empresa, responsável, cargo, CNPJ, telefone e porte."); return;
         }
-        if (!wmName.trim() || !wmEmail.trim() || !wmRole.trim() || !wmWhatsapp.trim()) {
-          toast.error("Preencha todos os dados do gestor de ondas."); return;
-        }
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(wmEmail.trim())) {
-          toast.error("E-mail do gestor de ondas inválido."); return;
-        }
+
+
         const { data, error } = await supabase.auth.signUp({
           email, password,
           options: { emailRedirectTo: `${window.location.origin}/trabalho` },
@@ -108,11 +102,8 @@ const Trabalho = () => {
             owner_user_id: data.user.id, name: companyName, contact_name: contactName,
             contact_role: contactRole,
             contact_email: email, contact_phone: phone || null, cnpj: cnpj || null, size_range: sizeRange, slug,
-            wave_manager_name: wmName.trim(),
-            wave_manager_email: wmEmail.trim().toLowerCase(),
-            wave_manager_role: wmRole.trim(),
-            wave_manager_whatsapp: wmWhatsapp.trim(),
           });
+
           if (cErr) throw cErr;
           toast.success("Cadastro recebido! Aguarde aprovação do admin.");
 
@@ -213,22 +204,10 @@ const Trabalho = () => {
                   <div><Label>E-mail *</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
                   <div><Label>Senha *</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
 
-                  <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-3 mt-2">
-                    <div>
-                      <h3 className="font-medium text-sm">Contato gestor de ondas</h3>
-                      <p className="text-xs text-muted-foreground">
-                        Pessoa responsável por revisar e aprovar a lista de e-mails dos colaboradores e aprovar o envio da 1ª onda. Recebe notificações das ondas seguintes. <strong>Não</strong> tem acesso a respostas individuais.
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div><Label>Nome *</Label><Input value={wmName} onChange={(e) => setWmName(e.target.value)} required /></div>
-                      <div><Label>Cargo *</Label><Input value={wmRole} onChange={(e) => setWmRole(e.target.value)} placeholder="Ex.: Coord. de RH" required /></div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div><Label>E-mail *</Label><Input type="email" value={wmEmail} onChange={(e) => setWmEmail(e.target.value)} required /></div>
-                      <div><Label>WhatsApp *</Label><Input value={wmWhatsapp} onChange={(e) => setWmWhatsapp(e.target.value)} placeholder="(11) 90000-0000" required /></div>
-                    </div>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Após a aprovação, você cadastra o gestor de ciclos direto no painel da empresa.
+                  </p>
+
 
                   <Button type="submit" className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90" disabled={submitting}>
                     {submitting ? "Enviando…" : "Solicitar cadastro gratuito*"}

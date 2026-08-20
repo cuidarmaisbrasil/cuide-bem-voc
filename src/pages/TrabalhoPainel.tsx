@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -83,6 +86,45 @@ export default function TrabalhoPainel() {
   const [rounds, setRounds] = useState<RoundStat[]>([]);
   const [participants, setParticipants] = useState(0);
   const [busy, setBusy] = useState(true);
+  const [wm, setWm] = useState({ name: "", role: "", email: "", whatsapp: "" });
+  const [savingWm, setSavingWm] = useState(false);
+  const [sendingWm, setSendingWm] = useState(false);
+
+  async function saveWaveManager() {
+    if (!company) return;
+    const email = wm.email.trim().toLowerCase();
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      toast.error("E-mail do gestor inválido.");
+      return;
+    }
+    setSavingWm(true);
+    const patch = {
+      wave_manager_name: wm.name.trim() || null,
+      wave_manager_role: wm.role.trim() || null,
+      wave_manager_email: email || null,
+      wave_manager_whatsapp: wm.whatsapp.trim() || null,
+    };
+    const { error } = await supabase.from("companies").update(patch).eq("id", company.id);
+    setSavingWm(false);
+    if (error) return toast.error(error.message);
+    setCompany({ ...company, ...patch } as any);
+    toast.success("Gestor de ciclos atualizado.");
+  }
+
+  async function sendWmInvite() {
+    if (!company) return;
+    setSendingWm(true);
+    const { data, error } = await supabase.functions.invoke("wave-manager-invite", {
+      body: { company_id: company.id },
+    });
+    setSendingWm(false);
+    if (error || (data as any)?.error) {
+      return toast.error((data as any)?.error ?? error?.message ?? "Falha ao enviar convite.");
+    }
+    toast.success("Convite enviado ao gestor de ciclos.");
+  }
+
+
 
   useEffect(() => {
     document.title = "Painel da empresa — Cuidar+ Trabalho";
@@ -104,6 +146,13 @@ export default function TrabalhoPainel() {
         return;
       }
       setCompany(co as any);
+      setWm({
+        name: (co as any).wave_manager_name ?? "",
+        role: (co as any).wave_manager_role ?? "",
+        email: (co as any).wave_manager_email ?? "",
+        whatsapp: (co as any).wave_manager_whatsapp ?? "",
+      });
+
 
       const [invRes, pRes, { data: sess }] = await Promise.all([
         supabase
@@ -239,21 +288,48 @@ export default function TrabalhoPainel() {
             </Card>
 
             <Card className="p-5 space-y-4">
-              <h2 className="font-display text-lg font-semibold">Gestor de ciclos</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Field label="Nome" value={company.wave_manager_name} />
-                <Field label="Cargo" value={company.wave_manager_role} />
-                <Field label="E-mail" value={company.wave_manager_email} />
-                <Field label="WhatsApp" value={company.wave_manager_whatsapp} />
+              <div>
+                <h2 className="font-display text-lg font-semibold">Gestor de ciclos</h2>
+                <p className="text-xs text-muted-foreground">
+                  Pessoa responsável por revisar a lista de e-mails dos colaboradores e aprovar o envio do 1º ciclo.
+                  Recebe notificações dos ciclos seguintes e <strong>não</strong> tem acesso a respostas individuais.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Nome</Label>
+                  <Input value={wm.name} onChange={(e) => setWm({ ...wm, name: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Cargo</Label>
+                  <Input value={wm.role} onChange={(e) => setWm({ ...wm, role: e.target.value })} placeholder="Ex.: Coord. de RH" />
+                </div>
+                <div>
+                  <Label>E-mail</Label>
+                  <Input type="email" value={wm.email} onChange={(e) => setWm({ ...wm, email: e.target.value })} />
+                </div>
+                <div>
+                  <Label>WhatsApp</Label>
+                  <Input value={wm.whatsapp} onChange={(e) => setWm({ ...wm, whatsapp: e.target.value })} placeholder="(11) 90000-0000" />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={saveWaveManager} disabled={savingWm}>
+                  {savingWm ? "Salvando…" : "Salvar gestor de ciclos"}
+                </Button>
+                <Button variant="outline" onClick={sendWmInvite} disabled={sendingWm || !company.wave_manager_email}>
+                  {sendingWm ? "Enviando…" : "Enviar convite ao gestor"}
+                </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Para alterar dados cadastrais, fale com o suporte em{" "}
+                Para alterar outros dados cadastrais, fale com o suporte em{" "}
                 <a href="/trabalho/contato" className="underline">
                   /trabalho/contato
                 </a>
                 .
               </p>
             </Card>
+
           </TabsContent>
 
           <TabsContent value="contrato" className="mt-4">
