@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, CheckCircle2, Handshake, Send } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, Handshake, Send } from "lucide-react";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { SiteHeader } from "@/components/SiteHeader";
 
