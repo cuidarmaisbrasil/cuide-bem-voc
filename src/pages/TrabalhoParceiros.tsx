@@ -98,17 +98,18 @@ const TrabalhoParceiros = () => {
               Programa de parceiros
             </h1>
             <p className="text-muted-foreground">
-              Seus clientes precisam registrar riscos psicossociais no PGR e na AEP desde 2025. O
-              Cuidar+ Trabalho entrega a parte operacional dessa exigência — coleta anônima, cálculo por
-              dimensão e relatório comparável entre ciclos — para você assinar o laudo técnico.
+              Seus clientes precisam registrar riscos psicossociais no inventário de riscos do PGR desde
+              2025. O Cuidar+ Trabalho entrega a parte operacional dessa exigência — coleta anônima,
+              cálculo por dimensão, recorte por setor/função e relatório comparável entre ciclos — para
+              você assinar o laudo técnico.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
             {[
               { t: "Você mantém a relação", d: "O contrato e a assinatura técnica seguem com a sua consultoria. Somos a camada de medição." },
-              { t: "Relatório anexável", d: "Saída pronta para compor a AEP da NR-17 e o inventário de riscos do PGR." },
-              { t: "Primeiro ciclo gratuito", d: "Cada cliente indicado roda o primeiro ciclo sem custo até 100 colaboradores." },
+              { t: "Módulo anexável ao PGR", d: "Saída psicossocial pronta para compor o inventário de riscos da NR-1, com matriz de risco e plano de ação. Não substitui AEP/NR-17 nem AET." },
+              { t: "Ciclo de demonstração", d: "Cada parceiro novo roda um ciclo completo sem custo de parceria em um cliente de até 100 colaboradores." },
             ].map((c) => (
               <Card key={c.t} className="p-4 border-border/60">
                 <p className="font-medium text-sm mb-1">{c.t}</p>
@@ -116,6 +117,75 @@ const TrabalhoParceiros = () => {
               </Card>
             ))}
           </div>
+
+          <Card className="p-5 md:p-6 border-border/60 space-y-4">
+            <div>
+              <h2 className="font-medium">Formatos de parceria</h2>
+              <p className="text-sm text-muted-foreground">
+                Escolha o modelo que se encaixa no seu contrato de SST. Pode mudar depois.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {[
+                { t: "Indicação", d: "Você apresenta o cliente, nós conduzimos venda e operação.", r: "10% no 1º ano · 5% nas renovações" },
+                { t: "Revenda", d: "Você compra por preço de parceiro e revende no seu preço.", r: "25% a 35% de margem" },
+                { t: "Parceria técnica integrada", d: "Revenda com co-branding no relatório, devolutiva conduzida em conjunto e treinamento da sua equipe.", r: "Margem + honorário técnico próprio" },
+              ].map((c) => (
+                <div key={c.t} className="rounded-lg border border-border/60 p-4">
+                  <p className="font-medium text-sm mb-1">{c.t}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{c.d}</p>
+                  <Badge variant="secondary" className="text-xs">{c.r}</Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-5 md:p-6 border-border/60 space-y-3">
+            <div>
+              <h2 className="font-medium">Preço de parceiro por colaborador, por ciclo</h2>
+              <p className="text-sm text-muted-foreground">
+                Um ciclo = 3 meses, 5 medições, relatório consolidado, módulo NR-1/PGR e devolutiva
+                individual. Seu nível é definido pela base acumulada de colaboradores ativos na sua carteira.
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[520px]">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-2 pr-3 font-medium">Faixa do cliente</th>
+                    <th className="py-2 px-3 font-medium text-right">Tabela</th>
+                    <th className="py-2 px-3 font-medium text-right">Associado<br /><span className="text-xs text-muted-foreground">até 499 · −25%</span></th>
+                    <th className="py-2 px-3 font-medium text-right">Preferencial<br /><span className="text-xs text-muted-foreground">500–1.999 · −30%</span></th>
+                    <th className="py-2 pl-3 font-medium text-right">Master<br /><span className="text-xs text-muted-foreground">2.000+ · −35%</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Starter — 50 a 199", "R$ 19,50", "R$ 14,63", "R$ 13,65", "R$ 12,68"],
+                    ["Business — 200 a 999", "R$ 17,40", "R$ 13,05", "R$ 12,18", "R$ 11,31"],
+                    ["Enterprise — 1.000+", "R$ 15,60", "R$ 11,70", "R$ 10,92", "R$ 10,14"],
+                  ].map((r) => (
+                    <tr key={r[0]} className="border-t border-border/60">
+                      <td className="py-2 pr-3 font-medium">{r[0]}</td>
+                      <td className="py-2 px-3 text-right">{r[1]}</td>
+                      <td className="py-2 px-3 text-right">{r[2]}</td>
+                      <td className="py-2 px-3 text-right">{r[3]}</td>
+                      <td className="py-2 pl-3 text-right">{r[4]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Sem taxa de adesão e sem mínimo mensal. Faturamento trimestral na entrega do relatório,
+              prazo de 30 dias. Registro de oportunidade por 90 dias: a conta indicada é sua.
+            </p>
+            <Button variant="outline" asChild className="w-full sm:w-auto">
+              <a href="/downloads/proposta-parceria-sst-cuidar-mais-trabalho.pdf" download>
+                <Download className="mr-2 h-4 w-4" /> Baixar proposta completa (PDF)
+              </a>
+            </Button>
+          </Card>
 
           <Card className="p-5 md:p-6 border-border/60 bg-muted/30 space-y-3">
             <h2 className="font-medium">Como funciona</h2>
@@ -127,6 +197,7 @@ const TrabalhoParceiros = () => {
               <li>A cada três meses um novo ciclo gera a série histórica que comprova eficácia das ações.</li>
             </ol>
           </Card>
+
 
           <Card className="p-5 md:p-6 border-border/60 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
             <div>
