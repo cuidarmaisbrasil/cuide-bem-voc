@@ -15,7 +15,8 @@ import { SiteHeader } from "@/components/SiteHeader";
 
 const TITLE = "Programa de parceiros — Cuidar+ Trabalho";
 const DESC =
-  "Para consultorias de SST, clínicas de medicina ocupacional e escritórios de ergonomia: ofereça medição de riscos psicossociais NR-1 aos seus clientes, com relatório anexável à AEP.";
+  "Para consultorias de SST, medicina ocupacional e saúde do trabalhador: revenda a medição de riscos psicossociais NR-1 com 25% a 35% de margem e módulo anexável ao inventário de riscos do PGR.";
+
 
 const PartnerSchema = z.object({
   name: z.string().trim().min(2, "Informe seu nome.").max(120),
