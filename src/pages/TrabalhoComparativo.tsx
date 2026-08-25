@@ -136,8 +136,9 @@ export default function TrabalhoComparativo() {
           </p>
         </div>
 
-        <Card className="p-5 overflow-x-auto">
+        <Card className="p-5">
           <h2 className="font-display text-lg font-semibold mb-3">Visão geral</h2>
+          <div className="table-scroll -mx-1 px-1">
           <table className="w-full text-sm min-w-[560px]">
             <thead>
               <tr className="text-left text-xs text-muted-foreground">
@@ -196,12 +197,14 @@ export default function TrabalhoComparativo() {
               </tr>
             </tbody>
           </table>
+          </div>
         </Card>
 
         {scaleIds.length > 0 && (
-          <Card className="p-5 overflow-x-auto">
+          <Card className="p-5">
             <h2 className="font-display text-lg font-semibold mb-3">Dimensões COPSOQ II (média por ciclo)</h2>
-            <table className="w-full text-sm min-w-[560px]">
+            <div className="table-scroll -mx-1 px-1">
+          <table className="w-full text-sm min-w-[560px]">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground">
                   <th className="py-2">Dimensão</th>
@@ -227,6 +230,7 @@ export default function TrabalhoComparativo() {
                 ))}
               </tbody>
             </table>
+          </div>
             <p className="text-xs text-muted-foreground mt-3">
               Recortes com número de respondentes abaixo do mínimo aparecem como "oculto" para preservar o
               anonimato.
