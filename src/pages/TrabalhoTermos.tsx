@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { FileText, ArrowLeft } from "lucide-react";
+import { FileText } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const TrabalhoTermos = () => {

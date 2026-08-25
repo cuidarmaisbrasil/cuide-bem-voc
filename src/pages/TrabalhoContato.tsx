@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, ArrowLeft, CheckCircle2, Send } from "lucide-react";
+import { Mail, CheckCircle2, Send } from "lucide-react";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { SiteHeader } from "@/components/SiteHeader";
 

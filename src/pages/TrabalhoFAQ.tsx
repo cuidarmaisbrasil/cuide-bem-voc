@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { HelpCircle, ArrowLeft } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 
 const FAQS: Array<{ q: string; a: React.ReactNode }> = [
