@@ -22,6 +22,7 @@ import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialo
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { ContractSignCard } from "@/components/ContractSignCard";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 
 
@@ -368,28 +369,8 @@ const Trabalho = () => {
         )}
       </div>
 
-      {/* FOOTER LINKS — after cadastro */}
-      <footer className="border-t border-border/40 bg-background mt-8">
-        <div className="container max-w-6xl py-10 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <p className="text-xs text-muted-foreground text-center md:text-left">
-            © {new Date().getFullYear()} Cuidar+ Trabalho — Presença com cuidado, ação com resultado.
-          </p>
-          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm justify-center">
-            <a href="/trabalho/faq" className="text-muted-foreground hover:text-primary transition-smooth">
-              Perguntas frequentes
-            </a>
-            <a href="/trabalho/termos" className="text-muted-foreground hover:text-primary transition-smooth">
-              Termos e condições
-            </a>
-            <a href="/trabalho/contato" className="text-muted-foreground hover:text-primary transition-smooth font-medium">
-              Contato
-            </a>
-            <a href="https://calendly.com/comercial-cuidarmaisbrasil" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-smooth">
-              Agendar reunião
-            </a>
-          </nav>
-        </div>
-      </footer>
+      <SiteFooter variant="trabalho" />
+
     </main>
   );
 };

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const POSTS = [
   {
@@ -104,6 +105,7 @@ const BlogIndex = () => {
           </p>
         </Card>
       </section>
+    <SiteFooter variant="brasil" />
     </main>
   );
 };

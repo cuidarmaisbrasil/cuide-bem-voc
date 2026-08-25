@@ -127,6 +127,21 @@
 }
 
 @layer utilities {
+  /* Rolagem horizontal com sombra nas bordas para tabelas densas no mobile */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background-image:
+      linear-gradient(to right, hsl(var(--card)) 30%, hsl(var(--card) / 0)),
+      linear-gradient(to left, hsl(var(--card)) 30%, hsl(var(--card) / 0)),
+      linear-gradient(to right, hsl(var(--foreground) / 0.12), hsl(var(--foreground) / 0)),
+      linear-gradient(to left, hsl(var(--foreground) / 0.12), hsl(var(--foreground) / 0));
+    background-position: left center, right center, left center, right center;
+    background-repeat: no-repeat;
+    background-size: 28px 100%, 28px 100%, 12px 100%, 12px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+
   .bg-gradient-hero { background: var(--gradient-hero); }
   .bg-gradient-soft { background: var(--gradient-soft); }
   .shadow-soft { box-shadow: var(--shadow-soft); }
