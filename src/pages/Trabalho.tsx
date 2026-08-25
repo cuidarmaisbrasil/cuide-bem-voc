@@ -22,6 +22,7 @@ import { SampleReportRequestDialog } from "@/components/SampleReportRequestDialo
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { ContractSignCard } from "@/components/ContractSignCard";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 
 

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { interpretPhq9 } from "@/data/symptoms";
 import { track } from "@/lib/tracking";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 type Stage = "intro" | "test" | "result";
 
@@ -273,6 +274,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      <SiteFooter variant="brasil" />
     </main>
   );
 };

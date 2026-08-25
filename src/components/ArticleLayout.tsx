@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export type ArticleMeta = {
   slug: string;
@@ -123,6 +124,7 @@ export const ArticleLayout = ({
           )}
         </div>
       </article>
+      <SiteFooter variant="brasil" />
     </main>
   );
 };
