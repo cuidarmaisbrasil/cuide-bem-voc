@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const FAQS: Array<{ q: string; a: React.ReactNode }> = [
   {
@@ -146,6 +147,7 @@ const TrabalhoFAQ = () => {
           </div>
         </div>
       </section>
+    <SiteFooter variant="trabalho" />
     </main>
   );
 };

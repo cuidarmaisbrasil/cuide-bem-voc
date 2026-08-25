@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const PRESS_EMAIL = "imprensa@cuidarmaisbrasil.life";
 const URL = "https://cuidarmaisbrasil.life/imprensa";
@@ -132,6 +133,7 @@ const Imprensa = () => {
           </p>
         </Card>
       </article>
+    <SiteFooter variant="brasil" />
     </main>
   );
 };

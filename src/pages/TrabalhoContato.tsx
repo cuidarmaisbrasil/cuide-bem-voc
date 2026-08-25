@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mail, CheckCircle2, Send } from "lucide-react";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 
 const ContactSchema = z.object({
@@ -168,6 +169,7 @@ const TrabalhoContato = () => {
           </Card>
         </div>
       </section>
+    <SiteFooter variant="trabalho" />
     </main>
   );
 };

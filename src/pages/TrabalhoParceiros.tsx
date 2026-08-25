@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Download, Handshake, Send } from "lucide-react";
 import { AgendarReuniaoDialog } from "@/components/AgendarReuniaoDialog";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const TITLE = "Programa de parceiros — Cuidar+ Trabalho";
 const DESC =
@@ -276,6 +277,7 @@ const TrabalhoParceiros = () => {
           </Card>
         </div>
       </section>
+    <SiteFooter variant="trabalho" />
     </main>
   );
 };
