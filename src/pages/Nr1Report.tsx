@@ -645,7 +645,19 @@ const Nr1Report = () => {
         .nr1-table th { background: #f5f5f4; font-weight: 600; }
         .nr1-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
         @media screen and (max-width: 767px) {
-          .nr1-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+          .nr1-table {
+            display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%;
+            background-image:
+              linear-gradient(to right, #fff 30%, rgba(255,255,255,0)),
+              linear-gradient(to left, #fff 30%, rgba(255,255,255,0)),
+              linear-gradient(to right, rgba(0,0,0,0.12), rgba(0,0,0,0)),
+              linear-gradient(to left, rgba(0,0,0,0.12), rgba(0,0,0,0));
+            background-position: left center, right center, left center, right center;
+            background-repeat: no-repeat;
+            background-size: 24px 100%, 24px 100%, 10px 100%, 10px 100%;
+            background-attachment: local, local, scroll, scroll;
+          }
+
           .nr1-table th, .nr1-table td { min-width: 120px; }
           .nr1-table th[style], .nr1-table td[style] { min-width: 120px; }
         }
