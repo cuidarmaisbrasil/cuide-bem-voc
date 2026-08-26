@@ -41,7 +41,14 @@ const TRABALHO_LEGAL: FooterLink[] = [
   { to: "/trabalho/contato", label: "Contato", icon: Mail },
 ];
 
-export const SiteFooter = ({ variant = "brasil" }: { variant?: SiteFooterVariant }) => {
+export const SiteFooter = ({
+  variant = "brasil",
+  /** Reserva espaço extra no mobile quando há CTA fixo na base da página. */
+  mobileCtaSpacing = false,
+}: {
+  variant?: SiteFooterVariant;
+  mobileCtaSpacing?: boolean;
+}) => {
   const isTrabalho = variant === "trabalho";
   const nav = isTrabalho ? TRABALHO_LINKS : BRASIL_LINKS;
   const legal = isTrabalho ? TRABALHO_LEGAL : BRASIL_LEGAL;
@@ -138,7 +145,10 @@ export const SiteFooter = ({ variant = "brasil" }: { variant?: SiteFooterVariant
       </div>
 
       <div className="border-t border-border/60">
-        <p className="container max-w-6xl py-4 text-xs text-muted-foreground text-center sm:text-left">
+        <p className={
+            "container max-w-6xl py-4 text-xs text-muted-foreground text-center sm:text-left " +
+            (mobileCtaSpacing ? "pb-24 md:pb-4" : "")
+          }>
           © {new Date().getFullYear()} Cuidar+ · Gama Solutions (CNPJ 52.115.028/0001-78)
         </p>
       </div>
