@@ -210,7 +210,7 @@ const Index = () => {
       {stage === "test" && <DepressionTest onComplete={handleComplete} />}
       {stage === "result" && answers && <Results answers={answers} age={answers.age} onRestart={handleRestart} />}
 
-      <footer className="border-t border-border/60 mt-16 py-10 pb-28 md:pb-10 bg-muted/30">
+      <footer className="border-t border-border/60 mt-16 py-10 bg-muted/30">
         <div className="container max-w-3xl space-y-6 text-sm text-muted-foreground">
           <div className="text-center space-y-2">
             <p>
@@ -220,11 +220,6 @@ const Index = () => {
             <p>
               Em emergência ligue <a className="text-destructive font-semibold" href="tel:188">CVV 188</a> ou{" "}
               <a className="text-destructive font-semibold" href="tel:192">SAMU 192</a>.
-            </p>
-            <p className="pt-1">
-              <a className="text-primary hover:underline" href="/privacidade">Política de Privacidade</a>
-              <span className="mx-2">·</span>
-              <a className="text-primary hover:underline" href="/termos">Termos de Uso</a>
             </p>
           </div>
 

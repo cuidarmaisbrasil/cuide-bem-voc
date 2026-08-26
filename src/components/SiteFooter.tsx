@@ -138,7 +138,7 @@ export const SiteFooter = ({ variant = "brasil" }: { variant?: SiteFooterVariant
       </div>
 
       <div className="border-t border-border/60">
-        <p className="container max-w-6xl py-4 text-xs text-muted-foreground text-center sm:text-left">
+        <p className="container max-w-6xl py-4 pb-24 md:pb-4 text-xs text-muted-foreground text-center sm:text-left">
           © {new Date().getFullYear()} Cuidar+ · Gama Solutions (CNPJ 52.115.028/0001-78)
         </p>
       </div>
