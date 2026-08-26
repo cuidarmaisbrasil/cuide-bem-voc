@@ -269,7 +269,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
-      <SiteFooter variant="brasil" />
+      <SiteFooter variant="brasil" mobileCtaSpacing />
     </main>
   );
 };
