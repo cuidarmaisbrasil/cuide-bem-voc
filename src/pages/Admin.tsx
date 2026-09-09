@@ -80,7 +80,7 @@ function downloadCSV(filename: string, rows: Record<string, any>[]) {
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, isViewer, canView, loading, signOut } = useAuth();
+  const { user, isAdmin, canView, loading, signOut } = useAuth();
   const readOnly = !isAdmin;
 
   type AdminArea = "brasil" | "trabalho";

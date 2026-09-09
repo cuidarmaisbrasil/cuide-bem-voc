@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Loader2, Sparkles, Trash2, ExternalLink, Copy, ChevronDown, ChevronUp, Building2, Mail } from "lucide-react";
 
-import { COMMERCIAL_FROM, BOOKING_URL, outreachHtml, outreachSubject, outreachText } from "@/lib/outreachEmail";
+import { COMMERCIAL_FROM, outreachHtml, outreachSubject, outreachText } from "@/lib/outreachEmail";
 
 
 
