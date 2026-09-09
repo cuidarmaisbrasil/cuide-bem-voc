@@ -620,6 +620,19 @@ const Nr1Report = () => {
     });
   }, [target]);
 
+  // Rótulos por célula: permitem que as tabelas virem cartões empilhados no mobile.
+  useEffect(() => {
+    document.querySelectorAll<HTMLTableElement>(".nr1-table").forEach((t) => {
+      const heads = Array.from(t.querySelectorAll("thead th")).map((h) => h.textContent?.trim() ?? "");
+      t.querySelectorAll("tbody tr").forEach((tr) => {
+        Array.from(tr.children).forEach((td, i) => {
+          if (heads[i]) td.setAttribute("data-label", heads[i]);
+        });
+      });
+    });
+  });
+
+
   if (loading) return <main className="container py-10 text-sm text-muted-foreground">Carregando…</main>;
   if (!stats || !company) return <main className="container py-10 text-sm">Dados indisponíveis.</main>;
   if (!target) return <main className="container py-10 text-sm">Rodada não encontrada.</main>;
