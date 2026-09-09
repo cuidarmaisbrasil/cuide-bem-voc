@@ -680,6 +680,11 @@ const Nr1Report = () => {
             padding-bottom: 6px; margin-bottom: 4px;
           }
           .nr1-table td:first-child::before { content: none; }
+          .nr1-table td > * {
+            min-width: 0 !important; max-width: 100% !important;
+            width: auto !important; overflow-wrap: anywhere;
+          }
+
         }
 
       `}</style>
