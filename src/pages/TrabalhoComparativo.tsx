@@ -205,7 +205,7 @@ export default function TrabalhoComparativo() {
           <Card className="p-5">
             <h2 className="font-display text-lg font-semibold mb-3">Dimensões COPSOQ II (média por ciclo)</h2>
             <div className="table-scroll -mx-1 px-1">
-          <table className="w-full text-sm min-w-[560px]">
+          <table className="w-full text-sm md:min-w-[560px] stack-table">
               <thead>
                 <tr className="text-left text-xs text-muted-foreground">
                   <th className="py-2">Dimensão</th>
@@ -220,11 +220,11 @@ export default function TrabalhoComparativo() {
                   <tr key={id}>
                     <td className="py-2">{id}</td>
                     {rounds.map((r) => (
-                      <td key={r.round_no} className="py-2">
+                      <td key={r.round_no} className="py-2" data-label={`Ciclo ${r.round_no}`}>
                         {r.copsoq?.scales?.[id]?.mean ?? "—"}
                       </td>
                     ))}
-                    <td className="py-2">
+                    <td className="py-2" data-label="Variação">
                       <Delta from={first.copsoq?.scales?.[id]?.mean} to={last.copsoq?.scales?.[id]?.mean} />
                     </td>
                   </tr>
@@ -232,6 +232,7 @@ export default function TrabalhoComparativo() {
               </tbody>
             </table>
           </div>
+
             <p className="text-xs text-muted-foreground mt-3">
               Recortes com número de respondentes abaixo do mínimo aparecem como "oculto" para preservar o
               anonimato.

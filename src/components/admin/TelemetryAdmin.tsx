@@ -169,8 +169,8 @@ export function TelemetryAdmin() {
 
       <Card className="p-4">
         <h4 className="text-sm font-semibold mb-3">Últimas sessões pontuadas</h4>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+        <div className="overflow-x-auto table-scroll">
+          <table className="w-full text-xs min-w-[640px]">
             <thead className="text-left text-muted-foreground border-b">
               <tr>
                 <th className="py-2 pr-3">Quando</th>
@@ -225,8 +225,8 @@ export function TelemetryAdmin() {
 
       <Card className="p-4">
         <h4 className="text-sm font-semibold mb-3">Sessões (últimas 20)</h4>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+        <div className="overflow-x-auto table-scroll">
+          <table className="w-full text-xs min-w-[640px]">
             <thead className="text-left text-muted-foreground border-b">
               <tr>
                 <th className="py-2 pr-3">Início</th>
