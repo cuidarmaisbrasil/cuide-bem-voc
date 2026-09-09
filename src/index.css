@@ -142,6 +142,52 @@
     background-attachment: local, local, scroll, scroll;
   }
 
+  /* Tabelas densas viram cartões empilhados no mobile.
+     Cada <td> precisa de data-label com o título da coluna. */
+  @media (max-width: 767px) {
+    .stack-table,
+    .stack-table tbody,
+    .stack-table tr,
+    .stack-table td {
+      display: block;
+      width: 100%;
+      min-width: 0 !important;
+    }
+    .stack-table thead { display: none; }
+    .stack-table tr {
+      border: 1px solid hsl(var(--border));
+      border-radius: calc(var(--radius) - 0.375rem);
+      background: hsl(var(--card));
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.625rem;
+    }
+    .stack-table td {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      text-align: right;
+      border: 0;
+      padding: 0.25rem 0;
+    }
+    .stack-table td::before {
+      content: attr(data-label);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: hsl(var(--muted-foreground));
+      text-align: left;
+    }
+    .stack-table td:first-child {
+      font-weight: 600;
+      border-bottom: 1px solid hsl(var(--border) / 0.6);
+      padding-bottom: 0.375rem;
+      margin-bottom: 0.25rem;
+    }
+    .stack-table td:first-child::before { content: none; }
+    .table-scroll:has(> .stack-table) { background-image: none; }
+  }
+
+
   .bg-gradient-hero { background: var(--gradient-hero); }
   .bg-gradient-soft { background: var(--gradient-soft); }
   .shadow-soft { box-shadow: var(--shadow-soft); }
