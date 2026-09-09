@@ -620,6 +620,19 @@ const Nr1Report = () => {
     });
   }, [target]);
 
+  // Rótulos por célula: permitem que as tabelas virem cartões empilhados no mobile.
+  useEffect(() => {
+    document.querySelectorAll<HTMLTableElement>(".nr1-table").forEach((t) => {
+      const heads = Array.from(t.querySelectorAll("thead th")).map((h) => h.textContent?.trim() ?? "");
+      t.querySelectorAll("tbody tr").forEach((tr) => {
+        Array.from(tr.children).forEach((td, i) => {
+          if (heads[i]) td.setAttribute("data-label", heads[i]);
+        });
+      });
+    });
+  });
+
+
   if (loading) return <main className="container py-10 text-sm text-muted-foreground">Carregando…</main>;
   if (!stats || !company) return <main className="container py-10 text-sm">Dados indisponíveis.</main>;
   if (!target) return <main className="container py-10 text-sm">Rodada não encontrada.</main>;
@@ -645,22 +658,35 @@ const Nr1Report = () => {
         .nr1-table th { background: #f5f5f4; font-weight: 600; }
         .nr1-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; }
         @media screen and (max-width: 767px) {
-          .nr1-table {
-            display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%;
-            background-image:
-              linear-gradient(to right, #fff 30%, rgba(255,255,255,0)),
-              linear-gradient(to left, #fff 30%, rgba(255,255,255,0)),
-              linear-gradient(to right, rgba(0,0,0,0.12), rgba(0,0,0,0)),
-              linear-gradient(to left, rgba(0,0,0,0.12), rgba(0,0,0,0));
-            background-position: left center, right center, left center, right center;
-            background-repeat: no-repeat;
-            background-size: 24px 100%, 24px 100%, 10px 100%, 10px 100%;
-            background-attachment: local, local, scroll, scroll;
+          .nr1-table, .nr1-table tbody, .nr1-table tr, .nr1-table td {
+            display: block; width: 100% !important; max-width: 100% !important; min-width: 0 !important;
+          }
+          .nr1-table thead { display: none; }
+          .nr1-table { font-size: 12px; }
+          .nr1-table tr {
+            border: 1px solid #d4d4d8; border-radius: 8px; background: #fff;
+            padding: 8px 10px; margin-bottom: 10px;
+          }
+          .nr1-table td {
+            border: 0; padding: 3px 0; display: flex; gap: 12px;
+            align-items: baseline; justify-content: space-between; text-align: right;
+          }
+          .nr1-table td::before {
+            content: attr(data-label); font-size: 10px; font-weight: 600;
+            color: #52525b; text-align: left; flex: 0 0 40%;
+          }
+          .nr1-table td:first-child {
+            font-weight: 700; text-align: left; border-bottom: 1px solid #e4e4e7;
+            padding-bottom: 6px; margin-bottom: 4px;
+          }
+          .nr1-table td:first-child::before { content: none; }
+          .nr1-table td > * {
+            min-width: 0 !important; max-width: 100% !important;
+            width: auto !important; overflow-wrap: anywhere;
           }
 
-          .nr1-table th, .nr1-table td { min-width: 120px; }
-          .nr1-table th[style], .nr1-table td[style] { min-width: 120px; }
         }
+
       `}</style>
 
 
