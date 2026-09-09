@@ -139,7 +139,7 @@ export default function TrabalhoComparativo() {
         <Card className="p-5">
           <h2 className="font-display text-lg font-semibold mb-3">Visão geral</h2>
           <div className="table-scroll -mx-1 px-1">
-          <table className="w-full text-sm min-w-[560px]">
+          <table className="w-full text-sm md:min-w-[560px] stack-table">
             <thead>
               <tr className="text-left text-xs text-muted-foreground">
                 <th className="py-2">Indicador</th>
@@ -152,52 +152,53 @@ export default function TrabalhoComparativo() {
                 <th className="py-2">Variação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/60 md:divide-y">
               <tr>
                 <td className="py-2">Adesão (%)</td>
                 {rounds.map((r) => (
-                  <td key={r.round_no} className="py-2">{adherence(r)}%</td>
+                  <td key={r.round_no} className="py-2" data-label={`Ciclo ${r.round_no}`}>{adherence(r)}%</td>
                 ))}
-                <td className="py-2">
+                <td className="py-2" data-label="Variação">
                   <Delta from={adherence(first)} to={adherence(last)} lowerIsBetter={false} />
                 </td>
               </tr>
               <tr>
                 <td className="py-2">PHQ-9 moderado+ (%)</td>
                 {rounds.map((r) => (
-                  <td key={r.round_no} className="py-2">
+                  <td key={r.round_no} className="py-2" data-label={`Ciclo ${r.round_no}`}>
                     {r.phq9?.hidden ? "oculto" : `${phqModPlus(r) ?? 0}%`}
                   </td>
                 ))}
-                <td className="py-2">
+                <td className="py-2" data-label="Variação">
                   <Delta from={phqModPlus(first)} to={phqModPlus(last)} />
                 </td>
               </tr>
               <tr>
                 <td className="py-2">IGAP (assédio moral)</td>
                 {rounds.map((r) => (
-                  <td key={r.round_no} className="py-2">
+                  <td key={r.round_no} className="py-2" data-label={`Ciclo ${r.round_no}`}>
                     {r.psicossocial?.hidden ? "oculto" : r.psicossocial?.IGAP}
                   </td>
                 ))}
-                <td className="py-2">
+                <td className="py-2" data-label="Variação">
                   <Delta from={first.psicossocial?.IGAP} to={last.psicossocial?.IGAP} />
                 </td>
               </tr>
               <tr>
                 <td className="py-2">MDiSH médio</td>
                 {rounds.map((r) => (
-                  <td key={r.round_no} className="py-2">
+                  <td key={r.round_no} className="py-2" data-label={`Ciclo ${r.round_no}`}>
                     {r.assedio_sexual?.hidden ? "oculto" : r.assedio_sexual?.MDiSH_total}
                   </td>
                 ))}
-                <td className="py-2">
+                <td className="py-2" data-label="Variação">
                   <Delta from={first.assedio_sexual?.MDiSH_total} to={last.assedio_sexual?.MDiSH_total} />
                 </td>
               </tr>
             </tbody>
           </table>
           </div>
+
         </Card>
 
         {scaleIds.length > 0 && (
