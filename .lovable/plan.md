@@ -34,7 +34,7 @@ Transformar o painel existente em uma central clara para a empresa acompanhar ca
 
 ## Decisões técnicas
 
-- Não será criada uma nova tabela de perfis: o painel continuará usando a conta autenticada e o vínculo seguro já existente com `companies` e `company_wave_managers`.
+- Não será criado um perfil pessoal adicional: o painel reutilizará nome, cargo, e-mail e telefone do responsável já cadastrados na empresa, junto ao vínculo seguro existente com `companies` e `company_wave_managers`.
 - O acesso aos relatórios continuará validado no backend pelas permissões atuais.
 - A recuperação de senha usará o fluxo de e-mail do Lovable Cloud e uma página pública dedicada.
 - Dados da prévia ficarão isolados da base real e sempre identificados como demonstração.
