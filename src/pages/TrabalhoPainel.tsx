@@ -258,13 +258,13 @@ export default function TrabalhoPainel() {
         </div>
 
         <Tabs defaultValue="visao-geral">
-          <div className="sm:hidden"><Select defaultValue="visao-geral" onValueChange={(value) => document.querySelector<HTMLElement>(`[data-state][value='${value}']`)?.click()}><SelectTrigger aria-label="Escolher área"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="visao-geral">Visão geral</SelectItem><SelectItem value="empresa">Empresa</SelectItem><SelectItem value="equipe">Equipe e ciclos</SelectItem><SelectItem value="documentos">Documentos</SelectItem><SelectItem value="relatorios">Relatórios</SelectItem></SelectContent></Select></div>
+          <div className="sm:hidden"><Select defaultValue="visao-geral" onValueChange={(value) => document.getElementById(`company-tab-${value}`)?.click()}><SelectTrigger aria-label="Escolher área"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="visao-geral">Visão geral</SelectItem><SelectItem value="empresa">Empresa</SelectItem><SelectItem value="equipe">Equipe e ciclos</SelectItem><SelectItem value="documentos">Documentos</SelectItem><SelectItem value="relatorios">Relatórios</SelectItem></SelectContent></Select></div>
           <TabsList className="hidden sm:flex flex-wrap h-auto justify-start">
-            <TabsTrigger value="visao-geral"><ClipboardList className="mr-1.5 h-4 w-4" />Visão geral</TabsTrigger>
-            <TabsTrigger value="empresa"><Building2 className="mr-1.5 h-4 w-4" />Empresa</TabsTrigger>
-            <TabsTrigger value="equipe"><Users className="mr-1.5 h-4 w-4" />Equipe e ciclos</TabsTrigger>
-            <TabsTrigger value="documentos"><Receipt className="mr-1.5 h-4 w-4" />Documentos</TabsTrigger>
-            <TabsTrigger value="relatorios"><FileText className="mr-1.5 h-4 w-4" />Relatórios</TabsTrigger>
+            <TabsTrigger id="company-tab-visao-geral" value="visao-geral"><ClipboardList className="mr-1.5 h-4 w-4" />Visão geral</TabsTrigger>
+            <TabsTrigger id="company-tab-empresa" value="empresa"><Building2 className="mr-1.5 h-4 w-4" />Empresa</TabsTrigger>
+            <TabsTrigger id="company-tab-equipe" value="equipe"><Users className="mr-1.5 h-4 w-4" />Equipe e ciclos</TabsTrigger>
+            <TabsTrigger id="company-tab-documentos" value="documentos"><Receipt className="mr-1.5 h-4 w-4" />Documentos</TabsTrigger>
+            <TabsTrigger id="company-tab-relatorios" value="relatorios"><FileText className="mr-1.5 h-4 w-4" />Relatórios</TabsTrigger>
           </TabsList>
 
           <TabsContent value="visao-geral" className="mt-4 space-y-4">

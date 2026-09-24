@@ -464,6 +464,9 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                   <button onClick={onEntrar} className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-primary transition-smooth underline-offset-4 hover:underline">
                     Já tenho conta · entrar
                   </button>
+                  <button onClick={() => window.location.assign("/trabalho/painel/previa")} className="block mx-auto mt-2 text-xs text-primary hover:underline underline-offset-4">
+                    Ver prévia do painel
+                  </button>
                 </Card>
               </Reveal>
             </div>
