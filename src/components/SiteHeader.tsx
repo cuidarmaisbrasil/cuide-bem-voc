@@ -36,7 +36,7 @@ const BRASIL_NAV: NavItem[] = [
 
 const TRABALHO_NAV: NavItem[] = [
   { to: "/trabalho", label: "Início", icon: Briefcase },
-  { to: "/trabalho/painel", label: "Painel", icon: LayoutDashboard },
+  { to: "/trabalho/login", label: "Acesso da empresa", icon: LayoutDashboard },
   { to: "/trabalho/faq", label: "Dúvidas", icon: HelpCircle },
   { to: "/trabalho/parceiros", label: "Parceiros", icon: Handshake },
   { to: "/trabalho/termos", label: "Termos", icon: FileText },

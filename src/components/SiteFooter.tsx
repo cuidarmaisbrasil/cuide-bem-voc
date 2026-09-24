@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Heart,
@@ -31,7 +32,7 @@ const BRASIL_LEGAL: FooterLink[] = [
 
 const TRABALHO_LINKS: FooterLink[] = [
   { to: "/trabalho", label: "Início", icon: Briefcase },
-  { to: "/trabalho/painel", label: "Painel da empresa", icon: LayoutDashboard },
+  { to: "/trabalho/login", label: "Acesso da empresa", icon: LayoutDashboard },
   { to: "/trabalho/faq", label: "Dúvidas frequentes", icon: HelpCircle },
   { to: "/trabalho/parceiros", label: "Parceiros SST", icon: Handshake },
 ];
@@ -41,20 +42,20 @@ const TRABALHO_LEGAL: FooterLink[] = [
   { to: "/trabalho/contato", label: "Contato", icon: Mail },
 ];
 
-export const SiteFooter = ({
+export const SiteFooter = forwardRef<HTMLElement, {
+  variant?: SiteFooterVariant;
+  mobileCtaSpacing?: boolean;
+}>(({
   variant = "brasil",
   /** Reserva espaço extra no mobile quando há CTA fixo na base da página. */
   mobileCtaSpacing = false,
-}: {
-  variant?: SiteFooterVariant;
-  mobileCtaSpacing?: boolean;
-}) => {
+}, ref) => {
   const isTrabalho = variant === "trabalho";
   const nav = isTrabalho ? TRABALHO_LINKS : BRASIL_LINKS;
   const legal = isTrabalho ? TRABALHO_LEGAL : BRASIL_LEGAL;
 
   return (
-    <footer className="border-t border-border/60 bg-muted/30 mt-12">
+    <footer ref={ref} className="border-t border-border/60 bg-muted/30 mt-12">
       <div className="container max-w-6xl py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">
           <span className="flex items-center gap-2 font-display font-semibold">
@@ -154,6 +155,8 @@ export const SiteFooter = ({
       </div>
     </footer>
   );
-};
+});
+
+SiteFooter.displayName = "SiteFooter";
 
 export default SiteFooter;

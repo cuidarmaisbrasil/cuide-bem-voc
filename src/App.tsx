@@ -28,6 +28,9 @@ const TrabalhoContato = lazy(() => import("./pages/TrabalhoContato.tsx"));
 const TrabalhoAmostraRelatorio = lazy(() => import("./pages/TrabalhoAmostraRelatorio.tsx"));
 const TrabalhoOndas = lazy(() => import("./pages/TrabalhoOndas.tsx"));
 const TrabalhoPainel = lazy(() => import("./pages/TrabalhoPainel.tsx"));
+const TrabalhoLogin = lazy(() => import("./pages/TrabalhoLogin.tsx"));
+const TrabalhoPainelPrevia = lazy(() => import("./pages/TrabalhoPainelPrevia.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const TrabalhoComparativo = lazy(() => import("./pages/TrabalhoComparativo.tsx"));
 const TrabalhoParceiros = lazy(() => import("./pages/TrabalhoParceiros.tsx"));
 const BlogIndex = lazy(() => import("./pages/BlogIndex.tsx"));
@@ -77,6 +80,9 @@ const App = () => (
               <Route path="/trabalho/amostra-relatorio" element={<TrabalhoAmostraRelatorio />} />
               <Route path="/trabalho/ondas" element={<TrabalhoOndas />} />
               <Route path="/trabalho/painel" element={<TrabalhoPainel />} />
+              <Route path="/trabalho/login" element={<TrabalhoLogin />} />
+              <Route path="/trabalho/painel/previa" element={<TrabalhoPainelPrevia />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/trabalho/comparativo" element={<TrabalhoComparativo />} />
               <Route path="/trabalho/parceiros" element={<TrabalhoParceiros />} />
               <Route path="/blog" element={<BlogIndex />} />
