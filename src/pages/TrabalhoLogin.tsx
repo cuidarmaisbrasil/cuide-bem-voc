@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 export default function TrabalhoLogin() {
   const navigate = useNavigate();
-  const { user, loading, isWaveManager } = useAuth();
+  const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -27,10 +27,13 @@ export default function TrabalhoLogin() {
   useEffect(() => {
     if (loading || !user) return;
     void (async () => {
-      const { data } = await supabase.from("companies").select("id").eq("owner_user_id", user.id).maybeSingle();
-      navigate(data ? "/trabalho/painel" : isWaveManager ? "/trabalho/ondas" : "/trabalho/painel", { replace: true });
+      const [ownerResult, managerResult] = await Promise.all([
+        supabase.from("companies").select("id").eq("owner_user_id", user.id).maybeSingle(),
+        supabase.from("company_wave_managers").select("company_id").eq("user_id", user.id).limit(1),
+      ]);
+      navigate(ownerResult.data ? "/trabalho/painel" : managerResult.data?.length ? "/trabalho/ondas" : "/trabalho/painel", { replace: true });
     })();
-  }, [user, loading, isWaveManager, navigate]);
+  }, [user, loading, navigate]);
 
   async function signIn(event: FormEvent) {
     event.preventDefault();
