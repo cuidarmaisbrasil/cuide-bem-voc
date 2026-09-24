@@ -157,7 +157,7 @@ const Trabalho = () => {
       <SiteHeader variant="trabalho" onSignOut={user ? signOut : undefined} />
 
 
-      {!user && <PublicLanding onCadastrar={() => { setAuthMode("signup"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("signup-company")?.focus(), 600); }} onEntrar={() => { setAuthMode("login"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth" }); }} />}
+      {!user && <PublicLanding onCadastrar={() => { setAuthMode("signup"); document.getElementById("cadastro")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("signup-company")?.focus(), 600); }} onEntrar={() => navigate("/trabalho/login")} />}
 
 
       <div className="container max-w-3xl py-10 space-y-6">
@@ -169,11 +169,8 @@ const Trabalho = () => {
                 Gratuito* até 20 colaboradores. Aprovação em até 1 dia útil e seu painel é liberado.
               </p>
             </div>
-            <Tabs value={authMode} onValueChange={(v) => setAuthMode(v as any)}>
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="signup">Cadastrar empresa</TabsTrigger>
-                <TabsTrigger value="login">Entrar</TabsTrigger>
-              </TabsList>
+            <Tabs value={authMode} onValueChange={(v) => v === "login" ? navigate("/trabalho/login") : setAuthMode("signup")}>
+              <TabsList className="grid grid-cols-2 w-full"><TabsTrigger value="signup">Cadastrar empresa</TabsTrigger><TabsTrigger value="login">Entrar</TabsTrigger></TabsList>
               <TabsContent value="signup">
                 <form onSubmit={handleAuth} className="space-y-3 mt-4">
                   <div><Label htmlFor="signup-company">Nome da empresa *</Label><Input id="signup-company" value={companyName} onChange={(e) => setCompanyName(e.target.value)} required /></div>
@@ -466,6 +463,9 @@ function PublicLanding({ onCadastrar, onEntrar }: { onCadastrar: () => void; onE
                   </Button>
                   <button onClick={onEntrar} className="block mx-auto mt-3 text-xs text-muted-foreground hover:text-primary transition-smooth underline-offset-4 hover:underline">
                     Já tenho conta · entrar
+                  </button>
+                  <button onClick={() => window.location.assign("/trabalho/painel/previa")} className="block mx-auto mt-2 text-xs text-primary hover:underline underline-offset-4">
+                    Ver prévia do painel
                   </button>
                 </Card>
               </Reveal>

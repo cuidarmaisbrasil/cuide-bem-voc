@@ -13,15 +13,16 @@ import { toast } from "sonner";
 import { ContractSignCard } from "@/components/ContractSignCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
-  ArrowLeft,
-  Briefcase,
+  AlertCircle,
   Building2,
+  ClipboardList,
   Download,
   FileText,
   GitCompareArrows,
   Receipt,
   Users,
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Company {
   id: string;
@@ -128,7 +129,7 @@ export default function TrabalhoPainel() {
 
   useEffect(() => {
     document.title = "Painel da empresa — Cuidar+ Trabalho";
-    if (!loading && !user) navigate("/trabalho");
+    if (!loading && !user) navigate("/trabalho/login", { replace: true });
   }, [user, loading, navigate]);
 
   useEffect(() => {
@@ -230,6 +231,11 @@ export default function TrabalhoPainel() {
     );
 
   const multiCycle = rounds.length > 1;
+  const openRounds = rounds.filter((round) => round.status === "open").length;
+  const latestRound = rounds[0];
+  const latestAdherence = latestRound ? adherence[latestRound.round_no] : undefined;
+  const latestPct = latestAdherence?.sent ? Math.round((latestAdherence.completed / latestAdherence.sent) * 100) : null;
+  const pendingDocuments = invoices.filter((invoice) => invoice.status !== "paga").length;
 
   return (
     <main className="min-h-screen bg-background">
@@ -237,11 +243,8 @@ export default function TrabalhoPainel() {
 
 
       <div className="container max-w-5xl py-8 space-y-6">
-        <div className="flex items-start justify-between flex-wrap gap-3">
+        <div className="flex items-start justify-between flex-wrap gap-3 border-b border-border/60 pb-5">
           <div>
-            <Button variant="ghost" size="sm" className="-ml-2 mb-1" onClick={() => navigate("/trabalho")}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
-            </Button>
             <h1 className="font-display text-2xl font-semibold flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" /> {company.name}
             </h1>
@@ -254,17 +257,27 @@ export default function TrabalhoPainel() {
           </Badge>
         </div>
 
-        <Tabs defaultValue="perfil">
-          <TabsList className="flex flex-wrap h-auto justify-start">
-            <TabsTrigger value="perfil">Perfil</TabsTrigger>
-            <TabsTrigger value="contrato">Contrato</TabsTrigger>
-            <TabsTrigger value="notas">Notas fiscais</TabsTrigger>
-            <TabsTrigger value="colaboradores">Colaboradores</TabsTrigger>
-            <TabsTrigger value="ciclos">Ciclos</TabsTrigger>
-            <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
+        <Tabs defaultValue="visao-geral">
+          <div className="sm:hidden"><Select defaultValue="visao-geral" onValueChange={(value) => document.getElementById(`company-tab-${value}`)?.click()}><SelectTrigger aria-label="Escolher área"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="visao-geral">Visão geral</SelectItem><SelectItem value="empresa">Empresa</SelectItem><SelectItem value="equipe">Equipe e ciclos</SelectItem><SelectItem value="documentos">Documentos</SelectItem><SelectItem value="relatorios">Relatórios</SelectItem></SelectContent></Select></div>
+          <TabsList className="hidden sm:flex flex-wrap h-auto justify-start">
+            <TabsTrigger id="company-tab-visao-geral" value="visao-geral"><ClipboardList className="mr-1.5 h-4 w-4" />Visão geral</TabsTrigger>
+            <TabsTrigger id="company-tab-empresa" value="empresa"><Building2 className="mr-1.5 h-4 w-4" />Empresa</TabsTrigger>
+            <TabsTrigger id="company-tab-equipe" value="equipe"><Users className="mr-1.5 h-4 w-4" />Equipe e ciclos</TabsTrigger>
+            <TabsTrigger id="company-tab-documentos" value="documentos"><Receipt className="mr-1.5 h-4 w-4" />Documentos</TabsTrigger>
+            <TabsTrigger id="company-tab-relatorios" value="relatorios"><FileText className="mr-1.5 h-4 w-4" />Relatórios</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="perfil" className="mt-4 space-y-4">
+          <TabsContent value="visao-geral" className="mt-4 space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Card className="p-4"><p className="text-sm text-muted-foreground">Colaboradores</p><p className="mt-2 text-2xl font-semibold">{participants}</p></Card>
+              <Card className="p-4"><p className="text-sm text-muted-foreground">Ciclos</p><p className="mt-2 text-2xl font-semibold">{rounds.length}</p><p className="text-xs text-muted-foreground">{openRounds ? `${openRounds} em andamento` : "Nenhum em andamento"}</p></Card>
+              <Card className="p-4"><p className="text-sm text-muted-foreground">Adesão mais recente</p><p className="mt-2 text-2xl font-semibold">{latestPct === null ? "—" : `${latestPct}%`}</p><p className="text-xs text-muted-foreground">{latestPct === null ? "Sem envios concluídos" : `Ciclo ${latestRound?.round_no}`}</p></Card>
+              <Card className="p-4"><p className="text-sm text-muted-foreground">Documentos pendentes</p><p className="mt-2 text-2xl font-semibold">{pendingDocuments}</p></Card>
+            </div>
+            <Card className="p-5"><h2 className="font-display text-lg font-semibold">Próximos passos</h2><div className="mt-3 flex flex-wrap gap-2"><Button onClick={() => navigate("/trabalho/ondas")}><Users className="mr-1.5 h-4 w-4" />Gerenciar equipe e ciclos</Button>{multiCycle && <Button variant="outline" onClick={() => navigate("/trabalho/comparativo")}><GitCompareArrows className="mr-1.5 h-4 w-4" />Comparar ciclos</Button>}</div>{!company.wave_manager_email && <p className="mt-3 flex gap-2 text-sm text-muted-foreground"><AlertCircle className="h-4 w-4 shrink-0 text-highlight" />Cadastre o gestor de ciclos na área Empresa.</p>}</Card>
+          </TabsContent>
+
+          <TabsContent value="empresa" className="mt-4 space-y-4">
             <Card className="p-5 space-y-4">
               <h2 className="font-display text-lg font-semibold">Dados da empresa</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -332,16 +345,8 @@ export default function TrabalhoPainel() {
 
           </TabsContent>
 
-          <TabsContent value="contrato" className="mt-4">
-            <ContractSignCard
-              companyId={company.id}
-              companyName={company.name}
-              cnpj={company.cnpj}
-              sizeRange={company.size_range}
-            />
-          </TabsContent>
-
-          <TabsContent value="notas" className="mt-4">
+          <TabsContent value="documentos" className="mt-4 space-y-4">
+            <ContractSignCard companyId={company.id} companyName={company.name} cnpj={company.cnpj} sizeRange={company.size_range} />
             <Card className="p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Receipt className="h-4 w-4 text-primary" />
@@ -388,7 +393,7 @@ export default function TrabalhoPainel() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="colaboradores" className="mt-4">
+          <TabsContent value="equipe" className="mt-4 space-y-4">
             <Card className="p-5 space-y-3">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
@@ -400,9 +405,6 @@ export default function TrabalhoPainel() {
               </p>
               <Button onClick={() => navigate("/trabalho/ondas")}>Gerenciar colaboradores e disparos</Button>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="ciclos" className="mt-4 space-y-4">
             {rounds.length === 0 ? (
               <Card className="p-5">
                 <p className="text-sm text-muted-foreground">Nenhum ciclo iniciado até o momento.</p>
